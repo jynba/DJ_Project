@@ -5,10 +5,6 @@
 </template>
 <script setup>
 	import { initRiver } from '@/utils/common.js';
-	import { onMounted } from 'vue';
-	onMounted(() => {
-		initRiver();
-	});
 </script>
 <style scoped lang="scss">
 	.modelToolBar {
