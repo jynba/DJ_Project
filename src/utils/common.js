@@ -70,17 +70,17 @@ export function initRiver() {
 	// 	'dongjiang:dongjiang_river7'
 	// );
 	const dongjiangbound6 = addWebMapData(
-		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
 		'dongjiang:dongjiang_bound6'
 	);
 	const dongjiangriver6 = addWebMapData(
-		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
 		'dongjiang:dongjiang_river6'
 	);
-	const dongjiangReservoirs = addWebMapData(
-		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
-		'dongjiang:dongjiang_reservoirs_total'
-	);
+	// const dongjiangReservoirs = addWebMapData(
+	// 	IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+	// 	'dongjiang:dongjiang_reservoirs_total'
+	// );
 	// 天地图标注
 	window.viewer.imageryLayers.addImageryProvider(
 		new Cesium.WebMapTileServiceImageryProvider({
