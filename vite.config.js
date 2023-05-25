@@ -27,11 +27,11 @@ export default defineConfig(({ command, mode }) => ({
 		},
 	},
 	build: {
-		outDir: 'html',
+		outDir: 'dist',
 	},
 	define: {
 		// geoserver服务地址
-		// IP_ADDRESS_WMS: JSON.stringify('http://172.27.101.19:8080/'),
+		IP_ADDRESS_WMS1: JSON.stringify('http://172.27.101.19:8080/'),
 		IP_ADDRESS_WMS: JSON.stringify('https://eslab2.dgut.edu.cn/'),
 	},
 }));

@@ -70,12 +70,54 @@ export function initRiver() {
 	// 	'dongjiang:dongjiang_river7'
 	// );
 	const dongjiangbound6 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
 		'dongjiang:dongjiang_bound6'
 	);
 	const dongjiangriver6 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
 		'dongjiang:dongjiang_river6'
+	);
+	const dongjiangReservoirs = addWebMapData(
+		IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+		'dongjiang:dongjiang_reservoirs_total'
+	);
+	// 天地图标注
+	window.viewer.imageryLayers.addImageryProvider(
+		new Cesium.WebMapTileServiceImageryProvider({
+			url:
+				'http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0' +
+				'&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}' +
+				'&style=default&format=tiles&tk=a5ef217ac65d9c8323d15a22f98c5c66',
+			layer: 'tdtCva',
+			style: 'default',
+			format: 'tiles',
+			tileMatrixSetID: 'c',
+			subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
+			tilingScheme: new Cesium.GeographicTilingScheme(),
+			tileMatrixLabels: [
+				'1',
+				'2',
+				'3',
+				'4',
+				'5',
+				'6',
+				'7',
+				'8',
+				'9',
+				'10',
+				'11',
+				'12',
+				'13',
+				'14',
+				'15',
+				'16',
+				'17',
+				'18',
+				'19',
+			],
+			maximumLevel: 18,
+			show: false,
+		})
 	);
 	window.viewer.scene.camera.changed.addEventListener(function () {
 		// 加载河网和固定位置
@@ -92,19 +134,19 @@ export function initRiver() {
 		let longitude = (curPosition.longitude * 180) / Math.PI;
 		let latitude = (curPosition.latitude * 180) / Math.PI;
 		// 限制高度，到达一定高度，则回归
-		if (latitude > 120 || latitude < 100 || longitude < 20 || longitude > 30) {
-			console.log(longitude, latitude, height);
-			setTimeout(() => {
-				window.viewer.camera.flyTo({
-					destination: Cesium.Cartesian3.fromDegrees(
-						114.50734815163804,
-						23.76178676036698,
-						751048
-					),
-					duration: 0.5,
-				});
-			}, 2000);
-		}
+		// if (latitude > 120 || latitude < 100 || longitude < 20 || longitude > 30) {
+		// 	console.log(longitude, latitude, height);
+		// 	setTimeout(() => {
+		// 		window.viewer.camera.flyTo({
+		// 			destination: Cesium.Cartesian3.fromDegrees(
+		// 				114.50734815163804,
+		// 				23.76178676036698,
+		// 				751048
+		// 			),
+		// 			duration: 0.5,
+		// 		});
+		// 	}, 2000);
+		// }
 	});
 }
 
