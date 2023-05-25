@@ -7,12 +7,15 @@
  * @Description: 
 -->
 <template>
-	<div id="cesiumContainer"></div>
+	<div id="cesiumContainer">
+		<loadRiver />
+	</div>
 </template>
 <script setup>
+	import loadRiver from './loadRiver.vue';
+
 	import { onMounted } from 'vue';
 	import * as Cesium from 'cesium';
-	import { initRiver } from '../utils/common';
 	onMounted(() => {
 		const config = {
 			showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
@@ -136,7 +139,7 @@
 		// });
 		// city.style = heightStyle;
 
-		initRiver();
+		// initRiver();
 		// 分区分块加载河流影像
 		// viewer.scene.camera.moveStart.addEventListener(function () {
 

@@ -1,12 +1,14 @@
 <template>
 	<div class="layout-tool-template modelToolBar">
-		<button @click="loadRiver()">loadRiver</button>
+		<button @click="initRiver()">loadRiver</button>
 	</div>
 </template>
 <script setup>
 	import { initRiver } from '@/utils/common.js';
 	import { onMounted } from 'vue';
-	const loadRiver = initRiver;
+	onMounted(() => {
+		initRiver();
+	});
 </script>
 <style scoped lang="scss">
 	.modelToolBar {
