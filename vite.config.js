@@ -27,7 +27,7 @@ export default defineConfig(({ command, mode }) => ({
 		},
 	},
 	build: {
-		outDir: 'dist',
+		outDir: 'html',
 	},
 	define: {
 		// geoserver服务地址
