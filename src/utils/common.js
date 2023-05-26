@@ -4,7 +4,7 @@
  * 作者: 许佳宇
  * 用途：公共类函数
  */
-
+import request from './request';
 /**
  * 作者 许佳宇
  * 创建时间：2023/05/17
@@ -59,16 +59,22 @@ export let layerShow = function (stat, obj) {
 	};
 };
 
+/**
+ * 变量名：initRiver
+ * 作者： 许佳宇
+ * 创建时间：2023/05/26
+ * 功能：初始化河流
+ */
 export function initRiver() {
 	// 加载geoserver服务
-	// const dongjiangbound7 = addWebMapData(
-	// 	IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-	// 	'dongjiang:dongjiang_bound7'
-	// );
-	// const dongjiangriver7 = addWebMapData(
-	// 	IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-	// 	'dongjiang:dongjiang_river7'
-	// );
+	const dongjiangbound7 = addWebMapData(
+		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+		'dongjiang:dongjiang_bound7'
+	);
+	const dongjiangriver7 = addWebMapData(
+		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+		'dongjiang:dongjiang_river7'
+	);
 	const dongjiangbound6 = addWebMapData(
 		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
 		'dongjiang:dongjiang_bound6'
@@ -164,58 +170,124 @@ export function setLine(value) {
 }
 
 export function clickRiver() {
-	$.ajax({
-		url: IP_ADDRESS_WEB + 'getTibetDetail1',
-		method: 'POST',
-		data: {
-			// 河流或湖泊名
-			name,
-			gid,
-			// 类型，lake或river
-			type,
-			// 当前用户的权限
-			authority,
-		},
-		success: function (res) {
-			// 返回的结果含有河段信息
-			if (res.code == 20000) {
-				if (document.getElementById('drop')) {
-					document.getElementById('drop').innerHTML = '';
-				}
-				// 清除按钮样式
-				// setBtnStyle();
-				document.getElementById('searchinput').value = '';
-				// 如果为河流类型
-				if (type == 'river') {
-					// 先清除高亮
-					viewer.entities.remove(LINE_SEGMENT_LABELING);
-					// 再将视角转到河流中心
-					flyToCenter(res.data, 1);
+	// 获取点击经纬度
+	var longitude = Cesium.Math.toDegrees(cartographic.longitude);
+	var latitude = Cesium.Math.toDegrees(cartographic.latitude);
 
-					// 用于调用获取显示图表
-					judgmentType(res.data.gid, 'river');
-					// 在地球上添加高亮显示当前河流
-					let addRedLine = viewer.entities.add({
-						name: 'Red line on the surface',
-						polyline: {
-							positions: Cesium.Cartesian3.fromDegreesArray(res.data.scope), //经纬度数组 data.scope
-							followSurface: false,
-							width: 4,
-							material: new Cesium.PolylineOutlineMaterialProperty({
-								color: Cesium.Color.RED,
-								outlineWidth: 2,
-								outlineColor: Cesium.Color.RED,
-							}),
-							depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
-								color: Cesium.Color.RED,
-								outlineWidth: 2,
-								outlineColor: Cesium.Color.RED,
-							}),
-						},
-					});
-					setLine(addRedLine);
+	try {
+		$.ajax({
+			url: IP_ADDRESS_WEB + 'getRiverDetails',
+			method: 'POST',
+			data: {
+				lon: longitude,
+				lat: latitude,
+				height: Math.ceil(window.viewer.camera.positionCartographic.height),
+			},
+			success: function (res) {
+				// 返回的结果含有河段信息
+				if (res.code == 20000) {
+					if (document.getElementById('drop')) {
+						document.getElementById('drop').innerHTML = '';
+					}
+					// 清除按钮样式
+					// setBtnStyle();
+					document.getElementById('searchinput').value = '';
+					// 如果为河流类型
+					if (type == 'river') {
+						// 先清除高亮
+						viewer.entities.remove(LINE_SEGMENT_LABELING);
+						// 再将视角转到河流中心
+						flyToCenter(res.data, 1);
+
+						// 用于调用获取显示图表
+						judgmentType(res.data.gid, 'river');
+						// 在地球上添加高亮显示当前河流
+						let addRedLine = viewer.entities.add({
+							name: 'Red line on the surface',
+							polyline: {
+								positions: Cesium.Cartesian3.fromDegreesArray(res.data.scope), //经纬度数组 data.scope
+								followSurface: false,
+								width: 4,
+								material: new Cesium.PolylineOutlineMaterialProperty({
+									color: Cesium.Color.RED,
+									outlineWidth: 2,
+									outlineColor: Cesium.Color.RED,
+								}),
+								depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
+									color: Cesium.Color.RED,
+									outlineWidth: 2,
+									outlineColor: Cesium.Color.RED,
+								}),
+							},
+						});
+						setLine(addRedLine);
+					}
 				}
-			}
+			},
+		});
+	} catch {
+		console.log('ajax error');
+	}
+}
+
+export function showRiver(movement) {
+	// 获取全局椭球体
+	const ellipsoid = window.viewer.scene.globe.ellipsoid;
+	// 拾取鼠标在椭圆上的结束点笛卡尔坐标点
+	const cartesian = window.viewer.scene.camera.pickEllipsoid(
+		movement.position,
+		window.viewer.scene.globe.ellipsoid
+	);
+	// 笛卡尔坐标转制图坐标
+	const cartographic = ellipsoid.cartesianToCartographic(cartesian);
+	// 获取点击经纬度高度
+	const longitude = Cesium.Math.toDegrees(cartographic.longitude);
+	const latitude = Cesium.Math.toDegrees(cartographic.latitude);
+	const height = Math.ceil(window.viewer.camera.positionCartographic.height);
+
+	// 发请求
+	request({
+		url: '/getriver',
+		method: 'post',
+		data: {
+			lon: longitude,
+			lat: latitude,
+			// height: height,
+			index: 6,
 		},
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	}).then((res) => {
+		console.log(res);
+		// 先清除高亮
+		window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+
+		// 在地球上添加高亮显示当前河流
+		let addRedLine = viewer.entities.add({
+			name: 'Red line on the surface',
+			polyline: {
+				positions: Cesium.Cartesian3.fromDegreesArray(res.data.scope), //经纬度数组 data.scope
+				followSurface: false,
+				width: 4,
+				material: new Cesium.PolylineOutlineMaterialProperty({
+					color: Cesium.Color.RED,
+					outlineWidth: 2,
+					outlineColor: Cesium.Color.RED,
+				}),
+				depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
+					color: Cesium.Color.RED,
+					outlineWidth: 2,
+					outlineColor: Cesium.Color.RED,
+				}),
+			},
+		});
+		setLine(addRedLine);
 	});
+}
+
+export function clickLeftMouseFunction() {
+	let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+	handler.setInputAction(function (movement) {
+		showRiver(movement);
+	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }

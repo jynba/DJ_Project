@@ -13,7 +13,7 @@
 </template>
 <script setup>
 	import loadRiver from './loadRiver.vue';
-
+	import { clickLeftMouseFunction } from '@/utils/common.js';
 	import { onMounted } from 'vue';
 	import * as Cesium from 'cesium';
 	onMounted(() => {
@@ -144,6 +144,7 @@
 		// viewer.scene.camera.moveStart.addEventListener(function () {
 
 		// });
+		clickLeftMouseFunction();
 	});
 </script>
 <style lang="scss">
