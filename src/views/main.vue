@@ -9,11 +9,13 @@
 <template>
 	<div id="cesiumContainer">
 		<loadRiver />
+		<panel />
 	</div>
 </template>
 <script setup>
 	import loadRiver from './loadRiver.vue';
-	import { clickLeftMouseFunction } from '@/utils/common.js';
+	import panel from './panel.vue';
+	import { initRiver, clickLeftMouseFunction } from '@/utils/common.js';
 	import { onMounted } from 'vue';
 	import * as Cesium from 'cesium';
 	onMounted(() => {
@@ -89,6 +91,7 @@
 		window.viewer = viewer;
 		window.Cesium = Cesium;
 
+		// 天地图
 		// const token = 'a5ef217ac65d9c8323d15a22f98c5c66';
 		// const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
 		// 	url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${token}`,
@@ -144,6 +147,7 @@
 		// viewer.scene.camera.moveStart.addEventListener(function () {
 
 		// });
+		initRiver();
 		clickLeftMouseFunction();
 	});
 </script>

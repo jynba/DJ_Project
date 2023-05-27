@@ -18,28 +18,29 @@ request.interceptors.response.use(
 	(response) => {
 		// 成功回调
 		// 简化数据
-		return response;
+		return response.data;
 	},
 	(error) => {
 		let message = '';
 		// 处理http网络错误
-		let status = error.response.status;
-		switch (status) {
-			case 401:
-				message = 'TOKEN 过期: ' + error.response.break;
-			case 403:
-				message = '无权访问';
-				break;
-			case 404:
-				message = 'Not Found';
-				break;
-			case 500:
-				message = '服务器出现错误';
-				break;
-			default:
-				message = '网络出现问题';
-				break;
-		}
+		let status = error.response?.status;
+		if (status)
+			switch (status) {
+				case 401:
+					message = 'TOKEN 过期: ' + error.response.break;
+				case 403:
+					message = '无权访问';
+					break;
+				case 404:
+					message = 'Not Found';
+					break;
+				case 500:
+					message = '服务器出现错误';
+					break;
+				default:
+					message = '网络出现问题';
+					break;
+			}
 		// 提示错误信息
 		ElMessage({
 			type: 'error',
