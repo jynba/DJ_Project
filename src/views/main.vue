@@ -92,14 +92,42 @@
 		window.Cesium = Cesium;
 
 		// 天地图
-		// const token = 'a5ef217ac65d9c8323d15a22f98c5c66';
-		// const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
-		// 	url: `https://t0.tianditu.gov.cn/img_w/wmts?tk=${token}`,
-		// 	format: 'tiles',
-		// 	layer: 'img',
-		// 	style: 'default',
-		// 	tileMatrixSetID: 'w',
-		// });
+		const token = 'a5ef217ac65d9c8323d15a22f98c5c66';
+		const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
+			url:
+				'http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0' +
+				'&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}' +
+				`&style=default&format=tiles&tk=${token}`,
+			layer: 'tdtCva',
+			style: 'default',
+			format: 'tiles',
+			tileMatrixSetID: 'c',
+			subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
+			tilingScheme: new Cesium.GeographicTilingScheme(),
+			tileMatrixLabels: [
+				'1',
+				'2',
+				'3',
+				'4',
+				'5',
+				'6',
+				'7',
+				'8',
+				'9',
+				'10',
+				'11',
+				'12',
+				'13',
+				'14',
+				'15',
+				'16',
+				'17',
+				'18',
+				'19',
+			],
+			// maximumLevel: 18,
+			show: false,
+		});
 		// const ciaLayer = new Cesium.WebMapTileServiceImageryProvider({
 		// 	url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
 		// 	format: 'tiles',
@@ -116,7 +144,7 @@
 		// 		transparent: true,
 		// 	},
 		// });
-		// viewer.imageryLayers.addImageryProvider(imgLayer);
+		viewer.imageryLayers.addImageryProvider(imgLayer);
 		// viewer.imageryLayers.addImageryProvider(ciaLayer);
 
 		// 设置建筑
