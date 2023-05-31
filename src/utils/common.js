@@ -31,33 +31,47 @@ export function addWebMapData(url, layers) {
 }
 
 /**
- * 变量名：layerShow
+ * 方法名：layerShow
  * 作者： 许佳宇
- * 创建时间：2023/05/18
- * 功能：控制显示图层的状态
- * @param {Boolean} stat - 图层初始的显示状态，true为显示，false为不显示
- * @param {Boolean} changStat - 图层要改变的状态，true为显示，false为不显示
- * @param {object} obj - 要控制的图层对象
+ * 创建时间：2023/05/31
+ * 功能：控制河流层级的显示
  */
-export let layerShow = function (stat, obj) {
-	if (stat == false) {
-		// 图层的显示状态为false，图层的透明度设为0
-		obj.alpha = 0;
-	} else {
-		// 图层的显示状态为true，图层的透明度设为1
-		obj.alpha = 1;
-	}
+let DONGJIANG_RIVERS = [, -1, -1, -1, -1, -1, -1, -1]; //目前只控制了1级和2级
+export function layerShow(river_index, isShow = true) {
+	// 获取图层索引，通过show显示与隐藏
+	const layer_index = window.viewer.imageryLayers.indexOf(
+		DONGJIANG_RIVERS[river_index]
+	);
 
-	this.show = function (changStat) {
-		if (changStat == true) {
-			// 图层的显示状态为true，图层的透明度设为1
-			obj.alpha = 1;
-		} else {
-			// 图层的显示状态为false，图层的透明度设为0
-			obj.alpha = 0;
-		}
-	};
-};
+	if (layer_index == -1) {
+		// 天地图标注
+		DONGJIANG_RIVERS[river_index] = addWebMapData(
+			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+			`dongjiang:dongjiang_river${river_index}`
+		);
+	} else {
+		window.viewer.imageryLayers.get(layer_index).show = isShow;
+	}
+}
+/**
+ * 变量名：initReservoirs
+ * 作者： 许佳宇
+ * 创建时间：2023/05/31
+ * 功能：初始化河流
+ */
+let DONGJIANG_RESERVOIRS;
+export function initReservoirs() {
+	const layer_index = window.viewer.imageryLayers.indexOf(DONGJIANG_RESERVOIRS);
+	if (layer_index == -1) {
+		DONGJIANG_RESERVOIRS = addWebMapData(
+			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+			'dongjiang:dongjiang_reservoirs_total'
+		);
+	} else {
+		window.viewer.imageryLayers.get(layer_index).show =
+			!window.viewer.imageryLayers.get(layer_index).show;
+	}
+}
 
 /**
  * 变量名：initRiver
@@ -66,26 +80,13 @@ export let layerShow = function (stat, obj) {
  * 功能：初始化河流
  */
 export function initRiver() {
-	// 加载geoserver服务
-	const dongjiangbound7 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-		'dongjiang:dongjiang_bound7'
-	);
-	const dongjiangriver7 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-		'dongjiang:dongjiang_river7'
-	);
-	const dongjiangbound6 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-		'dongjiang:dongjiang_bound6'
-	);
-	const dongjiangriver6 = addWebMapData(
-		IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-		'dongjiang:dongjiang_river6'
-	);
-	// const dongjiangReservoirs = addWebMapData(
+	// 默认显示2级河流
+	const showRiver3 = layerShow(3);
+	let showRiver2;
+	let showRiver1;
+	// const dongjiangbound6 = addWebMapData(
 	// 	IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-	// 	'dongjiang:dongjiang_reservoirs_total'
+	// 	'dongjiang:dongjiang_bound6'
 	// );
 
 	// 回归中心位置
@@ -104,19 +105,27 @@ export function initRiver() {
 		let longitude = (curPosition.longitude * 180) / Math.PI;
 		let latitude = (curPosition.latitude * 180) / Math.PI;
 		// 限制高度，到达一定高度，则回归
-		// if (latitude > 120 || latitude < 100 || longitude < 20 || longitude > 30) {
-		// 	console.log(longitude, latitude, height);
-		// 	setTimeout(() => {
-		// 		window.viewer.camera.flyTo({
-		// 			destination: Cesium.Cartesian3.fromDegrees(
-		// 				114.50734815163804,
-		// 				23.76178676036698,
-		// 				751048
-		// 			),
-		// 			duration: 0.5,
-		// 		});
-		// 	}, 2000);
-		// }
+		if (height > 620256) {
+			debounce(function () {
+				window.viewer.camera.flyTo({
+					destination: Cesium.Cartesian3.fromDegrees(
+						114.50734815163804,
+						23.76178676036698,
+						751048
+					),
+					duration: 0.5,
+				});
+			}, 1000)();
+		}
+		if (height > 200000 && height < 300000) {
+			showRiver2 = layerShow(2);
+			showRiver1 = layerShow(1, false);
+		} else if (height <= 200000) {
+			showRiver1 = layerShow(1);
+		} else {
+			showRiver1 = layerShow(1, false);
+			showRiver2 = layerShow(2, false);
+		}
 	});
 }
 
@@ -129,8 +138,8 @@ export function initRiver() {
 let MAP_LABELS = '';
 export function mapLabels() {
 	// 获取图层索引，通过show显示与隐藏
-	const index = window.viewer.imageryLayers.indexOf(MAP_LABELS);
-	if (index == -1) {
+	const layer_index = window.viewer.imageryLayers.indexOf(MAP_LABELS);
+	if (layer_index == -1) {
 		// 天地图标注
 		MAP_LABELS = window.viewer.imageryLayers.addImageryProvider(
 			new Cesium.WebMapTileServiceImageryProvider({
@@ -166,13 +175,12 @@ export function mapLabels() {
 					'19',
 				],
 				maximumLevel: 18,
-				show: false,
 			})
 			// 1 //添加到底部
 		);
 	} else {
-		window.viewer.imageryLayers.get(index).show =
-			!window.viewer.imageryLayers.get(index).show;
+		window.viewer.imageryLayers.get(layer_index).show =
+			!window.viewer.imageryLayers.get(layer_index).show;
 	}
 }
 
@@ -262,7 +270,29 @@ export function showRiver(movement) {
 	const longitude = Cesium.Math.toDegrees(cartographic.longitude);
 	const latitude = Cesium.Math.toDegrees(cartographic.latitude);
 	const height = Math.ceil(window.viewer.camera.positionCartographic.height);
-	console.log(longitude, latitude, height, '经纬度高度');
+	let index;
+	if (height < 12366200 && height > 9836620) {
+		index = 7;
+	}
+	if (height < 9836620 && height > 7836620) {
+		index = 6;
+	}
+	if (height < 7836620 && height > 5836620) {
+		index = 5;
+	}
+	if (height < 5836620 && height > 3836620) {
+		index = 4;
+	}
+	if (height < 3836620 && height > 1836620) {
+		index = 3;
+	}
+	if (height < 1836620 && height > 152287) {
+		index = 2;
+	}
+	if (height <= 152287) {
+		index = 1;
+	}
+	console.log(longitude, latitude, height, index, '经纬度高度层级');
 	// 发请求
 	request({
 		url: '/getriver',
@@ -271,7 +301,7 @@ export function showRiver(movement) {
 			lon: longitude,
 			lat: latitude,
 			// height: height,
-			index: 6,
+			index: index,
 		},
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	}).then((res) => {

@@ -52,7 +52,7 @@
 <style scoped>
 	.modelToolBar {
 		position: absolute;
-		left: 100px;
+		left: 200px;
 		top: 0;
 		z-index: 999;
 		margin: 8px;

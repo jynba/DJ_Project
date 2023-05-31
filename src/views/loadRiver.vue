@@ -1,11 +1,13 @@
 <template>
 	<div class="layout-tool-template modelToolBar">
 		<button @click="mapLabels()">地图标注</button>
+		<button @click="initReservoirs()">显示水库</button>
+
 		<!-- <button @click="getRiver()">getRiver</button> -->
 	</div>
 </template>
 <script setup>
-	import { mapLabels } from '@/utils/common.js';
+	import { mapLabels, initReservoirs } from '@/utils/common.js';
 </script>
 <style scoped lang="scss">
 	.modelToolBar {
