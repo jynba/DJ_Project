@@ -115,7 +115,7 @@ export function initRiver() {
 					),
 					duration: 0.5,
 				});
-			}, 1000)();
+			}, 500)();
 		}
 		if (height > 200000 && height < 300000) {
 			showRiver2 = layerShow(2);
@@ -271,22 +271,10 @@ export function showRiver(movement) {
 	const latitude = Cesium.Math.toDegrees(cartographic.latitude);
 	const height = Math.ceil(window.viewer.camera.positionCartographic.height);
 	let index;
-	if (height < 12366200 && height > 9836620) {
-		index = 7;
-	}
-	if (height < 9836620 && height > 7836620) {
-		index = 6;
-	}
-	if (height < 7836620 && height > 5836620) {
-		index = 5;
-	}
-	if (height < 5836620 && height > 3836620) {
-		index = 4;
-	}
-	if (height < 3836620 && height > 1836620) {
+	if (height > 300000) {
 		index = 3;
 	}
-	if (height < 1836620 && height > 152287) {
+	if (height < 300000 && height > 152287) {
 		index = 2;
 	}
 	if (height <= 152287) {
@@ -342,7 +330,7 @@ export function clickLeftMouseFunction() {
 	handler.setInputAction(function (movement) {
 		debounce(function () {
 			showRiver(movement);
-		}, 1000)();
+		}, 500)();
 	}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
