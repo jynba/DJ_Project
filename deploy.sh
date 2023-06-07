@@ -8,7 +8,7 @@ npm run build
 
 git init
 git add -A
-git commit -m 'deploy'
+git commit -m 'fix:添加命名功能'
 
 # 直接部署到github,触发github action
 git push git@github.com:jynba/DJ_Project.git main

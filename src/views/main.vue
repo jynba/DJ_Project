@@ -9,15 +9,154 @@
 <template>
 	<div id="cesiumContainer">
 		<loadRiver />
-		<panel />
+		<panel :show-panel="showPanel" @close="handleClosePanel" />
 	</div>
 </template>
 <script setup>
 	import loadRiver from './loadRiver.vue';
 	import panel from './panel.vue';
-	import { initRiver, clickLeftMouseFunction } from '@/utils/common.js';
+	import request from '../utils/request';
+	import { initRiver, debounce } from '@/utils/common.js';
 	import { onMounted } from 'vue';
 	import * as Cesium from 'cesium';
+	import { ref } from 'vue';
+
+	/**
+	 * 方法名：selectRiver
+	 * 创建时间：2023/06/6
+	 * 作者: 许佳宇
+	 * 功能：点击河流
+	 */
+	const selectRiver = async (movement) => {
+		// 获取全局椭球体
+		const ellipsoid = window.viewer.scene.globe.ellipsoid;
+		// 拾取鼠标在椭圆上的结束点笛卡尔坐标点
+		const cartesian = window.viewer.scene.camera.pickEllipsoid(
+			movement.position,
+			window.viewer.scene.globe.ellipsoid
+		);
+		// 笛卡尔坐标转制图坐标
+		const cartographic = ellipsoid.cartesianToCartographic(cartesian);
+		// 获取点击经纬度高度
+		const longitude = Cesium.Math.toDegrees(cartographic.longitude);
+		const latitude = Cesium.Math.toDegrees(cartographic.latitude);
+		const height = Math.ceil(window.viewer.camera.positionCartographic.height);
+		let index;
+		if (height > 300000) {
+			index = 3;
+		}
+		if (height < 300000 && height > 152287) {
+			index = 2;
+		}
+		if (height <= 152287) {
+			index = 1;
+		}
+		console.log(longitude, latitude, height, index, '经纬度高度层级');
+		// 发请求
+		return request({
+			url: '/getriver',
+			method: 'post',
+			data: {
+				lon: longitude,
+				lat: latitude,
+				index: index,
+			},
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		});
+	};
+
+	const showPanel = ref(false);
+	const handleClosePanel = () => {
+		showPanel.value = false;
+	};
+	let LINE_SEGMENT_LABELING;
+
+	/**
+	 * 方法名：clickRightMouseFunction
+	 * 创建时间：2023/05/27
+	 * 作者: 许佳宇
+	 * 功能：监听右键的事件
+	 */
+	const clickRightMouseFunction = () => {
+		let handler = new Cesium.ScreenSpaceEventHandler(
+			window.viewer.scene.canvas
+		);
+		handler.setInputAction(function (movement) {
+			debounce(async function () {
+				window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+				const res = await selectRiver(movement);
+				console.log(res);
+				// 先清除高亮
+				if (res.code == 20000) {
+					// 再将视角转到河流中心
+					// flyToCenter(res.data);
+					// 在地球上添加高亮显示当前河流
+					window.$selectedRiver = res.data; //把选中命名的河流挂载到window
+					let addRedLine = window.viewer.entities.add({
+						name: 'Red line on the surface',
+						polyline: {
+							positions: Cesium.Cartesian3.fromDegreesArray(res.data.scope), //经纬度数组 data.scope
+							followSurface: false,
+							width: 4,
+							material: new Cesium.PolylineOutlineMaterialProperty({
+								color: Cesium.Color.RED,
+								outlineWidth: 2,
+								outlineColor: Cesium.Color.RED,
+							}),
+							depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
+								color: Cesium.Color.RED,
+								outlineWidth: 2,
+								outlineColor: Cesium.Color.RED,
+							}),
+						},
+					});
+					LINE_SEGMENT_LABELING = addRedLine;
+					showPanel.value = true; //展示面板
+					console.log(showPanel.value, 'selecet');
+				}
+			}, 500)();
+		}, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+	};
+
+	// 左键点击高亮
+	const clickLeftMouseFunction = () => {
+		let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+		handler.setInputAction(function (movement) {
+			debounce(async function () {
+				window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+				const res = await selectRiver(movement);
+				console.log(res);
+				if (res.code == 20000) {
+					// 再将视角转到河流中心
+					// flyToCenter(res.data);
+					// 在地球上添加高亮显示当前河流
+					window.$selectedRiver = res.data; //把选中命名的河流挂载到window
+					let addRedLine = window.viewer.entities.add({
+						name: 'Red line on the surface',
+						polyline: {
+							positions: Cesium.Cartesian3.fromDegreesArray(res.data.scope), //经纬度数组 data.scope
+							followSurface: false,
+							width: 4,
+							material: new Cesium.PolylineOutlineMaterialProperty({
+								color: Cesium.Color.RED,
+								outlineWidth: 2,
+								outlineColor: Cesium.Color.RED,
+							}),
+							depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
+								color: Cesium.Color.RED,
+								outlineWidth: 2,
+								outlineColor: Cesium.Color.RED,
+							}),
+						},
+					});
+					console.log(addRedLine);
+					LINE_SEGMENT_LABELING = addRedLine;
+				}
+			}, 500)();
+		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+	};
+
 	onMounted(() => {
 		const config = {
 			showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
@@ -45,7 +184,6 @@
 			// }),
 		};
 		const viewer = new Cesium.Viewer('cesiumContainer', config);
-
 		viewer.scene.debugShowFramesPerSecond = true; //不显示帧率
 		viewer.shadows = true; //开启或关闭阴影
 		// 关闭抗锯齿
@@ -61,10 +199,8 @@
 		viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
 			Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
 		);
-
 		// 去除版权信息
 		viewer._cesiumWidget._creditContainer.style.display = 'none';
-
 		// 设置进入平台的初始视角为东江流域
 		viewer.camera.setView({
 			// 笛卡尔坐标(经度,维度,高度)
@@ -86,7 +222,6 @@
 				roll: Cesium.Math.toRadians(0),
 			},
 		});
-
 		// 将viewer挂载到window上
 		window.viewer = viewer;
 		window.Cesium = Cesium;
@@ -146,7 +281,6 @@
 		// });
 		viewer.imageryLayers.addImageryProvider(imgLayer);
 		// viewer.imageryLayers.addImageryProvider(ciaLayer);
-
 		// 设置建筑
 		// const city = viewer.scene.primitives.add(
 		// 	new Cesium.Cesium3DTileset({ url: Cesium.IonResource.fromAssetId(3839) })
@@ -170,13 +304,9 @@
 		// });
 		// city.style = heightStyle;
 
-		// initRiver();
-		// 分区分块加载河流影像
-		// viewer.scene.camera.moveStart.addEventListener(function () {
-
-		// });
-		initRiver();
+		initRiver(); //分层级加载河流
 		clickLeftMouseFunction();
+		clickRightMouseFunction();
 	});
 </script>
 <style lang="scss">

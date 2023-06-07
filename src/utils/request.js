@@ -1,6 +1,6 @@
 // 进行axios二次封装：使用请求与拦截器
 import axios from 'axios';
-import { ElMessage } from 'element-plus';
+import { ElNotification } from 'element-plus';
 // 第一步：创建实例
 let request = axios.create({
 	// 基础路径，发请求时都会携带
@@ -42,9 +42,14 @@ request.interceptors.response.use(
 					break;
 			}
 		// 提示错误信息
-		ElMessage({
-			type: 'error',
+		// ElMessage({
+		// 	type: 'error',
+		// 	message,
+		// });
+		ElNotification({
 			message,
+			type: 'error',
+			duration: 1000,
 		});
 		return Promise.reject(error);
 	}
