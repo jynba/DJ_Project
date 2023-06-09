@@ -22,6 +22,64 @@
 	import { ref } from 'vue';
 
 	/**
+	 * 方法名：getBoundaryCenter
+	 * 创建时间：2023/5/27
+	 * 作者: 许佳宇
+	 * 功能：计算给定边界的中心点经纬度
+	 * @param {Array} boundary - 边界数组，包含多个经纬度坐标点，坐标点以经度、纬度的顺序存储
+	 * @returns {Array} - 中心点的经纬度，以经度、纬度的顺序存储
+	 */
+	const getBoundaryCenter = (boundary) => {
+		// 初始化经纬度总和为 0
+		let sumLat = 0,
+			sumLng = 0;
+		// 遍历边界数组，计算经纬度总和
+		for (let i = 0; i < boundary.length; i += 2) {
+			sumLat += boundary[i + 1];
+			sumLng += boundary[i];
+		}
+		// 计算经纬度平均值，得到中心点经纬度
+		const centerLat = sumLat / (boundary.length / 2);
+		const centerLng = sumLng / (boundary.length / 2);
+		// 返回中心点经纬度数组
+		return [centerLng, centerLat];
+	};
+	/**
+	 * 方法名：flyToCenter
+	 * 创建时间：2023/05/27
+	 * 作者: 许佳宇
+	 * 功能：将视角飞到河流范围的中心
+	 * @param {Array} data - 边界数组，包含多个经纬度坐标点，坐标点以经度、纬度的顺序存储
+	 */
+	const flyToCenter = (data) => {
+		// 找出边界经纬度中点
+		const center = getBoundaryCenter(data.scope);
+		const flytoLat = center[0];
+		const flytoLng = center[1];
+
+		// 利用经纬度坐标计算边界起点到中点的距离
+		const firstLat = data.scope[0];
+		const firstLng = data.scope[1];
+		const diameter = Math.sqrt(
+			Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2)
+		);
+
+		// 将视角飞到边界中点，高度为边界起点到边界中点的距离乘以一个常数17770*3,该常数是多次测试得出的最优值
+		window.viewer.camera.flyTo({
+			destination: Cesium.Cartesian3.fromDegrees(
+				flytoLat,
+				flytoLng,
+				diameter * 177770 * 3
+			),
+			orientation: {
+				heading: Cesium.Math.toRadians(0),
+				pitch: Cesium.Math.toRadians(-90),
+				roll: Cesium.Math.toRadians(0),
+			},
+		});
+	};
+
+	/**
 	 * 方法名：selectRiver
 	 * 创建时间：2023/06/6
 	 * 作者: 许佳宇
@@ -45,10 +103,10 @@
 		if (height > 300000) {
 			index = 3;
 		}
-		if (height < 300000 && height > 152287) {
+		if (height < 300000 && height > 102287) {
 			index = 2;
 		}
-		if (height <= 152287) {
+		if (height <= 102287) {
 			index = 1;
 		}
 		console.log(longitude, latitude, height, index, '经纬度高度层级');
@@ -89,7 +147,7 @@
 				// 先清除高亮
 				if (res.code == 20000) {
 					// 再将视角转到河流中心
-					// flyToCenter(res.data);
+					flyToCenter(res.data);
 					// 在地球上添加高亮显示当前河流
 					window.$selectedRiver = res.data; //把选中命名的河流挂载到window
 					let addRedLine = window.viewer.entities.add({
@@ -129,7 +187,7 @@
 				console.log(res);
 				if (res.code == 20000) {
 					// 再将视角转到河流中心
-					// flyToCenter(res.data);
+					flyToCenter(res.data);
 					// 在地球上添加高亮显示当前河流
 					window.$selectedRiver = res.data; //把选中命名的河流挂载到window
 					let addRedLine = window.viewer.entities.add({

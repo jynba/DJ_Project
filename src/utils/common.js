@@ -80,7 +80,7 @@ export function initReservoirs() {
  * 功能：初始化河流
  */
 export function initRiver() {
-	// 默认显示2级河流
+	// 默认显示3级河流
 	const showRiver3 = layerShow(3);
 	let showRiver2;
 	let showRiver1;
@@ -183,66 +183,6 @@ export function mapLabels() {
 			!window.viewer.imageryLayers.get(layer_index).show;
 	}
 }
-
-/**
- * 方法名：getBoundaryCenter
- * 创建时间：2023/5/27
- * 作者: 许佳宇
- * 功能：计算给定边界的中心点经纬度
- * @param {Array} boundary - 边界数组，包含多个经纬度坐标点，坐标点以经度、纬度的顺序存储
- * @returns {Array} - 中心点的经纬度，以经度、纬度的顺序存储
- */
-export function getBoundaryCenter(boundary) {
-	// 初始化经纬度总和为 0
-	let sumLat = 0,
-		sumLng = 0;
-	// 遍历边界数组，计算经纬度总和
-	for (let i = 0; i < boundary.length; i += 2) {
-		sumLat += boundary[i + 1];
-		sumLng += boundary[i];
-	}
-	// 计算经纬度平均值，得到中心点经纬度
-	const centerLat = sumLat / (boundary.length / 2);
-	const centerLng = sumLng / (boundary.length / 2);
-	// 返回中心点经纬度数组
-	return [centerLng, centerLat];
-}
-
-/**
- * 方法名：flyToCenter
- * 创建时间：2023/05/27
- * 作者: 许佳宇
- * 功能：将视角飞到河流范围的中心
- * @param {Array} data - 边界数组，包含多个经纬度坐标点，坐标点以经度、纬度的顺序存储
- */
-export function flyToCenter(data) {
-	// 找出边界经纬度中点
-	const center = getBoundaryCenter(data.scope);
-	const flytoLat = center[0];
-	const flytoLng = center[1];
-
-	// 利用经纬度坐标计算边界起点到中点的距离
-	const firstLat = data.scope[0];
-	const firstLng = data.scope[1];
-	const diameter = Math.sqrt(
-		Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2)
-	);
-
-	// 将视角飞到边界中点，高度为边界起点到边界中点的距离乘以一个常数17770*3,该常数是多次测试得出的最优值
-	window.viewer.camera.flyTo({
-		destination: Cesium.Cartesian3.fromDegrees(
-			flytoLat,
-			flytoLng,
-			diameter * 177770 * 3
-		),
-		orientation: {
-			heading: Cesium.Math.toRadians(0),
-			pitch: Cesium.Math.toRadians(-90),
-			roll: Cesium.Math.toRadians(0),
-		},
-	});
-}
-
 
 /**
  * 创建时间：2023/05/22
