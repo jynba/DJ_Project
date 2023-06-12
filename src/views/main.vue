@@ -101,13 +101,13 @@
 		const height = Math.ceil(window.viewer.camera.positionCartographic.height);
 		let index;
 		if (height > 300000) {
-			index = 3;
+			index = 6;
 		}
-		if (height < 300000 && height > 102287) {
-			index = 2;
+		if (height < 300000 && height > 200000) {
+			index = 5;
 		}
-		if (height <= 102287) {
-			index = 1;
+		if (height <= 200000) {
+			index = 4;
 		}
 		console.log(longitude, latitude, height, index, '经纬度高度层级');
 		// 发请求
@@ -362,6 +362,7 @@
 		// });
 		// city.style = heightStyle;
 
+		viewer.scene.screenSpaceCameraController.minimumZoomDistance = 30000; //相机最小缩放距离
 		initRiver(); //分层级加载河流
 		clickLeftMouseFunction();
 		clickRightMouseFunction();

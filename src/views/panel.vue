@@ -102,11 +102,14 @@
 	const checkRiverForm = () => {
 		console.log(111);
 		if (!SUBMIT_FLAG) {
-			if (naming_reason.value == '') {
-				// ElMessage({
-				// 	message: '请选择命名依据',
-				// 	type: 'error',
-				// });
+			// 校验河流中文名
+			if (zh_name.value == '' || zh_name.value == '未命名') {
+				ElNotification({
+					message: '请输入河流中文名',
+					type: 'warning',
+					duration: 1000,
+				});
+			} else if (naming_reason.value == '') {
 				ElNotification({
 					title: 'Error',
 					message: '请选择命名依据',
@@ -115,36 +118,11 @@
 				});
 				console.log('请选择命名依据');
 			}
-			// 校验河流中文名
-			// 如果输入内容为空,则会出现提示内容
-			else if (zh_name.value == '' || zh_name.value == '未命名') {
-				ElNotification({
-					message: '请输入河流中文名',
-					type: 'warning',
-					duration: 1000,
-				});
-			}
 			// 判断河流名是否为空且是否满足'未命名'
 			else {
 				SUBMIT_FLAG = true;
 				submitRiverLogForm();
-				// 设定正则用于校验中国河流代码
-				// const reg = /^[A-Z]{3}[0-9a-zA-Z]{5}/;
-				// 如果河流代码有内容,且校验通过
-				// if (riverCode.value.length != 0 && reg.test(riverCode.value)) {
-
-				// }
-
-				// 如果输入了中国河流代码信息，则需要校验是否通过正则
 			}
-			//  else if (riverCode.value.length != 0 && !reg.test(riverCode.value)) {
-			// 	ElMessage({
-			// 		message: '请输入正确的河流代码',
-			// 		type: 'warning',
-			// 	});
-			// 	console.log('hhhs');
-			// }
-			// 如果河流名为未命名,则出现提示语
 		}
 	};
 	/**
