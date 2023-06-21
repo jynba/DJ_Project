@@ -4,7 +4,7 @@
  # @version: 1.0.0
  # @Author: 朱海东
  # @Date: 2023-06-20 15:38:35
- # @LastEditTime: 2023-06-20 16:16:26
+ # @LastEditTime: 2023-06-21 08:50:55
 ### 
 
 # 确保脚本抛出遇到的错误
@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m 'fix:添加命名功能'
+git commit -m 'fix:添加了导航栏功能'
 
 # 直接部署到github,触发github action
 git push 
