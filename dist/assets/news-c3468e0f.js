@@ -1,1 +1,0 @@
-import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{b as c,c as r}from"./index-0d65ad4d.js";const n={};function o(t,s){return c(),r("div",null,"消息页面")}const f=e(n,[["render",o]]);export{f as default};
