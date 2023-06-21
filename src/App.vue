@@ -8,9 +8,14 @@
 <template>
 	<div id="app">
 		<!-- 只有 name 为 home 的页面会被缓存 -->
-		<keep-alive include="home">
-			<router-view/>
-		</keep-alive>
+		<!-- <keep-alive>
+			<router-view />
+		</keep-alive> -->
+		<router-view v-slot="{ Component }">
+			<keep-alive>
+				<component :is="Component" />
+			</keep-alive>
+		</router-view>
 		<van-tabbar v-model="active.selected">
 			<van-tabbar-item icon="home-o" :to="{ name: 'home' }">
 				首页
@@ -26,29 +31,26 @@
 </template>
 
 <script setup>
-// export default {
-// 	name: 'App',
-// };
-import { reactive,onMounted} from 'vue'
+	// export default {
+	// 	name: 'App',
+	// };
+	import { reactive, onMounted } from 'vue';
 
-const active = reactive({
-	selected: 'home'
-})
-
-
-
+	const active = reactive({
+		selected: 'home',
+	});
 </script>
 
 <style lang="scss">
-html,
-body,
-#app {
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	color: #2c3e50;
-	padding: 0px;
-	margin: 0px;
-	@include bfc;
-}
+	html,
+	body,
+	#app {
+		font-family: 'Avenir', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		color: #2c3e50;
+		padding: 0px;
+		margin: 0px;
+		@include bfc;
+	}
 </style>

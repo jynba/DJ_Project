@@ -22,9 +22,10 @@
 	import panel from '../components//panel.vue';
 	import request from '../utils/request';
 	import { initRiver, debounce } from '@/utils/common.js';
-	import { onMounted, reactive } from 'vue';
+	import { onDeactivated, onMounted, reactive } from 'vue';
 	import * as Cesium from 'cesium';
 	import { ref } from 'vue';
+	import { onActivated } from 'vue';
 
 	/**
 	 * 方法名：getBoundaryCenter
@@ -461,6 +462,7 @@
 	};
 
 	onMounted(() => {
+		console.log('main页面被加载了');
 		const config = {
 			showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
 			requestRenderMode: true, // 开启请求的渲染模式
@@ -611,6 +613,14 @@
 		initRiver(); //分层级加载河流
 		clickLeftMouseFunction();
 		clickRightMouseFunction();
+	});
+
+	onActivated(() => {
+		console.log('onactivated!!');
+	});
+
+	onDeactivated(() => {
+		console.log('onDeactivated!!');
 	});
 </script>
 <style lang="scss">
