@@ -1,8 +1,8 @@
 /*
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
- * @LastEditors: GRIT
- * @LastEditTime: 2023-05-21 14:45:09
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2023-06-20 18:01:55
  * @FilePath: \DJ_Project\dj-project\vite.config.js
  * @Description:
  */
@@ -12,6 +12,7 @@ import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+
 
 import { resolve } from 'path';
 // https://vitejs.dev/config/
@@ -26,6 +27,7 @@ export default defineConfig(({ command, mode }) => ({
 		Components({
 			resolvers: [ElementPlusResolver()],
 		}),
+		
 	],
 	base: './',
 	// 路径配置

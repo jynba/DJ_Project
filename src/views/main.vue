@@ -1,8 +1,8 @@
 <!--
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
- * @LastEditors: GRIT
- * @LastEditTime: 2023-05-21 15:15:49
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2023-06-20 20:42:24
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -18,8 +18,8 @@
 	</div>
 </template>
 <script setup>
-	import loadRiver from './loadRiver.vue';
-	import panel from './panel.vue';
+	import loadRiver from '../components/loadRiver.vue';
+	import panel from '../components//panel.vue';
 	import request from '../utils/request';
 	import { initRiver, debounce } from '@/utils/common.js';
 	import { onMounted, reactive } from 'vue';
