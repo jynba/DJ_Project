@@ -7,7 +7,7 @@
 -->
 <template>
 
-<div>消息页面</div>
+<div>附近页面待开发</div>
 </template>
 <script setup>
 	
