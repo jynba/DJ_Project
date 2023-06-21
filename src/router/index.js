@@ -3,11 +3,11 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 15:38:35
- * @LastEditTime: 2023-06-20 18:50:51
+ * @LastEditTime: 2023-06-21 18:03:29
  */
 import { createRouter, createWebHashHistory } from 'vue-router';
 const Home = () => import('@/views/main.vue')
-const News = () => import('@/views/news.vue')
+const Near = () => import('@/views/near.vue')
 const User = () => import('@/views/user.vue')
 
 
@@ -23,12 +23,12 @@ const routes = [
 	  component: Home
 	},
 	{
-	  path: '/news',
-	  name: 'news',
+	  path: '/near',
+	  name: 'near',
 	  meta: {
-		title: '消息'
+		title: '附近'
 	  },
-	  component: News
+	  component: Near
 	},
 	{
 	  path: '/user',
