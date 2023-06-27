@@ -11,7 +11,7 @@
 			</p>
 		</div>
 		<div v-if="props.hasLast">
-			<p>请先命名上一级河流</p>
+			<p style="color: white">请先命名上一级河流</p>
 			<button class="confirm" @click="$emit('namedLast')">命名上一级</button>
 			<button class="close" @click="closeBox()">关闭</button>
 		</div>
@@ -276,21 +276,22 @@
 		width: 540px;
 		height: 380px;
 		background: rgba(4, 9, 27, 0.7);
-		color: rgb(239, 229, 241);
 
 		.currentSelect {
+			color: white;
 			margin-bottom: 5px;
 			font-size: 18px;
 			font-weight: 700;
 		}
 		.currentSelectRiver {
+			color: white;
 			margin-left: 5px;
 			font-size: 14px;
 		}
 
 		.infoContainer {
 			margin: 40px 0 20px 30px;
-
+			color: white;
 			.currentRiverName {
 				margin-bottom: 20px;
 				display: flex;
