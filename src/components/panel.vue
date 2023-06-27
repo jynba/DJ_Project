@@ -223,6 +223,7 @@
 					duration: 1000,
 				});
 				removeRiverNameForm();
+				SUBMIT_FLAG = false;
 			})
 			.catch((err) => {
 				console.log(err);
@@ -299,11 +300,13 @@
 					margin-top: 4px;
 				}
 				.firstInput {
+					color: black;
 					margin: 0 10px 0 20px;
 					width: 110px;
 					height: 25px;
 				}
 				.secondInput {
+					color: black;
 					width: 110px;
 					height: 25px;
 				}

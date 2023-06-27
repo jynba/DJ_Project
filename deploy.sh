@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m 'fix:添加了搜索栏'
+git commit -m 'fix:修改了河流分级、完善命名bug'
 
 # 直接部署到github,触发github action
 git push 

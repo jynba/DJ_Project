@@ -13,7 +13,6 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
-
 import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -26,8 +25,7 @@ export default defineConfig(({ command, mode }) => ({
 		}),
 		Components({
 			resolvers: [ElementPlusResolver()],
-		})
-		
+		}),
 	],
 	base: './',
 	// 路径配置
@@ -40,7 +38,7 @@ export default defineConfig(({ command, mode }) => ({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://127.0.0.1:5000', // 接口的域名
+				target: 'http://172.27.101.19:32769', // 接口的域名
 				secure: false, // 如果是https接口，需要配置这个参数
 				changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
 				rewrite: (path) => path.replace(/^\/api/, ''),
