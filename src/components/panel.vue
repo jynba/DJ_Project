@@ -164,6 +164,45 @@
 	const showSources = () => {
 		return SELECT_LIST.find((i) => i.value == naming_reason.value).text;
 	};
+
+	/**
+	 * 方法名：submitRiverNameForm
+	 * 创建时间：2023/02/24
+	 * 作者: 龙俊良
+	 * 功能：提交命名表单内容  用于更新河网数据表的内容
+	 */
+	const submitRiverNameForm = () => {
+		const tmp = {
+			// 河流名
+			rivername: zh_name.value.replace('@', '-'),
+			// 平均流量
+			discharge: averageFlow.value == '' ? 0 : averageFlow.value,
+			channelid: window.$selectedRiver?.channelid,
+			// 河网级别
+			level: window?.$selectedRiver?.level,
+			hierarcode: window.$selectedRiver.hierarcode.toString(),
+			basincode: window.$selectedRiver?.basincode,
+			// 中国河流代码
+			shuilicode: riverCode.value == '' ? '' : riverCode.value,
+			// 当前需要插入的河段位于哪个河网表
+			tablelocation: window.$selectedRiver.tablelocation,
+		};
+		request({
+			url: '/submittmp',
+			method: 'POST',
+			data: tmp,
+		})
+			.then((res) => {
+				console.log(res, '改名成功');
+				removeRiverNameForm();
+				SUBMIT_FLAG = false;
+			})
+			.catch((err) => {
+				console.log(err);
+				SUBMIT_FLAG = false;
+			});
+	};
+
 	/**
 	 * 方法名：submitRiverLogForm
 	 * 创建时间：2023/06/5
@@ -222,8 +261,7 @@
 					type: 'success',
 					duration: 1000,
 				});
-				removeRiverNameForm();
-				SUBMIT_FLAG = false;
+				submitRiverNameForm();
 			})
 			.catch((err) => {
 				console.log(err);

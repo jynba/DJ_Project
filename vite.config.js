@@ -12,7 +12,6 @@ import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-
 import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -38,7 +37,9 @@ export default defineConfig(({ command, mode }) => ({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://172.27.101.19:32769', // 接口的域名
+				target: 'http://172.27.101.19:32769',
+				// target: loadEnv(mode, process.cwd()).VITE_TESTSERVER, // 接口的域名
+				// 若loadENV无第三个参数''，则需要VITE_前缀
 				secure: false, // 如果是https接口，需要配置这个参数
 				changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
 				rewrite: (path) => path.replace(/^\/api/, ''),
