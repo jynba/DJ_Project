@@ -642,7 +642,7 @@ onMounted(() => {
 }
 
 #popup_search {
-	position: absolute;
+	position: fixed;
 	bottom: 3.125rem;
 	width: 100%;
 	height: 3.125rem;
