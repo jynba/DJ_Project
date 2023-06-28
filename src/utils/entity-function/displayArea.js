@@ -1,3 +1,14 @@
+/*
+ * @Descripttion: 用于控制实体
+ * @version: 1.0.0
+ * @Author: 朱海东
+ * @Date: 2023-06-27 16:29:41
+ * @LastEditTime: 2023-06-28 10:24:30
+ */
+import axios from "axios";
+import qs from 'qs';
+import Hammer from 'hammerjs';
+
 /**
  * @Author: 朱海东
  * @Date: 2023-06-27 16:30:49
@@ -5,39 +16,9 @@
  * @msg: 返回四个屏幕坐标
  * @return {*}
  */
-import axios from "axios";
-import qs from 'qs';
-// const wellknown = require('wellknown');
 
-
-// // 将十六进制字符串转换为二进制数据
-// const hexToBinary = hexString => {
-//     const hex = hexString.substr(2); // 去掉前缀 '0101'
-//     const binaryString = atob(hex); // 使用 atob() 进行 base64 解码
-//     return binaryString;
-// };
-
-// // 解析二进制数据为几何对象
-// const parseGeometry = binaryString => {
-//     const wktData = wellknown.stringify(binaryString);
-//     const geometry = wellknown.parse(wktData);
-//     return geometry;
-// };
-
-// // 解析几何对象，并返回经纬度
-// const getCoordinates = geometry => {
-//     let coordinates = [];
-
-//     if (geometry.type === 'Point') {
-//         coordinates = [geometry.coordinates[1], geometry.coordinates[0]];
-//     } else if (geometry.type === 'Polygon' || geometry.type === 'MultiPoint') {
-//         coordinates = geometry.coordinates.map(coord => [coord[1], coord[0]]);
-//     } // 其他几何类型的处理方式
-
-//     return coordinates;
-// };
-
-
+const viewerDom = document.getElementById('cesiumContainer')
+// const hammer = new Hammer(window.viewer);
 export function showArea() {
     // 获取当前场景四个坐标
 
@@ -76,7 +57,7 @@ export function showArea() {
         //         //   });
 
         //         //   console.log(result);
-             
+
 
 
 
@@ -110,15 +91,15 @@ export function showArea() {
         // } catch {
         //     console.log('异常')
         // }
-        
 
-        let position = Cesium.Cartographic.fromDegrees(114.5457178632316,23.41926302048954);
+
+        let position = Cesium.Cartographic.fromDegrees(114.5457178632316, 23.41926302048954);
         // 将Cartographic对象转换为Cartesian3坐标系
         let cartesian = viewer.scene.globe.ellipsoid.cartographicToCartesian(position);
 
         // 创建一个实体（Entity）以表示标记位置
         let entity = new Cesium.Entity({
-            name:'实体一',
+            name: '实体一',
             position: cartesian,
             label: {
                 text: '小白龙',
@@ -132,10 +113,33 @@ export function showArea() {
 
         // 将实体添加到场景中
         viewer.entities.add(entity);
-        limitEntityHeight(entity,56389,124301)
+        limitEntityHeight(entity, 56389, 124301)
         // console.log('Allentity2', viewer.entities.values)
-    
+
     });
+
+
+
+    // 监听 tap 事件
+    // hammer.on("tap", function (event) {
+    //     let screenPosition = new Cesium.Cartesian2(event.center.x, event.center.y);
+    //     let pickedObject = viewer.scene.pick(screenPosition);
+
+    //     if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
+    //         // 当实体被点击时触发的事件
+    //         console.log("实体被点击了！");
+    //     }
+    // });
+
+    // // 添加鼠标点击事件监听器
+    // viewer.screenSpaceEventHandler.setInputAction(function (click) {
+    //     var pickedObject = viewer.scene.pick(click.position);
+
+    //     if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
+    //         // 当实体被点击时触发的事件
+    //         console.log("实体被点击了！");
+    //     }
+    // }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 
 }
@@ -155,22 +159,22 @@ function limitEntityHeight(entity, minHeight, maxHeight) {
     console.log('111')
     let entityPosition = entity.position.getValue(viewer.clock.currentTime);
     let cameraPosition = viewer.camera.position;
-    
+
     let distance = Cesium.Cartesian3.distance(entityPosition, cameraPosition);
-    
+
     if (distance < minHeight || distance > maxHeight) {
 
-    //   entity.show = false; // 当距离不在限定范围内时隐藏实体
-      viewer.entities.removeAll();
-    //   console.log('entity',entity)
-      console.log('Allentity', viewer.entities.values)
+        //   entity.show = false; // 当距离不在限定范围内时隐藏实体
+        viewer.entities.removeAll();
+        //   console.log('entity',entity)
+        console.log('Allentity', viewer.entities.values)
     } else {
-      entity.show = true;
-      console.log('显示')
+        entity.show = true;
+        console.log('显示')
     }
-  }
+}
 
 
 
-  
+
 

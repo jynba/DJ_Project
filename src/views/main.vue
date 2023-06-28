@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-27 16:38:44
+ * @LastEditTime: 2023-06-28 10:57:00
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -15,10 +15,10 @@
 	<popup-search id="popup_search" />
 </template>
 <script setup>
-import {showArea} from '../utils/entity-function/displayArea'
+import { showArea } from '../utils/entity-function/displayArea'
 import loadRiver from '../components/loadRiver.vue';
 import panel from '../components//panel.vue';
-import popupSearch from '../components/popupSearch.vue'
+import popupSearch from '../components/popupSearch.vue';
 import request from '../utils/request';
 import { initRiver, debounce } from '@/utils/common.js';
 import { onDeactivated, onMounted, reactive } from 'vue';
@@ -26,21 +26,19 @@ import * as Cesium from 'cesium';
 import { ref } from 'vue';
 import { onActivated } from 'vue';
 
-
 /**
  * 方法名：showPopup
  * 创建时间：2023/6/21
  * 作者: 朱海东
  * 功能：搜索功能
- * 
- * @returns {Boolean} - 
+ *
+ * @returns {Boolean} -
  */
 const popupShow = ref(true);
 //
-const showPopup=()=>{
+const showPopup = () => {
 	popupShow.value = true;
-}
-
+};
 
 /**
  * 方法名：getBoundaryCenter
@@ -127,8 +125,17 @@ const selectRiver = async (movement) => {
 	if (height < 300000 && height > 200000) {
 		index = 5;
 	}
-	if (height <= 200000) {
+	if (height <= 200000 && height > 100000) {
 		index = 4;
+	}
+	if (height <= 150000) {
+		index = 3;
+	}
+	if (height <= 100000) {
+		index = 2;
+	}
+	if (height <= 30000) {
+		index = 1;
 	}
 	console.log(longitude, latitude, height, index, '经纬度高度层级');
 	// 发请求
@@ -477,7 +484,6 @@ const clickLeftMouseFunction = () => {
 };
 
 onMounted(() => {
-
 	const config = {
 		showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
 		requestRenderMode: true, // 开启请求的渲染模式
@@ -624,12 +630,11 @@ onMounted(() => {
 	// });
 	// city.style = heightStyle;
 
-	viewer.scene.screenSpaceCameraController.minimumZoomDistance = 30000; //相机最小缩放距离
+	viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
 	initRiver(); //分层级加载河流
 	clickLeftMouseFunction();
 	clickRightMouseFunction();
 	showArea()
-
 });
 </script>
 <style lang="scss">
