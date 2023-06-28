@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-21 16:04:53
+ * @LastEditTime: 2023-06-28 10:57:00
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -19,15 +19,17 @@
 	<popup-search id="popup_search" />
 </template>
 <script setup>
-	import loadRiver from '../components/loadRiver.vue';
-	import panel from '../components//panel.vue';
-	import popupSearch from '../components/popupSearch.vue';
-	import request from '../utils/request';
-	import { initRiver, debounce } from '@/utils/common.js';
-	import { onDeactivated, onMounted, reactive } from 'vue';
-	import * as Cesium from 'cesium';
-	import { ref } from 'vue';
-	import { onActivated } from 'vue';
+
+import { showArea } from '../utils/entity-function/displayArea'
+import loadRiver from '../components/loadRiver.vue';
+import panel from '../components//panel.vue';
+import popupSearch from '../components/popupSearch.vue';
+import request from '../utils/request';
+import { initRiver, debounce } from '@/utils/common.js';
+import { onDeactivated, onMounted, reactive } from 'vue';
+import * as Cesium from 'cesium';
+import { ref } from 'vue';
+import { onActivated } from 'vue';
 
 	/**
 	 * 方法名：showPopup
@@ -85,6 +87,7 @@
 		const diameter = Math.sqrt(
 			Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2)
 		);
+
 
 		// 将视角飞到边界中点，高度为边界起点到边界中点的距离乘以一个常数17770*3,该常数是多次测试得出的最优值
 		window.viewer.camera.flyTo({
@@ -170,6 +173,59 @@
 	};
 	let LINE_SEGMENT_LABELING;
 
+/**
+ * 方法名：selectRiver
+ * 创建时间：2023/06/6
+ * 作者: 许佳宇
+ * 功能：点击河流
+ */
+const selectRiver = async (movement) => {
+	// 获取全局椭球体
+	const ellipsoid = window.viewer.scene.globe.ellipsoid;
+	// 拾取鼠标在椭圆上的结束点笛卡尔坐标点
+	const cartesian = window.viewer.scene.camera.pickEllipsoid(
+		movement.position,
+		window.viewer.scene.globe.ellipsoid
+	);
+	// 笛卡尔坐标转制图坐标
+	const cartographic = ellipsoid.cartesianToCartographic(cartesian);
+	// 获取点击经纬度高度
+	const longitude = Cesium.Math.toDegrees(cartographic.longitude);
+	const latitude = Cesium.Math.toDegrees(cartographic.latitude);
+	const height = Math.ceil(window.viewer.camera.positionCartographic.height);
+	let index;
+	if (height > 300000) {
+		index = 6;
+	}
+	if (height < 300000 && height > 200000) {
+		index = 5;
+	}
+	if (height <= 200000 && height > 100000) {
+		index = 4;
+	}
+	if (height <= 150000) {
+		index = 3;
+	}
+	if (height <= 100000) {
+		index = 2;
+	}
+	if (height <= 30000) {
+		index = 1;
+	}
+	console.log(longitude, latitude, height, index, '经纬度高度层级');
+	// 发请求
+	return request({
+		url: '/getriver',
+		method: 'post',
+		data: {
+			lon: longitude,
+			lat: latitude,
+			index: index,
+		},
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	});
+};
+=======
 	const showDetail = (data) => {
 		return request({
 			url: '/getriverlog',
@@ -182,6 +238,7 @@
 			},
 		});
 	};
+
 
 	/**
 	 * 方法名：mergeFullName
@@ -633,11 +690,14 @@
 		// });
 		// city.style = heightStyle;
 
-		viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-		initRiver(); //分层级加载河流
-		clickLeftMouseFunction();
-		clickRightMouseFunction();
-	});
+
+	viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
+	initRiver(); //分层级加载河流
+	clickLeftMouseFunction();
+	clickRightMouseFunction();
+	showArea()
+});
+
 </script>
 <style lang="scss">
 	#cesiumContainer {
@@ -648,10 +708,12 @@
 		overflow: hidden;
 	}
 
-	#popup_search {
-		position: absolute;
-		bottom: 3.125rem;
-		width: 100%;
-		height: 3.125rem;
-	}
+
+#popup_search {
+	position: fixed;
+	bottom: 3.125rem;
+	width: 100%;
+	height: 3.125rem;
+}
+
 </style>

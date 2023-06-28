@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 15:38:35
- * @LastEditTime: 2023-06-21 16:56:06
+ * @LastEditTime: 2023-06-27 16:31:27
 -->
 <template>
 	<div id="app">
@@ -16,11 +16,11 @@
 				<component :is="Component" />
 			</keep-alive>
 		</router-view>
-		<van-tabbar v-model="active.selected">
+		<van-tabbar class="tabbar" v-model="active.selected">
 			<van-tabbar-item icon="home-o" :to="{ name: 'home' }" active>
 				首页
 			</van-tabbar-item>
-			<van-tabbar-item icon="location-o" :to="{ name: 'near' }">
+			<van-tabbar-item icon="location-o" :to="{ name: 'near' }" >
 				附近
 			</van-tabbar-item>
 			<van-tabbar-item icon="manager-o" :to="{ name: 'user' }">
@@ -35,10 +35,22 @@
 	// 	name: 'App',
 	// };
 	import { reactive, onMounted } from 'vue';
+	import { useRoute ,useRouter} from 'vue-router';
+
+   
 
 	const active = reactive({
-		selected: 'home',
+		selected: 0,
 	});
+
+	const route = useRoute();
+	
+   
+
+	onMounted(() => {
+    
+
+});
 </script>
 
 <style lang="scss">
@@ -52,5 +64,10 @@
 		padding: 0px;
 		margin: 0px;
 		@include bfc;
+		.tabbar{
+		z-index: 2000;
 	}
+	}
+
+	
 </style>
