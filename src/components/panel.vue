@@ -11,7 +11,7 @@
 			</p>
 		</div>
 		<div v-if="props.hasLast">
-			<p>请先命名上一级河流</p>
+			<p style="color: white">请先命名上一级河流</p>
 			<button class="confirm" @click="$emit('namedLast')">命名上一级</button>
 			<button class="close" @click="closeBox()">关闭</button>
 		</div>
@@ -164,6 +164,45 @@
 	const showSources = () => {
 		return SELECT_LIST.find((i) => i.value == naming_reason.value).text;
 	};
+
+	/**
+	 * 方法名：submitRiverNameForm
+	 * 创建时间：2023/02/24
+	 * 作者: 龙俊良
+	 * 功能：提交命名表单内容  用于更新河网数据表的内容
+	 */
+	const submitRiverNameForm = () => {
+		const tmp = {
+			// 河流名
+			rivername: zh_name.value.replace('@', '-'),
+			// 平均流量
+			discharge: averageFlow.value == '' ? 0 : averageFlow.value,
+			channelid: window.$selectedRiver?.channelid,
+			// 河网级别
+			level: window?.$selectedRiver?.level,
+			hierarcode: window.$selectedRiver.hierarcode.toString(),
+			basincode: window.$selectedRiver?.basincode,
+			// 中国河流代码
+			shuilicode: riverCode.value == '' ? '' : riverCode.value,
+			// 当前需要插入的河段位于哪个河网表
+			tablelocation: window.$selectedRiver.tablelocation,
+		};
+		request({
+			url: '/submittmp',
+			method: 'POST',
+			data: tmp,
+		})
+			.then((res) => {
+				console.log(res, '改名成功');
+				removeRiverNameForm();
+				SUBMIT_FLAG = false;
+			})
+			.catch((err) => {
+				console.log(err);
+				SUBMIT_FLAG = false;
+			});
+	};
+
 	/**
 	 * 方法名：submitRiverLogForm
 	 * 创建时间：2023/06/5
@@ -222,7 +261,7 @@
 					type: 'success',
 					duration: 1000,
 				});
-				removeRiverNameForm();
+				submitRiverNameForm();
 			})
 			.catch((err) => {
 				console.log(err);
@@ -276,21 +315,22 @@
 		width: 540px;
 		height: 380px;
 		background: rgba(4, 9, 27, 0.7);
-		color: rgb(239, 229, 241);
 
 		.currentSelect {
+			color: white;
 			margin-bottom: 5px;
 			font-size: 18px;
 			font-weight: 700;
 		}
 		.currentSelectRiver {
+			color: white;
 			margin-left: 5px;
 			font-size: 14px;
 		}
 
 		.infoContainer {
 			margin: 40px 0 20px 30px;
-
+			color: white;
 			.currentRiverName {
 				margin-bottom: 20px;
 				display: flex;
@@ -298,11 +338,13 @@
 					margin-top: 4px;
 				}
 				.firstInput {
+					color: black;
 					margin: 0 10px 0 20px;
 					width: 110px;
 					height: 25px;
 				}
 				.secondInput {
+					color: black;
 					width: 110px;
 					height: 25px;
 				}
