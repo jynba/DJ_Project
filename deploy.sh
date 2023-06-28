@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m 'fix:修改了河流分级、完善命名bug'
+git commit -m 'fix:修改dem域名，命名后会出现在图层中'
 
 # 直接部署到github,触发github action
 git push 
