@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-28 10:57:00
+ * @LastEditTime: 2023-06-28 11:38:34
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -104,58 +104,7 @@ import { onActivated } from 'vue';
 		});
 	};
 
-	/**
-	 * 方法名：selectRiver
-	 * 创建时间：2023/06/6
-	 * 作者: 许佳宇
-	 * 功能：点击河流
-	 */
-	const selectRiver = async (movement) => {
-		// 获取全局椭球体
-		const ellipsoid = window.viewer.scene.globe.ellipsoid;
-		// 拾取鼠标在椭圆上的结束点笛卡尔坐标点
-		const cartesian = window.viewer.scene.camera.pickEllipsoid(
-			movement.position,
-			window.viewer.scene.globe.ellipsoid
-		);
-		// 笛卡尔坐标转制图坐标
-		const cartographic = ellipsoid.cartesianToCartographic(cartesian);
-		// 获取点击经纬度高度
-		const longitude = Cesium.Math.toDegrees(cartographic.longitude);
-		const latitude = Cesium.Math.toDegrees(cartographic.latitude);
-		const height = Math.ceil(window.viewer.camera.positionCartographic.height);
-		let index;
-		if (height > 300000) {
-			index = 6;
-		}
-		if (height < 300000 && height > 200000) {
-			index = 5;
-		}
-		if (height <= 200000 && height > 100000) {
-			index = 4;
-		}
-		if (height <= 150000) {
-			index = 3;
-		}
-		if (height <= 100000) {
-			index = 2;
-		}
-		if (height <= 30000) {
-			index = 1;
-		}
-		console.log(longitude, latitude, height, index, '经纬度高度层级');
-		// 发请求
-		return request({
-			url: '/getriver',
-			method: 'post',
-			data: {
-				lon: longitude,
-				lat: latitude,
-				index: index,
-			},
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-		});
-	};
+
 
 	const showPanel = ref(false);
 	const hasLast = ref(false);
@@ -225,7 +174,7 @@ const selectRiver = async (movement) => {
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 	});
 };
-=======
+
 	const showDetail = (data) => {
 		return request({
 			url: '/getriverlog',
