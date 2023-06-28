@@ -3,31 +3,43 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-06-21 16:18:11
+ * @LastEditTime: 2023-06-27 15:45:12
 -->
 <template>
-    <div>
+  <div>
 
-     <!-- 默认显示用 -->
-    <van-search  placeholder="请输入搜索关键词" @search="onSearch"/>
-    <!-- 弹出后 -->
-    <van-popup round v-model:show="popupShow" position="bottom" :style="{ height: '100%' }">
-      <van-search  placeholder="请输入搜索关键词" v-model:value="searchValue" show-action @search="onSearch" />
-    </van-popup>
-    <!-- <van-popup v-model:show="show">内容</van-popup> -->
+    <!-- 默认显示用 -->
+
+    <van-floating-panel v-model:height="height" :anchors="anchors" :content-draggable="false">
+      <van-search @focus="handleSearchFocus" placeholder="请输入搜索关键词" @search="onSearch">
+        <template #left-icon>
+          <img src="../assets/AI.png" style="width: 2rem; height: 2rem;" />
+        </template>
+        <template #right-icon>
+          <img src="../assets/search.png" style="width: 2rem; height: 2rem;" />
+        </template>
+      </van-search>
+    </van-floating-panel>
+
   </div>
-  </template>
+</template>
   
-  <script setup>
-  import { ref } from 'vue';
-  const popupShow = ref(false);
-  const searchShow = ref(false);
-  const searchValue = ref('');
-  
-  function onSearch() {
-    // 这里是搜索逻辑的处理
-    searchShow.value = false;
-  }
+<script setup>
+import { ref } from 'vue';
 
 
-  </script>
+const anchors = [
+  125,
+  Math.round(0.4 * window.innerHeight),
+  Math.round(0.7 * window.innerHeight),
+];
+const height = ref(anchors[0]);
+
+const handleSearchFocus = () => {
+  height.value = anchors[2]
+}
+
+</script>
+
+<style scoped></style>
+

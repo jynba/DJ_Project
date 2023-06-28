@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-21 16:04:53
+ * @LastEditTime: 2023-06-27 16:38:44
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -15,6 +15,7 @@
 	<popup-search id="popup_search" />
 </template>
 <script setup>
+import {showArea} from '../utils/entity-function/displayArea'
 import loadRiver from '../components/loadRiver.vue';
 import panel from '../components//panel.vue';
 import popupSearch from '../components/popupSearch.vue'
@@ -23,7 +24,7 @@ import { initRiver, debounce } from '@/utils/common.js';
 import { onDeactivated, onMounted, reactive } from 'vue';
 import * as Cesium from 'cesium';
 import { ref } from 'vue';
-	import { onActivated } from 'vue';
+import { onActivated } from 'vue';
 
 
 /**
@@ -476,6 +477,7 @@ const clickLeftMouseFunction = () => {
 };
 
 onMounted(() => {
+
 	const config = {
 		showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
 		requestRenderMode: true, // 开启请求的渲染模式
@@ -626,6 +628,8 @@ onMounted(() => {
 	initRiver(); //分层级加载河流
 	clickLeftMouseFunction();
 	clickRightMouseFunction();
+	showArea()
+
 });
 </script>
 <style lang="scss">
