@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-06-27 15:45:12
+ * @LastEditTime: 2023-06-28 14:24:04
 -->
 <template>
   <div>
@@ -36,7 +36,7 @@ const anchors = [
 const height = ref(anchors[0]);
 
 const handleSearchFocus = () => {
-  height.value = anchors[2]
+  height.value = anchors[1]
 }
 
 </script>

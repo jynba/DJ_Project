@@ -3,152 +3,203 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-06-28 10:24:30
+ * @LastEditTime: 2023-06-29 17:44:44
  */
+import { app } from '../../main.js';
 import axios from "axios";
-import qs from 'qs';
-import Hammer from 'hammerjs';
+import qs from "qs";
+import Hammer from "hammerjs";
+import wellknown from "wellknown";
+import djAreaData from "../../data/dongjiangAllType";
 
 /**
  * @Author: 朱海东
  * @Date: 2023-06-27 16:30:49
- * @name: 
+ * @name:
  * @msg: 返回四个屏幕坐标
  * @return {*}
  */
 
-const viewerDom = document.getElementById('cesiumContainer')
 // const hammer = new Hammer(window.viewer);
 export function showArea() {
-    // 获取当前场景四个坐标
+  clickBuildingEntity()
+  //  // 过滤镇和乡
+  // let buildingArray = djAreaData.natural_place_name.filter(item =>item.name.includes('公园'));
 
-    viewer.camera.changed.addEventListener(function () {
-        //清除所有实体
-        viewer.entities.removeAll();
-        // 在这里获取当前相机屏幕的四个坐标并发起数据请求渲染
+  viewer.camera.changed.addEventListener(function () {
+    //清除所有实体
+    viewer.entities.removeAll();
+    // 在这里获取当前相机屏幕的四个坐标并发起数据请求渲染
 
-        let camera = viewer.camera;
-        let viewRectangle = camera.computeViewRectangle();
-        let minLon = Cesium.Math.toDegrees(viewRectangle.west);
-        let minLat = Cesium.Math.toDegrees(viewRectangle.south);
-        let maxLon = Cesium.Math.toDegrees(viewRectangle.east);
-        let maxlat = Cesium.Math.toDegrees(viewRectangle.north);
-        let location = {
-            minLon: minLon,
-            minLat: minLat,
-            maxLon: maxLon,
-            maxLat: maxlat
-        }
+    let camera = viewer.camera;
+    let viewRectangle = camera.computeViewRectangle();
+    let minLon = Cesium.Math.toDegrees(viewRectangle.west);
+    let minLat = Cesium.Math.toDegrees(viewRectangle.south);
+    let maxLon = Cesium.Math.toDegrees(viewRectangle.east);
+    let maxlat = Cesium.Math.toDegrees(viewRectangle.north);
+    let location = {
+      minLon: minLon,
+      minLat: minLat,
+      maxLon: maxLon,
+      maxLat: maxlat,
+    };
 
-        // try {
-        //     axios.post(IP_ADDRESS_WMS2 + 'getPositionList', qs.stringify(location)).then(response => {
-        //         console.log(response.data.data.channel)
-
-        //         const responseData = response.data.data.channel
-        //         // const result = responseData.map(item => {
-        //         //     const binaryData = hexToBinary(item.geom);
-        //         //     const geometry = parseGeometry(binaryData);
-        //         //     const coordinates = getCoordinates(geometry);
-
-        //         //     return {
-        //         //       name: item.name,
-        //         //       coordinates: coordinates
-        //         //     };
-        //         //   });
-
-        //         //   console.log(result);
-
-
-
-
-
-        //         // 遍历每个实体
-        //         // responseData.forEach(entityData => {
-        //         //     const name = entityData.name;
-        //         //     const geom = entityData.geom;
-
-        //         //     // 解码geom属性为经纬度坐标
-        //         //     const lon = decodeGeomToLon(geom);
-        //         //     const lat = decodeGeomToLat(geom);
-        //         //     console.log(lon)
-        //         //     console.log(geom)
-
-        //         //     // 创建实体对象
-        //         //     viewer.entities.add({
-        //         //         name,
-        //         //         position: Cesium.Cartesian3.fromDegrees(lon, lat),
-        //         //         point: {
-        //         //             pixelSize: 10,
-        //         //             color: Cesium.Color.RED
-        //         //         }
-        //         //     });
-
-        //         // });
-
-
-
-        //     });
-        // } catch {
-        //     console.log('异常')
-        // }
-
-
-        let position = Cesium.Cartographic.fromDegrees(114.5457178632316, 23.41926302048954);
-        // 将Cartographic对象转换为Cartesian3坐标系
-        let cartesian = viewer.scene.globe.ellipsoid.cartographicToCartesian(position);
-
-        // 创建一个实体（Entity）以表示标记位置
-        let entity = new Cesium.Entity({
-            name: '实体一',
-            position: cartesian,
-            label: {
-                text: '小白龙',
-                // showBackground: true,
-                font: '14px sans-serif',
-                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                pixelOffset: new Cesium.Cartesian2(0, -20) // 调整标签位置
-            }
-        });
-
-        // 将实体添加到场景中
-        viewer.entities.add(entity);
-        limitEntityHeight(entity, 56389, 124301)
-        // console.log('Allentity2', viewer.entities.values)
-
-    });
-
-
-
-    // 监听 tap 事件
-    // hammer.on("tap", function (event) {
-    //     let screenPosition = new Cesium.Cartesian2(event.center.x, event.center.y);
-    //     let pickedObject = viewer.scene.pick(screenPosition);
-
-    //     if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
-    //         // 当实体被点击时触发的事件
-    //         console.log("实体被点击了！");
-    //     }
-    // });
-
-    // // 添加鼠标点击事件监听器
-    // viewer.screenSpaceEventHandler.setInputAction(function (click) {
-    //     var pickedObject = viewer.scene.pick(click.position);
-
-    //     if (Cesium.defined(pickedObject) && pickedObject.id === entity) {
-    //         // 当实体被点击时触发的事件
-    //         console.log("实体被点击了！");
-    //     }
-    // }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-
+    //根据不同类型进行渲染实体标记  1市  2镇、乡  3街道、社区、村 乡 4自然保护区、公园  5水库
+    // renderEntity(djAreaData.channel, location, 1);
+    renderEntity(djAreaData.cityArray, location, 1);
+    renderEntity(djAreaData.townArray, location, 2);
+    renderEntity(djAreaData.villageArray, location, 3);
+    renderEntity(djAreaData.buildingArray, location, 4);
+  });
 }
 
+/**
+ * @Author: 朱海东
+ * @Date: 2023-06-28 16:46:07
+ * @name: renderEntity
+ * @msg: 绘制不同属性的实体
+ * @return {*}
+ */
+const ImageUrl = [
+  "src/assets/bridge.png",
+  "src/assets/park.png",
+  "src/assets/reserve.png",
+  "src/assets/way.png",
+  "src/assets/tunnel.png",
+];
+function renderEntity(data, location, type) {
+  //解构当前屏幕经纬度
+  const { minLon, minLat, maxLon, maxLat } = location;
+  //筛选符合当前屏幕的数据
+  const filteredPlaces = data.filter(({ geom: [lon, lat] }) => {
+    return lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat;
+  });
+  //绘制城市名实体名称
+  if (type == 1) {
+    filteredPlaces.forEach((item) => {
+      const position = Cesium.Cartesian3.fromDegrees(
+        item.geom[0],
+        item.geom[1],
+      );
+
+      // 创建标签
+      const cityLabel = viewer.entities.add({
+        name: item.id,
+        position: position,
+        label: {
+          text: item.name,
+          scale: 0.8,
+          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+          font: "bold 10px Arial", // 设置字体大小为16像素
+          pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
+        },
+      });
+
+      limitEntityHeight(cityLabel, 157987, 753338);
+    });
+  }
+  //绘制镇乡名实体名称
+  if (type == 2) {
+    filteredPlaces.forEach((item) => {
+      const position = Cesium.Cartesian3.fromDegrees(
+        item.geom[0],
+        item.geom[1],
+      );
+
+      // 创建标签
+      const label = viewer.entities.add({
+        name: item.id,
+        position: position,
+        label: {
+          text: item.name,
+          scale: 0.8,
+          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+          font: "bold 12px Arial", // 设置字体大小为16像素
+          pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
+        },
+      });
+      limitEntityHeight(label, 25432, 157987);
+    });
+  }
+  //绘制村、街道、社区实体名称
+  if (type == 3) {
+    filteredPlaces.forEach((item) => {
+      const position = Cesium.Cartesian3.fromDegrees(
+        item.geom[0],
+        item.geom[1],
+      );
+
+      // 创建标签
+      const label = viewer.entities.add({
+        name: item.id,
+        position: position,
+        label: {
+          text: item.name,
+          scale: 0.8,
+          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+          font: "bold 12px Arial", // 设置字体大小为16像素
+          pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
+        },
+      });
+      limitEntityHeight(label, 118, 25432);
+    });
+  }
+
+  //绘制自然保护区、公园实体+图标
+  if (type == 4) {
+    filteredPlaces.forEach((item) => {
+      const position = Cesium.Cartesian3.fromDegrees(
+        item.geom[0],
+        item.geom[1],
+      );
+
+      // 创建标签
+      const label = viewer.entities.add({
+     
+        position: position,
+        label: {
+          text: item.name,
+          scale: 0.8,
+          horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+          font: "bold 12px Arial", // 设置字体大小为16像素
+          pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
+        },
+      });
+      // 创建实体
+      console.log(item.name.includes("桥"));
+      const entity = viewer.entities.add({
+        name: item.id,
+        position: position,
+        billboard: {
+          image: item.name.includes("桥")
+            ? ImageUrl[0]
+            : item.name.includes("公园")
+            ? ImageUrl[1]
+            : item.name.includes("保护区")
+            ? ImageUrl[2]
+            : item.name.includes("公路")
+            ? ImageUrl[3]
+            : ImageUrl[4],
+          scale: 1,
+          width: 20,
+          height: 20,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM, // 将图片垂直位置设置为实体的正上方
+        },
+      });
+      // 将实体和标签绑定起来
+
+      label.billboard = entity;
+      limitEntityHeight(entity, 432, 25432);
+      limitEntityHeight(label, 432, 25432);
+     
+    });
+  }
+}
 
 /**
  * @Author: 朱海东
  * @Date: 2023-06-28 09:01:37
- * @name: 
+ * @name:
  * @msg: 控制实体只在指定的高度范围上显示，
  * @param {*} entity
  * @param {*} minHeight
@@ -156,25 +207,72 @@ export function showArea() {
  * @return {*}
  */
 function limitEntityHeight(entity, minHeight, maxHeight) {
-    console.log('111')
-    let entityPosition = entity.position.getValue(viewer.clock.currentTime);
-    let cameraPosition = viewer.camera.position;
+  let entityPosition = entity.position.getValue(viewer.clock.currentTime);
+  let cameraPosition = viewer.camera.position;
 
-    let distance = Cesium.Cartesian3.distance(entityPosition, cameraPosition);
+  let distance = Cesium.Cartesian3.distance(entityPosition, cameraPosition);
 
-    if (distance < minHeight || distance > maxHeight) {
-
-        //   entity.show = false; // 当距离不在限定范围内时隐藏实体
-        viewer.entities.removeAll();
-        //   console.log('entity',entity)
-        console.log('Allentity', viewer.entities.values)
-    } else {
-        entity.show = true;
-        console.log('显示')
-    }
+  if (distance < minHeight || distance > maxHeight) {
+    // 遍历实体集合，根据 name 属性删除匹配的实体
+    viewer.entities.values.forEach((item) => {
+      if (item._name === entity._name) {
+        viewer.entities.remove(entity);
+      }
+    });
+  } else {
+    entity.show = true;
+  }
 }
 
+/**
+ * @Author: 朱海东
+ * @Date: 2023-06-29 10:05:24
+ * @name:
+ * @msg: 计算经纬度数组中的中心点
+ * @return {*}
+ */
+function calculateCenterPoint(coordinates) {
+  const center = coordinates.reduce(
+    (acc, current, index) => {
+      if (index % 2 === 0) {
+        acc.longitudes.push(current);
+      } else {
+        acc.latitudes.push(current);
+      }
+      return acc;
+    },
+    { longitudes: [], latitudes: [] },
+  );
 
+  const centerLongitude =
+    center.longitudes.reduce((sum, current) => sum + current, 0) /
+    center.longitudes.length;
+  const centerLatitude =
+    center.latitudes.reduce((sum, current) => sum + current, 0) /
+    center.latitudes.length;
 
+  return [centerLongitude, centerLatitude];
+}
 
+/**
+ * @Author: 朱海东
+ * @Date: 2023-06-29 16:41:36
+ * @name:
+ * @msg:
+ * @return {*}
+ */
+function clickBuildingEntity() {
 
+  // const data = 'Hello from jsa.js';
+  // app.config.globalProperties.$eventBus.emit('myData', data);
+  // 监听Entity的点击事件
+  let handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+  handler.setInputAction(function (click) {
+    let pickedObject = viewer.scene.pick(click.position);
+    console.log(pickedObject.primitive)
+    console.log(pickedObject.primitive._id._name)
+    // if (pickedObject && pickedObject.id === entity) {
+    //   console.log('1111');
+    // }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
