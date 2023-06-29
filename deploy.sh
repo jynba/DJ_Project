@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m 'fix:修改了河流分级、完善命名bug'
+git commit -m '添加了各种类型的地图标注'
 
 # 直接部署到github,触发github action
 git push 
