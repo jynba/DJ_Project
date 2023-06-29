@@ -1,0 +1,10 @@
+# 忽略的文件夹:
+build/
+coverage/
+.vscode/
+docker/
+node_modules/
+
+# 忽略的文件
+*.html
+*.js

@@ -14,8 +14,10 @@ set -e
 npm run build
 
 git init
-git add -A
-git commit -m 'fix:修改dem域名，命名后会出现在图层中'
+
+
+git commit -m '添加了各种类型的地图标注'
+
 
 # 直接部署到github,触发github action
 git push 
