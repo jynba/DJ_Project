@@ -14,8 +14,10 @@ set -e
 npm run build
 
 git init
-git add -A
+
+
 git commit -m '添加了各种类型的地图标注'
+
 
 # 直接部署到github,触发github action
 git push 

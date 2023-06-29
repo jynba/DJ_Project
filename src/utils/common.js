@@ -46,7 +46,7 @@ export function layerShow(river_index, isShow = true) {
 	if (layer_index == -1) {
 		// 天地图标注
 		DONGJIANG_RIVERS[river_index] = addWebMapData(
-			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
 			`dongjiang:dongjiang_river${river_index}`
 		);
 	} else {
@@ -64,7 +64,7 @@ export function initReservoirs() {
 	const layer_index = window.viewer.imageryLayers.indexOf(DONGJIANG_RESERVOIRS);
 	if (layer_index == -1) {
 		DONGJIANG_RESERVOIRS = addWebMapData(
-			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
 			'dongjiang:dongjiang_reservoirs_total'
 		);
 	} else {
@@ -87,7 +87,7 @@ export function initRiver() {
 	let showRiver2;
 	let showRiver1;
 	// const dongjiangbound6 = addWebMapData(
-	// 	IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
+	// 	IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
 	// 	'dongjiang:dongjiang_bound6'
 	// );
 
