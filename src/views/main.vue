@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-29 17:56:16
+ * @LastEditTime: 2023-06-30 16:04:33
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -457,7 +457,7 @@ const clickLeftMouseFunction = () => {
     debounce(async function () {
       window.viewer.entities.remove(LINE_SEGMENT_LABELING);
       const res = await selectRiver(movement);
-      console.log(res);
+      console.log("res", res);
       if (res.code == 20000) {
         // 再将视角转到河流中心
         flyToCenter(res.data);
