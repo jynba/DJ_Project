@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-30 16:04:33
+ * @LastEditTime: 2023-06-30 17:26:49
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -652,16 +652,17 @@ onMounted(() => {
 }
 
 #popup_search {
+  z-index: 200;
   position: fixed;
   bottom: 3.125rem;
   width: 100%;
   height: 3.125rem;
 }
 #detail_panel {
-  z-index: 200;
+  z-index: 201;
   position: absolute;
   bottom: 3.125rem;
   width: 100%;
-  height: 3.125rem;
+  height: 0.01rem;
 }
 </style>

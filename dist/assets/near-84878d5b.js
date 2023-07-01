@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o as r,c}from"./index-e4be8498.js";const o={};function n(t,a){return r(),c("div",null,"附近页面待开发")}const f=e(o,[["render",n]]);export{f as default};

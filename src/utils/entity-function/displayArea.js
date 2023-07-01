@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-06-30 16:34:32
+ * @LastEditTime: 2023-07-01 09:20:10
  */
 import { app } from "../../main.js";
 import axios from "axios";
@@ -96,7 +96,7 @@ function renderEntity(data, location, type) {
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 10px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -120,7 +120,7 @@ function renderEntity(data, location, type) {
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -143,7 +143,7 @@ function renderEntity(data, location, type) {
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -167,7 +167,7 @@ function renderEntity(data, location, type) {
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
