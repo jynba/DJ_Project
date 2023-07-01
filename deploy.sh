@@ -4,7 +4,7 @@
  # @version: 1.0.0
  # @Author: 朱海东
  # @Date: 2023-06-20 15:38:35
- # @LastEditTime: 2023-06-21 16:36:05
+ # @LastEditTime: 2023-07-01 09:23:23
 ### 
 
 # 确保脚本抛出遇到的错误
@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m '添加了各种类型的地图标注'
+git commit -m '添加了的地图标注、点击触发功能'
 
 # 直接部署到github,触发github action
 git push 
