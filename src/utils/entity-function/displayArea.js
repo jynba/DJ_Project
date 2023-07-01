@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-01 09:20:10
+ * @LastEditTime: 2023-07-01 10:20:53
  */
 import { app } from "../../main.js";
 import axios from "axios";
@@ -68,12 +68,12 @@ export function showArea() {
  * @return {*}
  */
 const ImageUrl = [
-  "src/assets/bridge.png",
-  "src/assets/park.png",
-  "src/assets/reserve.png",
-  "src/assets/way.png",
-  "src/assets/tunnel.png",
-  "src/assets/reservoir.png",
+  "./bridge.png",
+  "./park.png",
+  "./reserve.png",
+  "./way.png",
+  "./tunnel.png",
+  "./reservoir.png",
 ];
 function renderEntity(data, location, type) {
   //解构当前屏幕经纬度
