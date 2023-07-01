@@ -21,6 +21,7 @@
   <detail-panel id="detail_panel"></detail-panel>
 </template>
 <script setup>
+
 import { showArea } from "../utils/entity-function/displayArea";
 import loadRiver from "../components/loadRiver.vue";
 import panel from "../components//panel.vue";
@@ -46,6 +47,7 @@ const popupShow = ref(true);
 const showPopup = () => {
   popupShow.value = true;
 };
+
 
 /**
  * 方法名：getBoundaryCenter
@@ -173,6 +175,7 @@ const selectRiver = async (movement) => {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 };
+
 
 const showDetail = (data) => {
   return request({
@@ -666,3 +669,4 @@ onMounted(() => {
   height: 0.01rem;
 }
 </style>
+
