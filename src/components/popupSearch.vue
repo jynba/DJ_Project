@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-06-28 14:24:04
+ * @LastEditTime: 2023-06-30 17:36:46
 -->
 <template>
   <div>
@@ -11,12 +11,12 @@
     <!-- 默认显示用 -->
 
     <van-floating-panel v-model:height="height" :anchors="anchors" :content-draggable="false">
-      <van-search @focus="handleSearchFocus" placeholder="请输入搜索关键词" @search="onSearch">
+      <van-search @focus="handleSearchFocus" placeholder="请输入搜索关键词" @search="onSearch" >
         <template #left-icon>
           <img src="../assets/AI.png" style="width: 2rem; height: 2rem;" />
         </template>
         <template #right-icon>
-          <img src="../assets/search.png" style="width: 2rem; height: 2rem;" />
+          <img src="../assets/search.png" style="width: 2rem; height: 2rem;"/>
         </template>
       </van-search>
     </van-floating-panel>
@@ -37,6 +37,10 @@ const height = ref(anchors[0]);
 
 const handleSearchFocus = () => {
   height.value = anchors[1]
+}
+
+const onSearch=(value)=>{
+  console.log(value)
 }
 
 </script>

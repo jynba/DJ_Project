@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-29 17:32:00
+ * @LastEditTime: 2023-06-30 11:26:11
  * @FilePath: \DJ_Project\dj-project\src\main.js
  * @Description:
  */
@@ -12,7 +12,7 @@ import router from './router';
 import mitt from 'mitt';
 import qs from 'qs';
 import '@/styles/reset.css';
-import { Icon,Button, Form, Field, Tabbar, TabbarItem ,Popup, Search,FloatingPanel} from 'vant';
+import { Cell, CellGroup,Icon,Button, Form, Field, Tabbar, TabbarItem ,Popup, Search,FloatingPanel} from 'vant';
 
 // 引入 Vant 的 CSS 文件
 import 'vant/lib/index.css';
@@ -23,7 +23,7 @@ const app = createApp(App);
 const eventBus = mitt();
 app.config.globalProperties.$eventBus = eventBus;
 app.use(router)
-app.use(FloatingPanel).use(Button).use(Form).use(Field).use(Tabbar).use(TabbarItem).use(Icon).use(Popup).use(Search);
+app.use(FloatingPanel).use(Button).use(Form).use(Field).use(Tabbar).use(TabbarItem).use(Icon).use(Popup).use(Search).use(Cell).use(CellGroup);
 app.mount('#app');
 
 export { app, eventBus };

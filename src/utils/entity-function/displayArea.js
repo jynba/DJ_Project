@@ -3,9 +3,9 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-06-29 17:44:44
+ * @LastEditTime: 2023-07-01 09:20:10
  */
-import { app } from '../../main.js';
+import { app } from "../../main.js";
 import axios from "axios";
 import qs from "qs";
 import Hammer from "hammerjs";
@@ -22,9 +22,13 @@ import djAreaData from "../../data/dongjiangAllType";
 
 // const hammer = new Hammer(window.viewer);
 export function showArea() {
-  clickBuildingEntity()
+  clickBuildingEntity();
   //  // 过滤镇和乡
   // let buildingArray = djAreaData.natural_place_name.filter(item =>item.name.includes('公园'));
+
+  const newArray = djAreaData.buildingArray.map((item) => {
+    return Object.assign({}, item, { type: "building_table" });
+  });
 
   viewer.camera.changed.addEventListener(function () {
     //清除所有实体
@@ -44,12 +48,15 @@ export function showArea() {
       maxLat: maxlat,
     };
 
-    //根据不同类型进行渲染实体标记  1市  2镇、乡  3街道、社区、村 乡 4自然保护区、公园  5水库
+    //根据不同类型进行渲染实体标记  1市  2镇、乡  3街道、社区、村 乡 4自然保护区、公园 、桥、公路、水库等
     // renderEntity(djAreaData.channel, location, 1);
     renderEntity(djAreaData.cityArray, location, 1);
     renderEntity(djAreaData.townArray, location, 2);
     renderEntity(djAreaData.villageArray, location, 3);
+    //
     renderEntity(djAreaData.buildingArray, location, 4);
+    renderEntity(djAreaData.nature_reserve, location, 4);
+    renderEntity(djAreaData.natural_well, location, 4);
   });
 }
 
@@ -66,6 +73,7 @@ const ImageUrl = [
   "src/assets/reserve.png",
   "src/assets/way.png",
   "src/assets/tunnel.png",
+  "src/assets/reservoir.png",
 ];
 function renderEntity(data, location, type) {
   //解构当前屏幕经纬度
@@ -84,11 +92,11 @@ function renderEntity(data, location, type) {
 
       // 创建标签
       const cityLabel = viewer.entities.add({
-        name: item.id,
+        name: item.id + item.type,
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 10px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -108,11 +116,11 @@ function renderEntity(data, location, type) {
 
       // 创建标签
       const label = viewer.entities.add({
-        name: item.id,
+        name: item.id + item.type,
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -131,11 +139,11 @@ function renderEntity(data, location, type) {
 
       // 创建标签
       const label = viewer.entities.add({
-        name: item.id,
+        name: item.id + item.type,
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
@@ -155,20 +163,20 @@ function renderEntity(data, location, type) {
 
       // 创建标签
       const label = viewer.entities.add({
-     
+        name: item.id + item.type,
         position: position,
         label: {
           text: item.name,
-          scale: 0.8,
+          scale: 1.2,
           horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
           font: "bold 12px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
       });
       // 创建实体
-      console.log(item.name.includes("桥"));
+
       const entity = viewer.entities.add({
-        name: item.id,
+        name: item.id + item.type,
         position: position,
         billboard: {
           image: item.name.includes("桥")
@@ -179,6 +187,8 @@ function renderEntity(data, location, type) {
             ? ImageUrl[2]
             : item.name.includes("公路")
             ? ImageUrl[3]
+            : item.name.includes("水库")
+            ? ImageUrl[5]
             : ImageUrl[4],
           scale: 1,
           width: 20,
@@ -189,9 +199,8 @@ function renderEntity(data, location, type) {
       // 将实体和标签绑定起来
 
       label.billboard = entity;
-      limitEntityHeight(entity, 432, 25432);
-      limitEntityHeight(label, 432, 25432);
-     
+      limitEntityHeight(entity, 432, 14999);
+      limitEntityHeight(label, 432, 14999);
     });
   }
 }
@@ -261,18 +270,110 @@ function calculateCenterPoint(coordinates) {
  * @msg:
  * @return {*}
  */
-function clickBuildingEntity() {
 
-  // const data = 'Hello from jsa.js';
-  // app.config.globalProperties.$eventBus.emit('myData', data);
+function clickBuildingEntity() {
   // 监听Entity的点击事件
-  let handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
-  handler.setInputAction(function (click) {
+  let entityHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  entityHandler.setInputAction(function (click) {
     let pickedObject = viewer.scene.pick(click.position);
-    console.log(pickedObject.primitive)
-    console.log(pickedObject.primitive._id._name)
-    // if (pickedObject && pickedObject.id === entity) {
-    //   console.log('1111');
-    // }
+
+    if (pickedObject) {
+      // let position = pickedObject.primitive.position.getValue();
+      console.log("pickedObject", pickedObject);
+      const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
+      const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
+      const requestData = {
+        tablename: type,
+        gid: Number(id),
+      };
+      axios
+        .post(IP_ADDRESS_WMS2 + "getdongjiangDetail", qs.stringify(requestData))
+        .then(async (res) => {
+          const detailObj = {
+            popupShow: true,
+          };
+          detailObj.info = res.data.data;
+          const geom = JSON.parse(res.data.data[0].geom);
+          app.config.globalProperties.$eventBus.emit("detail", detailObj);
+
+          const currentHeight = Math.ceil(window.viewer.camera.positionCartographic.height);
+          console.log('res.data.data',res.data)
+          // 移动到对象位置
+          const flytoLat = parseFloat(geom[0]);
+          const flytoLng = parseFloat(geom[1]);
+          
+          //高于150000根据计算飞行
+          if(currentHeight>15000){
+          
+          // 利用经纬度坐标计算边界起点到中点的距离
+          const firstLat = flytoLat+0.1;
+          const firstLng = flytoLng+0.1;
+          const diameter = Math.sqrt(
+            Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2),
+          );
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              flytoLat,
+              flytoLng,
+              diameter * 177770 * 1.5,
+            ),
+            orientation: {
+              heading: Cesium.Math.toRadians(0),
+              pitch: Cesium.Math.toRadians(-90),
+              roll: Cesium.Math.toRadians(0),
+            },
+          });
+
+        }else{
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              flytoLat,
+              flytoLng,
+              currentHeight,
+            ),
+            orientation: {
+              heading: Cesium.Math.toRadians(0),
+              pitch: Cesium.Math.toRadians(-90),
+              roll: Cesium.Math.toRadians(0),
+            },
+          });
+
+        }
+          // let targetPosition = Cesium.Cartesian3.fromDegrees(parseFloat(geom[0]),parseFloat(geom[1]));
+          // await flyToPosition(targetPosition, 1);
+        })
+        .catch((error) => {
+          console.error("请求失败：", error);
+        });
+    }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
+
+/**
+ * @Author: 朱海东
+ * @Date: 2023-06-30 15:40:31
+ * @name: 异步飞行
+ * @msg:
+ * @param {*} position
+ * @param {*} duration
+ * @return {*}
+ */
+// async function flyToPosition(position, duration) {
+//   return new Promise((resolve) => {
+//     const center = getBoundaryCenter(data.scope);
+//     const flytoLat = center[0];
+//     const flytoLng = center[1];
+
+//     // 利用经纬度坐标计算边界起点到中点的距离
+//     const firstLat = data.scope[0];
+//     const firstLng = data.scope[1];
+//     const diameter = Math.sqrt(
+//       Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2),
+//     );
+//     viewer.camera.flyTo({
+//       destination: position,
+//       duration: duration,
+//       complete: resolve, // 飞行动画完成后解析 Promise
+//     });
+//   });
+// }
