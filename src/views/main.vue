@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-05 10:12:57
+ * @LastEditTime: 2023-07-05 11:01:53
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -33,6 +33,7 @@ import { onDeactivated, onMounted, reactive } from "vue";
 import * as Cesium from "cesium";
 import { ref } from "vue";
 import { onActivated } from "vue";
+import qs from "qs";
 
 /**
  * 方法名：showPopup
