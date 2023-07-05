@@ -3,13 +3,11 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-01 10:20:53
+ * @LastEditTime: 2023-07-05 10:11:38
  */
 import { app } from "../../main.js";
 import axios from "axios";
 import qs from "qs";
-import Hammer from "hammerjs";
-import wellknown from "wellknown";
 import djAreaData from "../../data/dongjiangAllType";
 
 /**
@@ -101,6 +99,11 @@ function renderEntity(data, location, type) {
           font: "bold 10px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
+        // billboard: {
+        //   image: createLabelImage(item.name), // 使用createLabelImage函数创建带有HTML内容的图像
+        //   width: 200,
+        //   height: 130,
+        // },
       });
 
       limitEntityHeight(cityLabel, 157987, 753338);
@@ -296,49 +299,49 @@ function clickBuildingEntity() {
           const geom = JSON.parse(res.data.data[0].geom);
           app.config.globalProperties.$eventBus.emit("detail", detailObj);
 
-          const currentHeight = Math.ceil(window.viewer.camera.positionCartographic.height);
-          console.log('res.data.data',res.data)
+          const currentHeight = Math.ceil(
+            window.viewer.camera.positionCartographic.height,
+          );
+          console.log("res.data.data", res.data);
           // 移动到对象位置
           const flytoLat = parseFloat(geom[0]);
           const flytoLng = parseFloat(geom[1]);
-          
+
           //高于150000根据计算飞行
-          if(currentHeight>15000){
-          
-          // 利用经纬度坐标计算边界起点到中点的距离
-          const firstLat = flytoLat+0.1;
-          const firstLng = flytoLng+0.1;
-          const diameter = Math.sqrt(
-            Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2),
-          );
-          viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(
-              flytoLat,
-              flytoLng,
-              diameter * 177770 * 1.5,
-            ),
-            orientation: {
-              heading: Cesium.Math.toRadians(0),
-              pitch: Cesium.Math.toRadians(-90),
-              roll: Cesium.Math.toRadians(0),
-            },
-          });
-
-        }else{
-          viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(
-              flytoLat,
-              flytoLng,
-              currentHeight,
-            ),
-            orientation: {
-              heading: Cesium.Math.toRadians(0),
-              pitch: Cesium.Math.toRadians(-90),
-              roll: Cesium.Math.toRadians(0),
-            },
-          });
-
-        }
+          if (currentHeight > 15000) {
+            // 利用经纬度坐标计算边界起点到中点的距离
+            const firstLat = flytoLat + 0.1;
+            const firstLng = flytoLng + 0.1;
+            const diameter = Math.sqrt(
+              Math.pow(firstLat - flytoLat, 2) +
+                Math.pow(firstLng - flytoLng, 2),
+            );
+            viewer.camera.flyTo({
+              destination: Cesium.Cartesian3.fromDegrees(
+                flytoLat,
+                flytoLng,
+                diameter * 177770 * 1.5,
+              ),
+              orientation: {
+                heading: Cesium.Math.toRadians(0),
+                pitch: Cesium.Math.toRadians(-90),
+                roll: Cesium.Math.toRadians(0),
+              },
+            });
+          } else {
+            viewer.camera.flyTo({
+              destination: Cesium.Cartesian3.fromDegrees(
+                flytoLat,
+                flytoLng,
+                currentHeight,
+              ),
+              orientation: {
+                heading: Cesium.Math.toRadians(0),
+                pitch: Cesium.Math.toRadians(-90),
+                roll: Cesium.Math.toRadians(0),
+              },
+            });
+          }
           // let targetPosition = Cesium.Cartesian3.fromDegrees(parseFloat(geom[0]),parseFloat(geom[1]));
           // await flyToPosition(targetPosition, 1);
         })
@@ -349,31 +352,4 @@ function clickBuildingEntity() {
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
-/**
- * @Author: 朱海东
- * @Date: 2023-06-30 15:40:31
- * @name: 异步飞行
- * @msg:
- * @param {*} position
- * @param {*} duration
- * @return {*}
- */
-// async function flyToPosition(position, duration) {
-//   return new Promise((resolve) => {
-//     const center = getBoundaryCenter(data.scope);
-//     const flytoLat = center[0];
-//     const flytoLng = center[1];
 
-//     // 利用经纬度坐标计算边界起点到中点的距离
-//     const firstLat = data.scope[0];
-//     const firstLng = data.scope[1];
-//     const diameter = Math.sqrt(
-//       Math.pow(firstLat - flytoLat, 2) + Math.pow(firstLng - flytoLng, 2),
-//     );
-//     viewer.camera.flyTo({
-//       destination: position,
-//       duration: duration,
-//       complete: resolve, // 飞行动画完成后解析 Promise
-//     });
-//   });
-// }
