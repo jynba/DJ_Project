@@ -21,7 +21,6 @@
   <detail-panel id="detail_panel"></detail-panel>
 </template>
 <script setup>
-
 import { showArea } from "../utils/entity-function/displayArea";
 import loadRiver from "../components/loadRiver.vue";
 import panel from "../components//panel.vue";
@@ -47,7 +46,6 @@ const popupShow = ref(true);
 const showPopup = () => {
   popupShow.value = true;
 };
-
 
 /**
  * 方法名：getBoundaryCenter
@@ -175,7 +173,6 @@ const selectRiver = async (movement) => {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 };
-
 
 const showDetail = (data) => {
   return request({
@@ -492,8 +489,9 @@ const clickLeftMouseFunction = () => {
 };
 
 onMounted(() => {
-  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE0MzdlZC00NGFhLTQ3ODItODQyNC01MTVlMmZiMjA4NDciLCJpZCI6NzU4ODIsImlhdCI6MTYzODk1MDcyM30.aB08DKXLq43IEtIjXrkeDMm4GYmtr9GjfDWnHWumWF0';
-  
+  Cesium.Ion.defaultAccessToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE0MzdlZC00NGFhLTQ3ODItODQyNC01MTVlMmZiMjA4NDciLCJpZCI6NzU4ODIsImlhdCI6MTYzODk1MDcyM30.aB08DKXLq43IEtIjXrkeDMm4GYmtr9GjfDWnHWumWF0";
+
   const config = {
     showRenderLoopErrors: false, //如果为true，则在发生渲染循环错误时，此小部件将自动向包含错误的用户显示HTML面板。
     requestRenderMode: true, // 开启请求的渲染模式
@@ -520,7 +518,7 @@ onMounted(() => {
     // }),
   };
   const viewer = new Cesium.Viewer("cesiumContainer", config);
- 
+
   viewer.scene.debugShowFramesPerSecond = true; //不显示帧率
   viewer.shadows = true; //开启或关闭阴影
   // 关闭抗锯齿
@@ -562,9 +560,10 @@ onMounted(() => {
   // 将viewer挂载到window上
   window.viewer = viewer;
   window.Cesium = Cesium;
-  // window.Cesium.Ion.defaultAccessToken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZGM4NzQ1MS0yMDdmLTQ4YmQtOGM1Yy02ZDllZjYxY2YyMDUiLCJpZCI6MTM1NDgyLCJpYXQiOjE2ODg1MjAwMDd9.hZyghWRVZzaK-woP45qd63OiEgjn0o5fOLo2JnL90Z0'
- 
-  // 天地图
+  // window.Cesium.Ion.defaultAccessToken =
+  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZGM4NzQ1MS0yMDdmLTQ4YmQtOGM1Yy02ZDllZjYxY2YyMDUiLCJpZCI6MTM1NDgyLCJpYXQiOjE2ODg1MjAwMDd9.hZyghWRVZzaK-woP45qd63OiEgjn0o5fOLo2JnL90Z0";
+
+  // // 天地图;
   // const token = "7998f96b301cf185de722d8dadab0479";
   // const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
   //   url:
@@ -609,16 +608,16 @@ onMounted(() => {
   // 	style: 'default',
   // 	tileMatrixSetID: 'w',
   // });
-  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
-  // 	url: IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
-  // 	layers: 'dongjiang:dongjiang_bound7',
-  // 	parameters: {
-  // 		service: 'WMS',
-  // 		format: 'image/png',
-  // 		transparent: true,
-  // 	},
-  // });
- 
+  const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+    url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
+    layers: "dongjiang:dongjiang_bound7",
+    parameters: {
+      service: "WMS",
+      format: "image/png",
+      transparent: true,
+    },
+  });
+
   // viewer.imageryLayers.addImageryProvider(ciaLayer);
   // 设置建筑
   // const city = viewer.scene.primitives.add(
@@ -644,11 +643,10 @@ onMounted(() => {
   // city.style = heightStyle;
 
   viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-  // initRiver(); //分层级加载河流
+  initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  showArea()
- 
+  // showArea();
 });
 </script>
 <style lang="scss">
@@ -675,4 +673,3 @@ onMounted(() => {
   height: 0.01rem;
 }
 </style>
-

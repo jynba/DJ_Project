@@ -15,7 +15,7 @@ npm run build
 
 git init
 git add -A
-git commit -m '添加了的地图标注、点击触发功能'
+git commit -m '红色消失问题解决'
 
 
 # 直接部署到github,触发github action

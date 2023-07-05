@@ -26,6 +26,7 @@ export function addWebMapData(url, layers) {
 				format: 'image/png',
 				transparent: true,
 			},
+			show: false
 		})
 	);
 }
@@ -39,19 +40,7 @@ export function addWebMapData(url, layers) {
 let DONGJIANG_RIVERS = [, -1, -1, -1, -1, -1, -1, -1];
 export function layerShow(river_index, isShow = true) {
 	// 获取图层索引，通过show显示与隐藏
-	const layer_index = window.viewer.imageryLayers.indexOf(
-		DONGJIANG_RIVERS[river_index]
-	);
-
-	if (layer_index == -1) {
-		// 天地图标注
-		DONGJIANG_RIVERS[river_index] = addWebMapData(
-			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
-			`dongjiang:dongjiang_river${river_index}`
-		);
-	} else {
-		window.viewer.imageryLayers.get(layer_index).show = isShow;
-	}
+	DONGJIANG_RIVERS[river_index].show = isShow;
 }
 /**
  * 变量名：initReservoirs
@@ -80,8 +69,18 @@ export function initReservoirs() {
  * 功能：初始化河流
  */
 export function initRiver() {
+
+	for (let index = 1; index < DONGJIANG_RIVERS.length; index++) {
+		DONGJIANG_RIVERS[index] = addWebMapData(
+			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+			`dongjiang:dongjiang_river${index}`
+		);
+		DONGJIANG_RIVERS[index].show = false
+	}
+
+
 	// 默认显示3级河流
-	const showRiver5 = layerShow(5);
+	let showRiver5 = layerShow(5, true);
 	let showRiver4;
 	let showRiver3;
 	let showRiver2;
