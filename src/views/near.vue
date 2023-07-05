@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-05 10:41:04
+ * @LastEditTime: 2023-07-05 15:51:14
 -->
 <template>
   <div>
@@ -29,8 +29,7 @@
           id="each_detail"
           v-for="item in gridItems"
           :key="item.text"
-          :span="6"
-        >
+          :span="6">
           <van-image :src="item.image" fit="cover" />
           <p>{{ item.text }}</p>
         </van-col>
@@ -53,7 +52,7 @@ import { ref,onMounted} from "vue";
 import axios from "axios";
 
 onMounted(() => {
-  getwarningData()
+  // getwarningData()
 });
 const getwarningData=()=>{
   axios.get('https://weather.cma.cn/api/map/alarm', {

@@ -15,7 +15,9 @@ npm run build
 
 git init
 git add -A
-git commit -m '红色消失问题解决'
+
+git commit -m '完成了初步的搜索功能'
+
 
 
 # 直接部署到github,触发github action
