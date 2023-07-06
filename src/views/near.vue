@@ -3,12 +3,12 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-06 17:48:07
+ * @LastEditTime: 2023-07-06 19:07:20
 -->
 <template>
   <div class="near_box">
     <!-- 定位+搜索栏 -->
-     <near-search class="near-search"></near-search>
+     <!-- <near-search class="near-search"></near-search> -->
     
     <div id="first_row">
       <div class="first_row_col1" @click="getCurrentLocation">
