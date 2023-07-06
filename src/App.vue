@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 15:38:35
- * @LastEditTime: 2023-07-06 09:47:43
+ * @LastEditTime: 2023-07-06 18:32:02
 -->
 <template>
   <div id="app">
@@ -30,11 +30,27 @@
 // export default {
 // 	name: 'App',
 // };
-import { reactive, ref, watch, onMounted } from "vue";
+import { reactive, ref,onMounted,watch} from "vue";
 import { useRoute, useRouter } from "vue-router";
+const init = () => {
+  return new Promise((resolve, reject) => {
+    // 如果已加载直接返回
+    if (window.T) {
+      console.log("地图脚本初始化成功...");
+      resolve(window.T);
+      reject("error");
+    }
+  });
+};
 
 const active = reactive({
   selected: 0,
+});
+
+const route = useRoute();
+
+onMounted(() => {
+  //   init();
 });
 
 const router = useRouter();

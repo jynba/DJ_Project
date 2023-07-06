@@ -2,13 +2,14 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-06 18:10:54
+ * @LastEditTime: 2023-07-06 18:21:24
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
 <template>
   <div id="cesiumContainer">
     <loadRiver />
+    <changeLayer />
     <panel
       :show-panel="showPanel"
       :has-last="hasLast"
@@ -26,6 +27,7 @@ import loadRiver from "../components/loadRiver.vue";
 import panel from "../components//panel.vue";
 import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
+import changeLayer from "../components/changeLayer.vue";
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
 import { onDeactivated, onMounted, reactive } from "vue";
@@ -603,21 +605,21 @@ onMounted(() => {
   // });
   // viewer.imageryLayers.addImageryProvider(imgLayer);
   // const ciaLayer = new Cesium.WebMapTileServiceImageryProvider({
-  // 	url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
-  // 	format: 'tiles',
-  // 	layer: 'cia',
-  // 	style: 'default',
-  // 	tileMatrixSetID: 'w',
+  //   url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
+  //   format: "tiles",
+  //   layer: "cia",
+  //   style: "default",
+  //   tileMatrixSetID: "w",
   // });
-  const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
-    url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
-    layers: "dongjiang:dongjiang_bound7",
-    parameters: {
-      service: "WMS",
-      format: "image/png",
-      transparent: true,
-    },
-  });
+  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+  //   url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
+  //   layers: "dongjiang:dongjiang_bound7",
+  //   parameters: {
+  //     service: "WMS",
+  //     format: "image/png",
+  //     transparent: true,
+  //   },
+  // });
 
   // viewer.imageryLayers.addImageryProvider(ciaLayer);
   // 设置建筑

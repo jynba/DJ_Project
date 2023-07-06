@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '完成了初步的搜索功能'
+git commit -m '完成图层切换、AI对话框'
 
 
 

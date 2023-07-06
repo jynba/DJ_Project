@@ -1,0 +1,7 @@
+.van-floating-panel__content {
+    overflow-y: hidden !important;
+}
+
+.van-popup {
+    overflow: hidden !important;
+}
