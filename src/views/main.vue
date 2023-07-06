@@ -9,6 +9,7 @@
 <template>
   <div id="cesiumContainer">
     <loadRiver />
+    <changeLayer />
     <panel
       :show-panel="showPanel"
       :has-last="hasLast"
@@ -26,6 +27,7 @@ import loadRiver from "../components/loadRiver.vue";
 import panel from "../components//panel.vue";
 import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
+import changeLayer from "../components/changeLayer.vue";
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
 import { onDeactivated, onMounted, reactive } from "vue";
@@ -603,21 +605,21 @@ onMounted(() => {
   // });
   // viewer.imageryLayers.addImageryProvider(imgLayer);
   // const ciaLayer = new Cesium.WebMapTileServiceImageryProvider({
-  // 	url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
-  // 	format: 'tiles',
-  // 	layer: 'cia',
-  // 	style: 'default',
-  // 	tileMatrixSetID: 'w',
+  //   url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
+  //   format: "tiles",
+  //   layer: "cia",
+  //   style: "default",
+  //   tileMatrixSetID: "w",
   // });
-  const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
-    url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
-    layers: "dongjiang:dongjiang_bound7",
-    parameters: {
-      service: "WMS",
-      format: "image/png",
-      transparent: true,
-    },
-  });
+  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+  //   url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
+  //   layers: "dongjiang:dongjiang_bound7",
+  //   parameters: {
+  //     service: "WMS",
+  //     format: "image/png",
+  //     transparent: true,
+  //   },
+  // });
 
   // viewer.imageryLayers.addImageryProvider(ciaLayer);
   // 设置建筑
@@ -644,9 +646,9 @@ onMounted(() => {
   // city.style = heightStyle;
 
   viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-  initRiver(); //分层级加载河流
-  clickLeftMouseFunction();
-  clickRightMouseFunction();
+  // initRiver(); //分层级加载河流
+  // clickLeftMouseFunction();
+  // clickRightMouseFunction();
   // showArea();
 });
 </script>

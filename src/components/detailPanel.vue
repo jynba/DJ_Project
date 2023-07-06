@@ -17,7 +17,7 @@
     >
       <van-cell-group>
         <van-cell :title="detailInfo.name" class="cell_title" />
-        <van-cell :title="detailInfo.introduction"/>
+        <van-cell :title="detailInfo.introduction" />
       </van-cell-group>
     </van-popup>
   </div>
@@ -35,8 +35,11 @@ const detailInfo = reactive({
 app.config.globalProperties.$eventBus.on("detail", (detail) => {
   popupShow.value = detail.popupShow;
   detailInfo.name = detail.info[0].name;
-  detailInfo.introduction = detail.info[0].introduction==null?'暂无数据':detail.info[0].introduction;
-  console.log('detailInfo.introduction',detailInfo.introduction)
+  detailInfo.introduction =
+    detail.info[0].introduction == null
+      ? "暂无数据"
+      : detail.info[0].introduction;
+  console.log("detailInfo.introduction", detailInfo.introduction);
 });
 </script>
 

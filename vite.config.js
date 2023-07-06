@@ -63,7 +63,7 @@ export default defineConfig(({ command, mode }) => ({
 	// 环境变量
 	define: {
 		// geoserver服务地址
-		
+
 		IP_ADDRESS_WMS1: JSON.stringify('http://172.27.101.19:8080/'),
 		IP_ADDRESS_WMS2: JSON.stringify('http://172.27.101.19:8090/'),
 		IP_ADDRESS_WMS: JSON.stringify('https://eslab2.dgut.edu.cn/'),

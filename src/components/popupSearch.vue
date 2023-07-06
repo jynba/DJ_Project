@@ -13,12 +13,14 @@
       v-model:height="height"
       :anchors="anchors"
       :content-draggable="false"
+      class="jy-panel"
     >
       <van-search
         v-model="searchVal.name"
         @focus="handleSearchFocus"
         placeholder="请输入搜索关键词"
         @search="onSearch"
+        class="jy-search"
       >
         <template #left-icon>
           <img src="../assets/AI.png" style="width: 2rem; height: 2rem" />
@@ -27,6 +29,30 @@
           <img src="../assets/search.png" style="width: 2rem; height: 2rem" />
         </template>
       </van-search>
+
+      <div class="flex-col relative section_4 space-y-16" ref="chatContainer">
+        <span class="self-start text_3">对话记录</span>
+        <div class="flex-col group_4 space-y-12" v-for="item in conversations">
+          <div class="flex-row justify-end group_5 space-x-5">
+            <div class="flex-col justify-start items-start text-wrapper_2">
+              <span class="text_4">{{ item.q }}</span>
+            </div>
+            <img
+              class="self-start image_3"
+              src="https://codefun-proj-user-res-1256085488.cos.ap-guangzhou.myqcloud.com/618880640163bf0011e2e0b2/64914e4f54fe0000116a6d3f/16885501565342185854.png"
+            />
+          </div>
+          <div class="flex-row items-center space-x-6">
+            <img
+              class="image_4"
+              src="https://codefun-proj-user-res-1256085488.cos.ap-guangzhou.myqcloud.com/618880640163bf0011e2e0b2/64914e4f54fe0000116a6d3f/16885501568338949860.png"
+            />
+            <div class="flex-col justify-start text-wrapper_3">
+              <span class="font_1 text_5">{{ item.ans }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </van-floating-panel>
   </div>
 </template>
@@ -35,8 +61,18 @@
 import axios from "axios";
 import { ref, reactive } from "vue";
 import qs from "qs";
+import { onMounted } from "vue";
+import { onUpdated } from "vue";
+import { nextTick } from "vue";
 
 const searchVal = { name: "" };
+
+const conversations = reactive([
+  {
+    q: "告诉我东江流域中的东源江的长度是多少",
+    ans: "长度的值是24",
+  },
+]);
 
 const anchors = [
   125,
@@ -45,12 +81,25 @@ const anchors = [
 ];
 const height = ref(anchors[0]);
 
+const chatContainer = ref();
+const scrollToBottom = () => {
+  nextTick(() => {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+  });
+};
+
 const handleSearchFocus = () => {
   height.value = anchors[1];
 };
 
 const onSearch = () => {
+  scrollToBottom();
   console.log(searchVal.name);
+  // 填加问题记录
+  conversations.push({
+    q: searchVal.name,
+  });
+
   if (searchVal.name.length > 0) {
     axios
       .post(IP_ADDRESS_WMS2 + "searchDongjiangList", qs.stringify(searchVal))
@@ -72,7 +121,7 @@ const onSearch = () => {
       });
   }
 
-  searchVal.name=''
+  searchVal.name = "";
 };
 
 /**
@@ -123,4 +172,76 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.font_1 {
+  font-size: 0.88rem;
+  font-family: OPPOSans;
+  line-height: 0.84rem;
+}
+.section_4 {
+  padding: 0.75rem 0.63rem 23.13rem;
+  background-color: #ffffff;
+}
+
+.space-y-16 {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.space-y-16 > *:not(:first-child) {
+  margin-top: 1rem;
+}
+.text_3 {
+  color: #1a65fc;
+  font-size: 1rem;
+  font-family: OPPOSans;
+  line-height: 0.94rem;
+}
+.group_4 {
+  padding-left: 0.13rem;
+}
+.space-y-12 > *:not(:first-child) {
+  margin-top: 0.75rem;
+}
+.group_5 {
+  padding-left: 3.5rem;
+}
+.space-x-5 > *:not(:first-child) {
+  margin-left: 0.31rem;
+}
+.text-wrapper_2 {
+  padding: 0.63rem 0;
+  border-radius: 10px;
+  background-color: #cdf4f9;
+}
+.text_4 {
+  margin: 0 0.5rem;
+  color: #000000;
+  font-size: 0.88rem;
+  font-family: OPPOSans;
+  line-height: 1.06rem;
+}
+.image_3 {
+  border-radius: 0.13rem;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.space-x-6 > *:not(:first-child) {
+  margin-left: 0.38rem;
+}
+.image_4 {
+  width: 2rem;
+  height: 1.81rem;
+}
+.text-wrapper_3 {
+  padding: 0.75rem 0;
+  height: 2.25rem;
+  border-radius: 10px;
+
+  background-color: #f5f5f5;
+}
+.text_5 {
+  margin: 0 0.5rem;
+  color: #000000;
+}
+</style>

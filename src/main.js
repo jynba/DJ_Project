@@ -12,7 +12,9 @@ import router from './router';
 import mitt from 'mitt';
 import qs from 'qs';
 import '@/styles/reset.css';
-import { Cell, CellGroup,Icon,Button, Form, Field, Tabbar, TabbarItem ,Popup, Search,FloatingPanel, Col, Row,NoticeBar} from 'vant';
+import '@/styles/codefun.css';
+import '@/styles/diyvant.css';
+import { Cell, CellGroup, Icon, Button, Form, Field, Tabbar, TabbarItem, Popup, Search, FloatingPanel, Col, Row, NoticeBar } from 'vant';
 import { Image as VanImage } from 'vant';
 
 // 引入 Vant 的 CSS 文件

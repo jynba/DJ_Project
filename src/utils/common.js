@@ -39,6 +39,10 @@ export function addWebMapData(url, layers) {
  */
 let DONGJIANG_RIVERS = [, -1, -1, -1, -1, -1, -1, -1];
 export function layerShow(river_index, isShow = true) {
+	DONGJIANG_RIVERS.forEach((item, index) => {
+		if (index == 0) return;
+		item.show = false
+	})
 	// 获取图层索引，通过show显示与隐藏
 	DONGJIANG_RIVERS[river_index].show = isShow;
 }
@@ -120,23 +124,16 @@ export function initRiver() {
 		}
 		if (height > 200000 && height < 300000) {
 			showRiver4 = layerShow(4);
-			showRiver3 = layerShow(3, false);
-			showRiver2 = layerShow(2, false);
-			showRiver1 = layerShow(1, false);
+
 		} else if (height <= 200000 && height > 100000) {
 			showRiver3 = layerShow(3);
-			showRiver2 = layerShow(2, false);
-			showRiver1 = layerShow(1, false);
+
 		} else if (height <= 100000 && height > 30000) {
 			showRiver2 = layerShow(2);
-			showRiver1 = layerShow(1, false);
 		} else if (height <= 30000) {
 			showRiver1 = layerShow(1);
 		} else {
-			showRiver1 = layerShow(1, false);
-			showRiver2 = layerShow(2, false);
-			showRiver3 = layerShow(3, false);
-			showRiver4 = layerShow(4, false);
+			layerShow(5)
 		}
 	});
 }
