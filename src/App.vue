@@ -3,27 +3,23 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 15:38:35
- * @LastEditTime: 2023-06-27 16:31:27
+ * @LastEditTime: 2023-07-06 18:32:02
 -->
 <template>
   <div id="app">
-    <!-- 只有 name 为 home 的页面会被缓存 -->
-    <!-- <keep-alive>
-			<router-view />
-		</keep-alive> -->
     <router-view v-slot="{ Component }">
       <keep-alive>
         <component :is="Component" />
       </keep-alive>
     </router-view>
     <van-tabbar class="tabbar" v-model="active.selected">
-      <van-tabbar-item icon="home-o" :to="{ name: 'home' }" active>
+      <van-tabbar-item icon="home-o" :to="{ name: 'home' }" :class="{ active: currentRouteName === 'home' }">
         首页
       </van-tabbar-item>
-      <van-tabbar-item icon="location-o" :to="{ name: 'near' }">
+      <van-tabbar-item icon="location-o" :to="{ name: 'near' }" :class="{ active: currentRouteName === 'near' }">
         附近
       </van-tabbar-item>
-      <van-tabbar-item icon="manager-o" :to="{ name: 'user' }">
+      <van-tabbar-item icon="manager-o" :to="{ name: 'user' }" :class="{ active: currentRouteName === 'user' }">
         我的
       </van-tabbar-item>
     </van-tabbar>
@@ -34,7 +30,7 @@
 // export default {
 // 	name: 'App',
 // };
-import { reactive, onMounted } from "vue";
+import { reactive, ref,onMounted,watch} from "vue";
 import { useRoute, useRouter } from "vue-router";
 const init = () => {
   return new Promise((resolve, reject) => {
@@ -56,6 +52,21 @@ const route = useRoute();
 onMounted(() => {
   //   init();
 });
+
+const router = useRouter();
+const currentRouteName = ref("");
+onMounted(() => {
+  console.log("router", router.currentRoute.value.name);
+});
+
+//监听导航栏  让图标颜色跟随变化
+watch(
+  () => router.currentRoute.value.name,
+  (name) => {
+	
+    currentRouteName.value = name;
+  },
+);
 </script>
 
 <style lang="scss">
@@ -72,5 +83,11 @@ body,
   .tabbar {
     z-index: 2000;
   }
+  .active {
+    color: #1989fa;;
+  }
+//   .van-tabbar-item--active{
+// 	color: black;
+//   }
 }
 </style>

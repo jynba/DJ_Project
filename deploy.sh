@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '完成图层切换、AI对话框'
+git commit -m '完成附近页面当前定位、轮播图'
 
 
 

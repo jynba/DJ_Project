@@ -1,1 +1,25 @@
-define(["./BoxGeometry-9c6e41ad","./when-54c2dc71","./GeometryOffsetAttribute-d889f085","./Check-6c0211bc","./Transforms-e9dbfb40","./Cartesian2-49b1de22","./Math-44e92d6b","./RuntimeError-2109023a","./ComponentDatatype-6d99a1ee","./WebGLConstants-76bb35d1","./GeometryAttribute-669569db","./GeometryAttributes-4fcfcf40","./VertexFormat-7572c785"],function(r,o,e,t,n,c,a,b,d,f,m,i,u){"use strict";return function(e,t){return o.defined(t)&&(e=r.BoxGeometry.unpack(e,t)),r.BoxGeometry.createGeometry(e)}});
+/**
+ * @license
+ * Cesium - https://github.com/CesiumGS/cesium
+ * Version 1.95
+ *
+ * Copyright 2011-2022 Cesium Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Columbus View (Pat. Pend.)
+ *
+ * Portions licensed separately.
+ * See https://github.com/CesiumGS/cesium/blob/main/LICENSE.md for full licensing details.
+ */
+define(["./BoxGeometry-acd0c697","./defaultValue-97284df2","./Transforms-d3d3b2a9","./Matrix2-73789715","./RuntimeError-4f8ec8a2","./ComponentDatatype-e7fbe225","./WebGLConstants-6da700a2","./_commonjsHelpers-3aae1032-65601a27","./combine-d11b1f00","./GeometryAttribute-fd1d7e90","./GeometryAttributes-734a3446","./GeometryOffsetAttribute-59b14f45","./VertexFormat-9886cb81"],(function(e,t,r,o,a,n,f,m,d,u,c,i,b){"use strict";return function(r,o){return t.defined(o)&&(r=e.BoxGeometry.unpack(r,o)),e.BoxGeometry.createGeometry(r)}}));

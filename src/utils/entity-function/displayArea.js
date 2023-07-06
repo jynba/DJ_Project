@@ -3,12 +3,13 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-05 15:42:51
+ * @LastEditTime: 2023-07-06 16:46:16
  */
 import { app } from "../../main.js";
 import axios from "axios";
 import qs from "qs";
 import djAreaData from "../../data/dongjiangAllType";
+import $ from "jquery";
 
 /**
  * @Author: 朱海东
@@ -29,7 +30,6 @@ export function showArea() {
   // });
 
   viewer.camera.changed.addEventListener(function () {
-
     //清除地标实体  多清几次  一次清不干净
     for (let i = 0; i < 4; i++) {
       viewer.entities.values.forEach((entity) => {
@@ -39,10 +39,8 @@ export function showArea() {
       });
     }
 
-   
-     
     // 在这里获取当前相机屏幕的四个坐标并发起数据请求渲染
-    
+
     let camera = viewer.camera;
     let viewRectangle = camera.computeViewRectangle();
     let minLon = Cesium.Math.toDegrees(viewRectangle.west);
@@ -56,7 +54,7 @@ export function showArea() {
       maxLat: maxlat,
     };
 
-    //根据不同类型进行渲染实体标记  1市 6县 2镇、乡  3街道、社区、村 乡 4自然保护区、公园 、桥、公路、水库等 
+    //根据不同类型进行渲染实体标记  1市 6县 2镇、乡  3街道、社区、村 乡 4自然保护区、公园 、桥、公路、水库等
     // renderEntity(djAreaData.channel, location, 1);
     renderEntity(djAreaData.cityArray, location, 1);
     renderEntity(djAreaData.townArray, location, 2);
@@ -143,8 +141,8 @@ function renderEntity(data, location, type) {
       limitEntityHeight(label, 25432, 157987);
     });
   }
-   //绘制县级实体名称
-   if (type == 6) {
+  //绘制县级实体名称
+  if (type == 6) {
     filteredPlaces.forEach((item) => {
       const position = Cesium.Cartesian3.fromDegrees(
         item.geom[0],
@@ -166,7 +164,7 @@ function renderEntity(data, location, type) {
       limitEntityHeight(countyLabel, 157987, 407987);
     });
   }
-  
+
   //绘制村、街道、社区实体名称
   if (type == 3) {
     filteredPlaces.forEach((item) => {
@@ -257,9 +255,7 @@ function limitEntityHeight(entity, minHeight, maxHeight) {
   // let entityPosition = entity.position.getValue(viewer.clock.currentTime);
   // let cameraPosition = viewer.camera.position;
   // let distance = Cesium.Cartesian3.distance(entityPosition, cameraPosition);
-  const currentHeight = Math.ceil(
-    viewer.camera.positionCartographic.height,
-  );
+  const currentHeight = Math.ceil(viewer.camera.positionCartographic.height);
 
   if (currentHeight < minHeight || currentHeight > maxHeight) {
     // 遍历实体集合，根据 name 属性删除匹配的实体
@@ -311,84 +307,128 @@ function calculateCenterPoint(coordinates) {
  * @return {*}
  */
 
-function clickBuildingEntity() {
+ function clickBuildingEntity() {
   // 监听Entity的点击事件
   let entityHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   entityHandler.setInputAction(function (click) {
     let pickedObject = viewer.scene.pick(click.position);
 
     if (pickedObject) {
-      // let position = pickedObject.primitive.position.getValue();
+      // 获取拾取到的实体位置
+      let position = pickedObject.primitive.position;
+      let cartographic = Cesium.Cartographic.fromCartesian(position);
+      let longitude = Cesium.Math.toDegrees(cartographic.longitude);
+      let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+      //获取信息
+     getExitLocationName(
+        longitude,
+        latitude
+      ).then((scope)=>{
+        console.log('scope',typeof scope,scope)
+        const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
+        const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
+        const requestData = {
+          tablename: type,
+          gid: Number(id),
+          scope:scope
+        };
+        //获取数据
+        axios
+          .post(IP_ADDRESS_WMS3 + "getdongjiangDetail", qs.stringify(requestData))
+          .then(async (res) => {
+            const detailObj = {
+              popupShow: true,
+            };
+            detailObj.info = res.data.data;
+            
+            console.log('detailObj',detailObj)
+            //获取县长范围信息
   
-      const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
-      const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
-      const requestData = {
-        tablename: type,
-        gid: Number(id),
-      };
-      console.log('requestData',requestData)
-      axios
-        .post(IP_ADDRESS_WMS2 + "getdongjiangDetail", qs.stringify(requestData))
-        .then(async (res) => {
-          const detailObj = {
-            popupShow: true,
-          };
-       
-          detailObj.info = res.data.data;
-        
-          const geom = JSON.parse(res.data.data[0].geom);
-        
-          app.config.globalProperties.$eventBus.emit("detail", detailObj);
-   
-          const currentHeight = Math.ceil(
-            window.viewer.camera.positionCartographic.height,
-          );
-        
-          // 移动到对象位置
-          const flytoLat = parseFloat(geom[0]);
-          const flytoLng = parseFloat(geom[1]);
-
-          //高于150000根据计算飞行
-          if (currentHeight > 15000) {
-            // 利用经纬度坐标计算边界起点到中点的距离
-            const firstLat = flytoLat + 0.1;
-            const firstLng = flytoLng + 0.1;
-            const diameter = Math.sqrt(
-              Math.pow(firstLat - flytoLat, 2) +
-                Math.pow(firstLng - flytoLng, 2),
+            app.config.globalProperties.$eventBus.emit("detail", detailObj);
+  
+            const currentHeight = Math.ceil(
+              window.viewer.camera.positionCartographic.height,
             );
-            viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(
-                flytoLat,
-                flytoLng,
-                diameter * 177770 * 1.5,
-              ),
-              orientation: {
-                heading: Cesium.Math.toRadians(0),
-                pitch: Cesium.Math.toRadians(-90),
-                roll: Cesium.Math.toRadians(0),
-              },
-            });
-          } else {
-            viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(
-                flytoLat,
-                flytoLng,
-                currentHeight,
-              ),
-              orientation: {
-                heading: Cesium.Math.toRadians(0),
-                pitch: Cesium.Math.toRadians(-90),
-                roll: Cesium.Math.toRadians(0),
-              },
-            });
-          }
-          // let targetPosition = Cesium.Cartesian3.fromDegrees(parseFloat(geom[0]),parseFloat(geom[1]));
-          // await flyToPosition(targetPosition, 1);
-        })
-        .catch((error) => {
-          console.error("请求失败：", error);
-        });
+  
+            // 移动到对象位置
+            const flytoLat =longitude;
+            const flytoLng = latitude;
+  
+            //高于150000根据计算飞行
+            if (currentHeight > 15000) {
+              // 利用经纬度坐标计算边界起点到中点的距离
+              const firstLat = flytoLat + 0.1;
+              const firstLng = flytoLng + 0.1;
+              const diameter = Math.sqrt(
+                Math.pow(firstLat - flytoLat, 2) +
+                  Math.pow(firstLng - flytoLng, 2),
+              );
+              viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(
+                  flytoLat,
+                  flytoLng,
+                  diameter * 177770 * 1.5,
+                ),
+                orientation: {
+                  heading: Cesium.Math.toRadians(0),
+                  pitch: Cesium.Math.toRadians(-90),
+                  roll: Cesium.Math.toRadians(0),
+                },
+              });
+            } else {
+              viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(
+                  flytoLat,
+                  flytoLng,
+                  currentHeight,
+                ),
+                orientation: {
+                  heading: Cesium.Math.toRadians(0),
+                  pitch: Cesium.Math.toRadians(-90),
+                  roll: Cesium.Math.toRadians(0),
+                },
+              });
+            }
+        
+          })
+          .catch((error) => {
+            console.error("请求失败：", error);
+          });
+      });
+
+     
+    
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-06 09:50:05
+ * @name:
+ * @msg:
+ * @return {*}
+ */
+export function getExitLocationName(longitude, latitude) {
+
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url:
+        `https://apis.map.qq.com/ws/geocoder/v1/?location=` +
+        latitude +
+        `,` +
+        longitude +
+        `&key=J4PBZ-YNE6K-YTSJR-AGXXU-ITI6H-Y4FJV&get_poi=1&output=jsonp&callback=?`,
+      type: "get",
+      dataType: "jsonp",
+      success: function (res) {
+        // 将结果分别赋值给下面的内容
+        if (res && res.result && res.result.address_component) {
+          resolve(res.result.address_component);
+        } else {
+          resolve({});
+        }
+      },
+    });
+  });
 }
