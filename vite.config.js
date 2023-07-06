@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-06-27 17:24:23
+ * @LastEditTime: 2023-07-06 09:14:16
  * @FilePath: \DJ_Project\dj-project\vite.config.js
  * @Description:
  */
@@ -66,6 +66,8 @@ export default defineConfig(({ command, mode }) => ({
 		
 		IP_ADDRESS_WMS1: JSON.stringify('http://172.27.101.19:8080/'),
 		IP_ADDRESS_WMS2: JSON.stringify('http://172.27.101.19:8090/'),
+		IP_ADDRESS_WMS3: JSON.stringify('https://eslab.dgut.edu.cn/'),
 		IP_ADDRESS_WMS: JSON.stringify('https://eslab2.dgut.edu.cn/'),
+		
 	},
 }));

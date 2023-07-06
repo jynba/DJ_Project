@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-07-05 15:13:20
+ * @LastEditTime: 2023-07-06 09:15:00
 -->
 <template>
   <div>
@@ -28,6 +28,7 @@
         </template>
       </van-search>
     </van-floating-panel>
+
   </div>
 </template>
 
@@ -53,7 +54,7 @@ const onSearch = () => {
   console.log(searchVal.name);
   if (searchVal.name.length > 0) {
     axios
-      .post(IP_ADDRESS_WMS2 + "searchDongjiangList", qs.stringify(searchVal))
+      .post(IP_ADDRESS_WMS3 + "searchDongjiangList", qs.stringify(searchVal))
       .then((res) => {
         console.log("res.data.data.length", res.data.data.length);
         if (res.data.data.length == 1) {
@@ -71,7 +72,6 @@ const onSearch = () => {
         }
       });
   }
-
   searchVal.name=''
 };
 

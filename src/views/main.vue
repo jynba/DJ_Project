@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-05 11:01:53
+ * @LastEditTime: 2023-07-06 11:13:27
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -646,7 +646,7 @@ onMounted(() => {
 
   viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
   // initRiver(); //分层级加载河流
-  clickLeftMouseFunction();
+  // clickLeftMouseFunction();
   clickRightMouseFunction();
   showArea()
  
