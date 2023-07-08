@@ -4,7 +4,7 @@
  # @version: 1.0.0
  # @Author: 朱海东
  # @Date: 2023-06-20 15:38:35
- # @LastEditTime: 2023-07-01 09:35:19
+ # @LastEditTime: 2023-07-08 17:26:32
 ### 
 
 # 确保脚本抛出遇到的错误
@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '完成附近页面当前定位、轮播图'
+git commit -m '完成点击显示详情、切换定位'
 
 
 

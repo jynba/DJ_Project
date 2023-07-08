@@ -3,17 +3,24 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-06 19:07:20
+ * @LastEditTime: 2023-07-08 15:39:02
 -->
 <template>
   <div class="near_box">
     <!-- 定位+搜索栏 -->
-     <!-- <near-search class="near-search"></near-search> -->
-    
+    <!-- <near-search class="near-search"></near-search> -->
+
     <div id="first_row">
       <div class="first_row_col1" @click="getCurrentLocation">
-        <van-icon name="location" />
-        <span>{{ currentLocation }}</span>
+        <!-- <van-icon name="location" /> -->
+        <van-dropdown-menu>
+          <van-dropdown-item
+            v-model="currentSelectedValue"
+            :options="cityOption1"
+          />
+        </van-dropdown-menu>
+
+        <!-- <span>{{ currentLocation }}</span> -->
       </div>
       <div class="first_row_col2">
         <van-search
@@ -29,11 +36,16 @@
       <van-row>
         <van-col
           id="each_detail"
-          v-for="item in gridItems"
+          v-for="(item, index) in gridItems"
           :key="item.text"
           :span="4.8"
         >
-          <van-image :src="item.image" fit="contain" />
+          <van-image
+            :src="item.image"
+            @click="clickClassification(index)"
+            fit="contain"
+            :class="{ selected: index == selectedImage }"
+          />
           <p>{{ item.text }}</p>
         </van-col>
       </van-row>
@@ -41,12 +53,16 @@
     <!-- 预警通知 -->
     <div class="noticebar">
       <van-swipe class="wanring-swipe" :autoplay="3000" indicator-color="gray">
-        <van-swipe-item v-for="item in warningData" :key="item.text">
-          <van-image class="swiperImage" :src="item.image" fit="contain" />
+        <van-swipe-item v-for="item in warningCityArr" :key="item.city">
+          <van-image
+            class="swiperImage"
+            src="./wind/wind-yellow.png"
+            fit="contain"
+          />
           <div class="wanrn_detaill">
-            <div>{{ item.time }}</div>
+            <div>{{ item.publishtime }}</div>
             <div>{{ item.city }}</div>
-            <div>{{ item.text }}</div>
+            <div>{{ item.warn }}</div>
           </div>
         </van-swipe-item>
       </van-swipe>
@@ -55,62 +71,115 @@
     <!-- 分类详情页 -->
     <div class="classification">
       <van-row
-        v-for="item in cateData"
+        v-show="detailData.length >= 0"
+        v-for="item in detailData"
         :key="item.text"
         class="each_classify"
         justify="center"
       >
         <van-col span="10">
-          <van-image
-            class="swiperImage"
-            :src="item.image"
-            fit="cover"
-          />
+          <van-image class="swiperImage" :src="item.image" fit="cover" />
         </van-col>
         <van-col class="each_classify_detail" span="14">
           <div>{{ item.city }}</div>
           <div>{{ item.text }}</div>
         </van-col>
       </van-row>
+
+      <div v-show="detailData.length == 0" class="no_data">暂无数据</div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
-import {getExitLocationName} from '../utils/entity-function/displayArea'
+import { ref, reactive, onMounted } from "vue";
+import { getExitLocationName } from "../utils/entity-function/displayArea";
 import axios from "axios";
-import nearSearch from "../components/nearSearch.vue"
+import $ from "jquery";
+import qs from "qs";
+import nearSearch from "../components/nearSearch.vue";
 
 onMounted(() => {
   //获取当前定位
-  getCurrentLocation()
-  // getwarningData()
+  getCurrentLocation();
+  //获取预警数据
+  getwarningData();
+  //默认显示第一个数据
+  clickClassification(0);
+  //获取详情数据
+  getDetailData();
 });
+
+const currentSelectedValue = ref(1);
+const cityOption1 = [
+  // { text: "当前定位", value: 0 },
+  { text: "东莞", value: 1 },
+  { text: "河源", value: 2 },
+  { text: "惠州", value: 3 },
+  { text: "深圳", value: 4 },
+  { text: "广州", value: 5 },
+  { text: "韶关", value: 6 },
+];
+
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-07 15:53:38
+ * @name: getwarningData
+ * @msg: 获取城市预警数据
+ * @return {*}
+ */
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+
+  return `${year}年${month}月${day}日${hour}时${minute}分`;
+};
+
+//预警类型对应的图片
+let warnImg = [
+  {
+    name: "高温黄色",
+    img: "./",
+  },
+];
+let warningCityArr = reactive([]);
 const getwarningData = () => {
-  axios
-    .get("https://weather.cma.cn/api/map/alarm", {
-      params: {
-        adcode: 44,
-      },
-    })
-    .then((res) => {
-      const warningData = res.data;
-      // console.log("warningData", warningData);
-    });
+  $.ajax({
+    url: "http://open.gd121.cn/share/data/getYJ.do?type=json&key=0b9fdc1c7526ae60e6ba59f82453aa3a&logType=warn",
+    method: "get",
+    success: function (res) {
+      console.log(res, "数据判断");
+      warningCityArr.push(res.东莞[0]);
+      warningCityArr.push(res.河源[0]);
+      warningCityArr.push(res.惠州[0]);
+      warningCityArr.push(res.深圳[0]);
+      warningCityArr.push(res.广州[0]);
+      warningCityArr.push(res.韶关[0]);
+      //
+      warningCityArr.forEach((item) => {
+        item.publishtime = formatDate(item.publishtime);
+      });
+      console.log("warningCityArr", warningCityArr);
+    },
+  });
 };
 
 //分类数据
 const gridItems = [
-  { image: "./bridge.png", text: "水文站" },
-  { image: "./park.png", text: "人工渠" },
-  { image: "./reservoir.png", text: "河流" },
-  { image: "./reserve.png", text: "湖泊" },
-  { image: "./AI.png", text: "灾害" },
-  { image: "./AI.png", text: "人文活动" },
-  { image: "./AI.png", text: "城市景点" },
-  { image: "./tunnel.png", text: "文化遗产" },
-  { image: "./tunnel.png", text: "博物馆" },
-  { image: "./tunnel.png", text: "更多" },
+  { image: "./classIcon/stations.png", text: "水文站" },
+  { image: "./classIcon/aqueduct.png", text: "人工渠" },
+  { image: "./classIcon/river.png", text: "河流" },
+  { image: "./classIcon/lake.png", text: "湖泊" },
+  { image: "./classIcon/disaster.png", text: "灾害" },
+  { image: "./classIcon/humanact.png", text: "人文活动" },
+  { image: "./classIcon/cityview.png", text: "城市景点" },
+  { image: "./classIcon/heritage.png", text: "文化遗产" },
+  { image: "./classIcon/museum.png", text: "博物馆" },
+  { image: "./classIcon/more.png", text: "更多" },
 
   // 继续添加更多格子的图片和文字
 ];
@@ -140,7 +209,7 @@ const warningData = [
   },
 ];
 
-//分类数据
+//所有分类数据
 const cateData = [
   {
     image: "./testdetail.png",
@@ -169,19 +238,37 @@ const cateData = [
   },
 ];
 
+//存储详细分类的数据
+let detailData = reactive([]);
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-07 11:12:48
+ * @name: clickClassification
+ * @msg: 点击获取不同分类的数据
+ * @return {*}
+ */
+const selectedImage = ref(null);
+const clickClassification = (clickIndex) => {
+  selectedImage.value = clickIndex;
+  const filterArr = cateData.filter((item, index) => index === clickIndex);
+  detailData.length = 0; // 清空现有数据
+  filterArr.forEach((item) => {
+    detailData.push(item); // 将每个项目添加到detailData
+  });
+};
 
 /**
  * @Author: 朱海东
  * @Date: 2023-07-06 16:24:52
- * @name: 获取当前定位
- * @msg: 
+ * @name:getCurrentLocation
+ * @msg:  获取当前定位
  * @return {*}
  */
 const latitude = ref(null);
 const longitude = ref(null);
 const error = ref(null);
 const currentLocation = ref(null);
-const getCurrentLocation=()=>{
+const getCurrentLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -191,37 +278,54 @@ const getCurrentLocation=()=>{
         const lat = latitude.value;
         const lon = longitude.value;
         error.value = null;
-     
-        getExitLocationName(lon,lat).then((location)=>{
-          console.log(location)
-          if(location.street){
-            console.log()
-            console.log('location.street',location.street)
-            currentLocation.value=location.street
-          }
 
-        })
-       
+        getExitLocationName(lon, lat).then((location) => {
+          console.log(location);
+          if (location.street) {
+            console.log();
+            console.log("location.street", location.street);
+            currentLocation.value = location.street;
+          }
+        });
       },
       (error) => {
         error.value = error.message;
         latitude.value = null;
         longitude.value = null;
-      }
+      },
     );
   } else {
-    error.value = '浏览器不支持地理位置获取';
+    error.value = "浏览器不支持地理位置获取";
   }
-}
+};
 
-
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-08 10:59:05
+ * @name: getDetailData
+ * @msg: 获取分类详情的数据
+ * @return {*}
+ */
+const getDetailData = () => {
+  const params = {
+    type: "lake",
+  };
+  axios
+    .post(IP_ADDRESS_WMS3 + "getDongjiangTypeList", qs.stringify(params))
+    .then((res) => {
+      console.log("分类数据", res);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
 </script>
 <style lang="scss">
 .near_box {
   width: 100%;
   height: 100%;
   position: relative;
-  .near-search{
+  .near-search {
     position: absolute;
     top: 0;
     left: 0;
@@ -237,6 +341,12 @@ const getCurrentLocation=()=>{
     justify-content: center;
     gap: 5px;
     flex: 1;
+    // .drop_menu {
+    //   width: 1rem;
+    // }
+    .van-dropdown-menu__bar {
+      box-shadow: none;
+    }
   }
   .first_row_col2 {
     flex: auto;
@@ -247,8 +357,15 @@ const getCurrentLocation=()=>{
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   flex-basis: 20%;
+  .van-image {
+    width: 60%;
+    height: 60%;
+  }
+}
+.selected {
+  border-radius: 50%;
+  background-color: #d9d9d9;
 }
 .noticebar {
   margin-top: 1rem;
@@ -264,7 +381,7 @@ const getCurrentLocation=()=>{
 
 .wanring-swipe .van-swipe-item {
   width: 100%;
-  // padding: 1rem;
+
   padding-top: 1rem;
   padding-bottom: 1rem;
   color: black;
@@ -292,7 +409,9 @@ const getCurrentLocation=()=>{
   background-color: #f6f6f6;
   padding: 0.5rem;
   overflow: scroll;
-  height: 50%;
+  height: 61%;
+  // display: flex;
+  // flex-direction: column;
 
   .each_classify {
     margin-top: 0.4rem;
@@ -310,6 +429,11 @@ const getCurrentLocation=()=>{
         font-weight: 500;
       }
     }
+  }
+  .no_data {
+    margin-top: 1rem;
+    width: 100%;
+    text-align: center;
   }
 }
 </style>
