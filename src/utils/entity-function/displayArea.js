@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-07 18:15:51
+ * @LastEditTime: 2023-07-10 11:15:07
  */
 import { app } from "../../main.js";
 import axios from "axios";
@@ -330,7 +330,7 @@ function clickBuildingEntity() {
       let cartographic = Cesium.Cartographic.fromCartesian(position);
       let longitude = Cesium.Math.toDegrees(cartographic.longitude);
       let latitude = Cesium.Math.toDegrees(cartographic.latitude);
-      console.log("pickedObject", pickedObject.id.intr);
+      // console.log("pickedObject", pickedObject.id.intr);
       //获取信息
       getExitLocationName(longitude, latitude).then((scope) => {
         const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
@@ -340,6 +340,7 @@ function clickBuildingEntity() {
           gid: Number(id),
           scope: scope,
         };
+        console.log("scope", scope);
         //获取数据
         axios
           .post(
@@ -354,7 +355,7 @@ function clickBuildingEntity() {
             };
             detailObj.info = res.data.data;
 
-            console.log("detailObj", detailObj);
+            // console.log("detailObj", detailObj);
             //获取县长范围信息
 
             app.config.globalProperties.$eventBus.emit("detail", detailObj);
