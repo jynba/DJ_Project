@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@turf/turf": "^6.5.0",
     "axios": "^1.4.0",
     "element-plus": "^2.3.5",
     "hammerjs": "^2.0.8",

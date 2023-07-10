@@ -54,7 +54,6 @@
         </div>
       </div>
     </van-floating-panel>
-
   </div>
 </template>
 
@@ -65,6 +64,7 @@ import qs from "qs";
 import { onMounted } from "vue";
 import { onUpdated } from "vue";
 import { nextTick } from "vue";
+import request from "../utils/request";
 
 const searchVal = { name: "" };
 
@@ -101,6 +101,19 @@ const onSearch = () => {
     q: searchVal.name,
   });
 
+  request({
+    url: "/gpt/exec",
+    method: "post",
+    data: {
+      ori: searchVal.name,
+    },
+  }).then((res) => {
+    console.log(res);
+    conversations.push({
+      ans: res.data,
+    });
+  });
+
   if (searchVal.name.length > 0) {
     axios
       .post(IP_ADDRESS_WMS3 + "searchDongjiangList", qs.stringify(searchVal))
@@ -121,7 +134,7 @@ const onSearch = () => {
         }
       });
   }
-  searchVal.name=''
+  searchVal.name = "";
 };
 
 /**

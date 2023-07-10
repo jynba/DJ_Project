@@ -187,7 +187,7 @@ const submitRiverNameForm = () => {
     tablelocation: window.$selectedRiver.tablelocation,
   };
   request({
-    url: "/submittmp",
+    url: "/api/submitDongjiangTmp",
     method: "POST",
     data: tmp,
   })
@@ -245,7 +245,7 @@ const submitRiverLogForm = () => {
   console.log("request");
 
   request({
-    url: "/submit",
+    url: "/api/submitDongjiang",
     method: "POST",
     data: tmp,
   })

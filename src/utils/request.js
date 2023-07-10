@@ -4,7 +4,7 @@ import { ElNotification } from 'element-plus';
 // 第一步：创建实例
 let request = axios.create({
 	// 基础路径，发请求时都会携带
-	baseURL: '/api',
+	// baseURL: '/api',
 	timeout: 5000, //超时时间
 });
 // 第二步：给实例添加 请求拦截器
@@ -52,6 +52,7 @@ request.interceptors.response.use(
 			type: 'error',
 			duration: 1000,
 		});
+		console.log(error);
 		return Promise.reject(error);
 	}
 );

@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '完成附近页面当前定位、轮播图'
+git commit -m '淹没分析'
 
 
 
