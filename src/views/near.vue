@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-10 13:49:26
+ * @LastEditTime: 2023-07-10 15:10:51
 -->
 <template>
   <div class="near_box">
@@ -129,15 +129,12 @@ const cityOption1 = [
  */
 let currentCity = ref("东莞市");
 const handleDropdownChange = (val) => {
-  // console.log("val", val);
-  // getCurrentLocation();
   currentCity.value = cityOption1.find((item, index) => {
     return index == val;
   });
   //获取下方详情数据  切换默认显示水文站数据
   getDetailData("hydrographicStation", currentCity.value);
   if (detailData.length >= 0) {
-    console.log("d");
     clickClassification(0);
   }
 };
@@ -288,7 +285,8 @@ const selectedImage = ref(null);
 const clickClassification = (item, clickIndex) => {
   selectedImage.value = clickIndex;
   detailData.length = 0; // 清空现有数据
-  getDetailData(item.type);
+  //获取对应的城市类型数据
+  getDetailData(item.type, currentCity.value);
 };
 
 /**
