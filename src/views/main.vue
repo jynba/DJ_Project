@@ -648,9 +648,9 @@ onMounted(() => {
   // });
   // city.style = heightStyle;
 
-  // viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-  initRiver(); //分层级加载河流
-  clickLeftMouseFunction();
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
+  // initRiver(); //分层级加载河流
+  // clickLeftMouseFunction();
   clickRightMouseFunction();
   // showArea();
 });

@@ -3,12 +3,13 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-06 16:46:16
+ * @LastEditTime: 2023-07-07 18:15:51
  */
 import { app } from "../../main.js";
 import axios from "axios";
 import qs from "qs";
 import djAreaData from "../../data/dongjiangAllType";
+import detailData from "../../data/dongjiangIntr.js";
 import $ from "jquery";
 
 /**
@@ -22,12 +23,17 @@ import $ from "jquery";
 // const hammer = new Hammer(window.viewer);
 export function showArea() {
   clickBuildingEntity();
-  //  // 过滤镇和乡
-  // let buildingArray = djAreaData.residential_place.filter(item =>item.name.includes('县'));
 
-  // const newArray = buildingArray.map((item) => {
-  //   return Object.assign({}, item, { type: "city_table" });
+  // const matchedData = djAreaData.buildingArray.map((well) => {
+  //   const matchingData = detailData.find((data) => data.name == well.name);
+  //   return {
+  //     ...well,
+  //     intr: matchingData ? matchingData.intr : "",
+  //     pic: matchingData ? matchingData.pic : "",
+  //   };
   // });
+
+  // console.log("matchedData", matchedData);
 
   viewer.camera.changed.addEventListener(function () {
     //清除地标实体  多清几次  一次清不干净
@@ -108,12 +114,9 @@ function renderEntity(data, location, type) {
           font: "bold 10px Arial", // 设置字体大小为16像素
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
-        // billboard: {
-        //   image: createLabelImage(item.name), // 使用createLabelImage函数创建带有HTML内容的图像
-        //   width: 200,
-        //   height: 130,
-        // },
       });
+      cityLabel.pic = item.pic;
+      cityLabel.intr = item.intr;
 
       limitEntityHeight(cityLabel, 157987, 753338);
     });
@@ -138,6 +141,8 @@ function renderEntity(data, location, type) {
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
       });
+      label.pic = item.pic;
+      label.intr = item.intr;
       limitEntityHeight(label, 25432, 157987);
     });
   }
@@ -161,6 +166,8 @@ function renderEntity(data, location, type) {
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
       });
+      countyLabel.pic = item.pic;
+      countyLabel.intr = item.intr;
       limitEntityHeight(countyLabel, 157987, 407987);
     });
   }
@@ -185,6 +192,8 @@ function renderEntity(data, location, type) {
           pixelOffset: new Cesium.Cartesian2(0, 15), // 调整实体和标签之间的垂直间距
         },
       });
+      label.pic = item.pic;
+      label.intr = item.intr;
       limitEntityHeight(label, 118, 25432);
     });
   }
@@ -235,6 +244,8 @@ function renderEntity(data, location, type) {
       // 将实体和标签绑定起来
 
       label.billboard = entity;
+      label.pic = item.pic;
+      label.intr = item.intr;
       limitEntityHeight(entity, 432, 14999);
       limitEntityHeight(label, 432, 14999);
     });
@@ -307,7 +318,7 @@ function calculateCenterPoint(coordinates) {
  * @return {*}
  */
 
- function clickBuildingEntity() {
+function clickBuildingEntity() {
   // 监听Entity的点击事件
   let entityHandler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   entityHandler.setInputAction(function (click) {
@@ -319,41 +330,43 @@ function calculateCenterPoint(coordinates) {
       let cartographic = Cesium.Cartographic.fromCartesian(position);
       let longitude = Cesium.Math.toDegrees(cartographic.longitude);
       let latitude = Cesium.Math.toDegrees(cartographic.latitude);
+      console.log("pickedObject", pickedObject.id.intr);
       //获取信息
-     getExitLocationName(
-        longitude,
-        latitude
-      ).then((scope)=>{
-        console.log('scope',typeof scope,scope)
+      getExitLocationName(longitude, latitude).then((scope) => {
         const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
         const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
         const requestData = {
           tablename: type,
           gid: Number(id),
-          scope:scope
+          scope: scope,
         };
         //获取数据
         axios
-          .post(IP_ADDRESS_WMS3 + "getdongjiangDetail", qs.stringify(requestData))
+          .post(
+            IP_ADDRESS_WMS3 + "getdongjiangDetail",
+            qs.stringify(requestData),
+          )
           .then(async (res) => {
             const detailObj = {
               popupShow: true,
+              intr: pickedObject.id.intr,
+              pic: pickedObject.id.pic,
             };
             detailObj.info = res.data.data;
-            
-            console.log('detailObj',detailObj)
+
+            console.log("detailObj", detailObj);
             //获取县长范围信息
-  
+
             app.config.globalProperties.$eventBus.emit("detail", detailObj);
-  
+
             const currentHeight = Math.ceil(
               window.viewer.camera.positionCartographic.height,
             );
-  
+
             // 移动到对象位置
-            const flytoLat =longitude;
+            const flytoLat = longitude;
             const flytoLng = latitude;
-  
+
             //高于150000根据计算飞行
             if (currentHeight > 15000) {
               // 利用经纬度坐标计算边界起点到中点的距离
@@ -389,15 +402,11 @@ function calculateCenterPoint(coordinates) {
                 },
               });
             }
-        
           })
           .catch((error) => {
             console.error("请求失败：", error);
           });
       });
-
-     
-    
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
@@ -410,7 +419,6 @@ function calculateCenterPoint(coordinates) {
  * @return {*}
  */
 export function getExitLocationName(longitude, latitude) {
-
   return new Promise(function (resolve, reject) {
     $.ajax({
       url:

@@ -118,6 +118,7 @@ const onSearch = () => {
     axios
       .post(IP_ADDRESS_WMS3 + "searchDongjiangList", qs.stringify(searchVal))
       .then((res) => {
+        console.log('res',res);
         console.log("res.data.data.length", res.data.data.length);
         if (res.data.data.length == 1) {
           //获取经纬度
