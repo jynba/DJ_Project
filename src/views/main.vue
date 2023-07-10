@@ -9,6 +9,7 @@
 <template>
   <div id="cesiumContainer">
     <loadRiver />
+    <flood />
     <changeLayer />
     <panel
       :show-panel="showPanel"
@@ -28,6 +29,7 @@ import panel from "../components//panel.vue";
 import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
 import changeLayer from "../components/changeLayer.vue";
+import flood from "../components/flood.vue";
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
 import { onDeactivated, onMounted, reactive } from "vue";
@@ -45,7 +47,6 @@ import qs from "qs";
  * @returns {Boolean} -
  */
 const popupShow = ref(true);
-//
 const showPopup = () => {
   popupShow.value = true;
 };
@@ -166,7 +167,7 @@ const selectRiver = async (movement) => {
   console.log(longitude, latitude, height, index, "经纬度高度层级");
   // 发请求
   return request({
-    url: "/getriver",
+    url: "/api/getDongjiangRiver",
     method: "post",
     data: {
       lon: longitude,
@@ -179,7 +180,7 @@ const selectRiver = async (movement) => {
 
 const showDetail = (data) => {
   return request({
-    url: "/getriverlog",
+    url: "/api/getDongjiangRiverLog",
     method: "POST",
     data: {
       hierarcode: data.hierarcode,
@@ -355,7 +356,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   formData.select_river = "";
   delete riverdata.scope;
   const res = await request({
-    url: "/getLastRiverLocation",
+    url: "/api/getDongjiangLastRiverLocation",
     method: "post",
     data: {
       ...riverdata,
@@ -363,7 +364,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   }); //找上一级河流位置
   // console.log(res, 'res');
   const res2 = await request({
-    url: "/getRiverGeom",
+    url: "/api/getDongjiangRiverGeom",
     method: "post",
     data: res[0],
   }); //高亮上一级河流
@@ -515,6 +516,8 @@ onMounted(() => {
     fullscreenElement: document.body, // 全屏时渲染的HTML元素
     orderIndependentTranslucency: false,
     navigationInstructionsInitiallyVisible: false,
+    terrainProvider: Cesium.createWorldTerrain(),
+
     // terrainProvider: Cesium.createWorldTerrainAsync({
     // 	requestWaterMask: true, // 请求水体效果所需要的海岸线数据
     // 	requestVertexNormals: true, // 请求地形照明数据
@@ -649,7 +652,7 @@ onMounted(() => {
   // initRiver(); //分层级加载河流
   // clickLeftMouseFunction();
   clickRightMouseFunction();
-  showArea();
+  // showArea();
 });
 </script>
 <style lang="scss">
