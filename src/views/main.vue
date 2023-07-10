@@ -146,7 +146,11 @@ const selectRiver = async (movement) => {
   const latitude = Cesium.Math.toDegrees(cartographic.latitude);
   const height = Math.ceil(window.viewer.camera.positionCartographic.height);
   let index;
-  if (height > 300000) {
+
+  if (height > 350000) {
+    index = 7;
+  }
+  if (height > 300000 && height < 350000) {
     index = 6;
   }
   if (height < 300000 && height > 200000) {
@@ -493,6 +497,14 @@ const clickLeftMouseFunction = () => {
 };
 
 onMounted(() => {
+  console.log("123");
+  navigator.geolocation.getCurrentPosition(function (position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    // 在这里处理获取到的经纬度数据
+    console.log(latitude, longitude);
+  });
+
   Cesium.Ion.defaultAccessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE0MzdlZC00NGFhLTQ3ODItODQyNC01MTVlMmZiMjA4NDciLCJpZCI6NzU4ODIsImlhdCI6MTYzODk1MDcyM30.aB08DKXLq43IEtIjXrkeDMm4GYmtr9GjfDWnHWumWF0";
 
@@ -649,8 +661,8 @@ onMounted(() => {
   // city.style = heightStyle;
 
   viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-  // initRiver(); //分层级加载河流
-  // clickLeftMouseFunction();
+  initRiver(); //分层级加载河流
+  clickLeftMouseFunction();
   clickRightMouseFunction();
   // showArea();
 });

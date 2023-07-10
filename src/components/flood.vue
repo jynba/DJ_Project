@@ -24,7 +24,7 @@
           最小高度：<el-input v-model="minWaterHeight" disabled></el-input
           >&nbsp;&nbsp;米
         </div>
-        <div class="water-bartool warningHeight">
+        <div class="water-bartool">
           预警高度：<el-input
             v-model="warningWaterHeight"
             :disabled="warningWaterHeightDisabled"
@@ -468,11 +468,6 @@ const clearAllEntities = () => {
     font-weight: 600;
     color: red;
   }
-}
-
-.warningHeight {
-  color: red;
-  font-weight: 600;
 }
 
 .el-input {
