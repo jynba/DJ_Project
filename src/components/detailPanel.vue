@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-10 15:06:47
+ * @LastEditTime: 2023-07-10 17:21:21
 -->
 <template>
   <div>
@@ -18,7 +18,8 @@
       <van-cell-group>
         <van-cell :title="detailInfo.name" class="cell_title" />
         <div class="intr_detaill">
-          <div>{{ detailInfo.introduction }}</div>
+          <div>河长:{{ detailInfo.riverChief }}</div>
+          <div style="margin-top: 1rem">{{ detailInfo.introduction }}</div>
           <img
             v-if="detailInfo.pic != ''"
             :src="detailInfo.pic"
@@ -41,12 +42,15 @@ const detailInfo = reactive({
   name: "",
   introduction: "",
   pic: "",
+  riverChief: "",
 });
 app.config.globalProperties.$eventBus.on("detail", (detail) => {
   popupShow.value = detail.popupShow;
-  detailInfo.name = detail.info[0].name;
+  detailInfo.name = detail.name;
   detailInfo.introduction = detail.intr == "" ? "暂无数据" : detail.intr;
   detailInfo.pic = detail.pic == "" ? "" : detail.pic;
+  detailInfo.riverChief = detail.riverChief;
+  console.log("detailInfo.riverChief", detailInfo.riverChief);
 });
 </script>
 
@@ -57,7 +61,7 @@ app.config.globalProperties.$eventBus.on("detail", (detail) => {
 }
 .intr_detaill {
   padding: 0.5rem;
-  height: 9.1rem;
+  height: 15rem;
   display: flex;
   flex-direction: column;
   overflow: scroll;

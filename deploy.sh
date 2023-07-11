@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '完成点击显示详情、切换定位'
+git commit -m '淹没分析'
 
 
 

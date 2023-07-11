@@ -57,7 +57,7 @@ export function initReservoirs() {
 	const layer_index = window.viewer.imageryLayers.indexOf(DONGJIANG_RESERVOIRS);
 	if (layer_index == -1) {
 		DONGJIANG_RESERVOIRS = addWebMapData(
-			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
 			'dongjiang:dongjiang_reservoirs_total'
 		);
 	} else {
@@ -76,7 +76,7 @@ export function initRiver() {
 
 	for (let index = 1; index < DONGJIANG_RIVERS.length; index++) {
 		DONGJIANG_RIVERS[index] = addWebMapData(
-			IP_ADDRESS_WMS1 + 'geoserver/dongjiang/wms',
+			IP_ADDRESS_WMS + 'geoserver/dongjiang/wms',
 			`dongjiang:dongjiang_river${index}`
 		);
 		DONGJIANG_RIVERS[index].show = false
@@ -190,132 +190,6 @@ export function mapLabels() {
 	} else {
 		window.viewer.imageryLayers.get(layer_index).show =
 			!window.viewer.imageryLayers.get(layer_index).show;
-	}
-}
-
-/**
- * 方法名：flytoLastRiverLocation
- * 创建时间：2023/02/24
- * 作者: 方序鸿
- * 功能：命名页面-定位至上一级
- * @param {Object} riverdata - 接口返回的河段信息
- */
-
-function flytoLastRiverLocation(riverdata) {
-	const tmp = { ...riverdata };
-	CHAINED_TEXT = '';
-	try {
-		// 打开河段加载提示框
-		$.ajax({
-			url: IP_ADDRESS_WEB + 'getLastRiverLocation',
-			method: 'POST',
-			data: {
-				...tmp,
-			},
-			success: function (res) {
-				if (res == 'error') {
-					// 查询失败
-					closeLoadingRiver(); // 关闭河段加载提示框
-					alert('查询失败');
-					document.getElementById('panel2').style.display = 'none'; // 隐藏table
-				} else {
-					// 查询成功
-					try {
-						const tmp2 = { ...res[0] };
-						// 高度值列表
-						let heightist = [
-							0, 10000, 15000, 33000, 54934, 104934, 204934, 439163, 1276504,
-							3316747, 5396496, 7053467, 9947664,
-						];
-						var flytolon = parseFloat(res[0].outletx); // 经度
-						var flytolat = parseFloat(res[0].outlety); // 纬度
-						var flytoheight = heightist[res[0].level]; // 高度
-
-						$.ajax({
-							url: IP_ADDRESS_WEB + 'getRiverGeom',
-							data: {
-								...tmp2,
-							},
-							method: 'POST',
-							success: function (data) {
-								// 飞行到河段的位置
-								viewer.camera.flyTo({
-									destination: Cesium.Cartesian3.fromDegrees(
-										flytolon,
-										flytolat,
-										flytoheight
-									),
-									orientation: {
-										heading: Cesium.Math.toRadians(0),
-										pitch: Cesium.Math.toRadians(-90),
-										roll: Cesium.Math.toRadians(0),
-									},
-								});
-								//隐藏table
-								document.getElementById('panel2').style.display = 'none';
-
-								if (typeof data == 'string') {
-									//隐藏table
-									document.getElementById('panel2').style.display = 'none';
-									//隐藏高亮
-									viewer.entities.remove(getBLUE_LINE());
-								} else {
-									// // 面板跟随显示
-									removeRiverNameForm();
-									setDomStyle();
-									DATA_DETAIL = data;
-									document
-										.getElementById('submits')
-										.removeAttribute('disabled');
-									// 将结果传入该函数进行处理
-									publicApi(data);
-									//隐藏高亮river
-									viewer.entities.remove(getBLUE_LINE());
-									dataCode = data.scope;
-									//创建实体用于点击河段时高亮该河段
-									setBLUE_LINE(
-										viewer.entities.add({
-											name: 'Red line on the surface',
-											polyline: {
-												positions: Cesium.Cartesian3.fromDegreesArray(
-													data.scope
-												),
-												followSurface: false,
-												width: 7,
-												material: new Cesium.PolylineOutlineMaterialProperty({
-													color: Cesium.Color.ORANGE,
-													outlineWidth: 7,
-													outlineColor: Cesium.Color.RED,
-												}),
-												depthFailMaterial:
-													new Cesium.PolylineOutlineMaterialProperty({
-														color: Cesium.Color.RED,
-														outlineWidth: 7,
-														outlineColor: Cesium.Color.RED,
-													}),
-											},
-										})
-									);
-								}
-							},
-							error: function (err) {
-								closeLoadingRiver();
-							},
-						});
-					} catch {
-						closeLoadingRiver();
-						console.log('getLastRiverLocation2 ajax err');
-					}
-				}
-			},
-			error: function (err) {
-				closeLoadingRiver();
-				console.log('ajax err', err);
-			},
-		});
-	} catch {
-		closeLoadingRiver();
-		console.log('getLastRiverLocation ajax err');
 	}
 }
 

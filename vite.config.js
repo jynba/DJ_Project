@@ -37,7 +37,7 @@ export default defineConfig(({ command, mode }) => ({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://172.27.101.19:32769',
+				target: 'https://eslab.dgut.edu.cn/',
 				// target: loadEnv(mode, process.cwd()).VITE_TESTSERVER, // 接口的域名
 				// 若loadENV无第三个参数''，则需要VITE_前缀
 				secure: false, // 如果是https接口，需要配置这个参数
@@ -45,6 +45,14 @@ export default defineConfig(({ command, mode }) => ({
 				rewrite: (path) => path.replace(/^\/api/, ''),
 				//重写传过来的path路径，比如 `/api/index/1?id=10&name=zs`
 				//注意:path路径最前面有斜杠（/），因此，正则匹配的时候不要忘了是斜杠（/）开头的；选项的 key 也是斜杠（/）开头的
+			},
+			'/gpt': {
+				target: 'http://192.168.1.149:8000',
+				// target: loadEnv(mode, process.cwd()).VITE_TESTSERVER, // 接口的域名
+				// 若loadENV无第三个参数''，则需要VITE_前缀
+				secure: false, // 如果是https接口，需要配置这个参数
+				changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+				rewrite: (path) => path.replace(/^\/gpt/, ''),
 			},
 		},
 	},
@@ -68,6 +76,6 @@ export default defineConfig(({ command, mode }) => ({
 		IP_ADDRESS_WMS2: JSON.stringify('http://172.27.101.19:8090/'),
 		IP_ADDRESS_WMS3: JSON.stringify('https://eslab.dgut.edu.cn/'),
 		IP_ADDRESS_WMS: JSON.stringify('https://eslab2.dgut.edu.cn/'),
-		
+
 	},
 }));
