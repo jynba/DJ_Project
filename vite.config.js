@@ -47,7 +47,7 @@ export default defineConfig(({ command, mode }) => ({
 				//注意:path路径最前面有斜杠（/），因此，正则匹配的时候不要忘了是斜杠（/）开头的；选项的 key 也是斜杠（/）开头的
 			},
 			'/gpt': {
-				target: 'http://192.168.1.149:8000',
+				target: 'http://106.55.180.180:8077/',
 				// target: loadEnv(mode, process.cwd()).VITE_TESTSERVER, // 接口的域名
 				// 若loadENV无第三个参数''，则需要VITE_前缀
 				secure: false, // 如果是https接口，需要配置这个参数

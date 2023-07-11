@@ -497,14 +497,6 @@ const clickLeftMouseFunction = () => {
 };
 
 onMounted(() => {
-  console.log("123");
-  navigator.geolocation.getCurrentPosition(function (position) {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-    // 在这里处理获取到的经纬度数据
-    console.log(latitude, longitude);
-  });
-
   Cesium.Ion.defaultAccessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE0MzdlZC00NGFhLTQ3ODItODQyNC01MTVlMmZiMjA4NDciLCJpZCI6NzU4ODIsImlhdCI6MTYzODk1MDcyM30.aB08DKXLq43IEtIjXrkeDMm4GYmtr9GjfDWnHWumWF0";
 
@@ -626,9 +618,9 @@ onMounted(() => {
   //   style: "default",
   //   tileMatrixSetID: "w",
   // });
-  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+  // const dongjiangbound6 = new Cesium.WebMapServiceImageryProvider({
   //   url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
-  //   layers: "dongjiang:dongjiang_bound7",
+  //   layers: "dongjiang:dongjiang_bound6",
   //   parameters: {
   //     service: "WMS",
   //     format: "image/png",
