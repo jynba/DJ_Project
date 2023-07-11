@@ -185,13 +185,14 @@ const selectRiver = async (movement) => {
 const showDetail = (data) => {
   return request({
     url: "/api/getDongjiangRiverLog",
-    method: "POST",
+    method: "post",
     data: {
       hierarcode: data.hierarcode,
       tablename: "dongjiang_log", //查询是否已有记录
       basincode: data.basincode,
       regioncode: data.regioncode,
     },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 };
 
