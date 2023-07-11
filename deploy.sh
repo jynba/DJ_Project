@@ -16,7 +16,9 @@ npm run build
 git init
 git add -A
 
+
 git commit -m '附近所有功能'
+
 
 
 
