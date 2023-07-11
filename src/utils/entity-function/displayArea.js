@@ -1,9 +1,16 @@
 /*
+ * @Descripttion:
+ * @version: 1.0.0
+ * @Author: 朱海东
+ * @Date: 2023-06-27 16:29:41
+ * @LastEditTime: 2023-07-10 17:55:16
+ */
+/*
  * @Descripttion: 用于控制实体
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-10 11:15:07
+ * @LastEditTime: 2023-07-10 17:27:24
  */
 import { app } from "../../main.js";
 import axios from "axios";
@@ -330,17 +337,22 @@ function clickBuildingEntity() {
       let cartographic = Cesium.Cartographic.fromCartesian(position);
       let longitude = Cesium.Math.toDegrees(cartographic.longitude);
       let latitude = Cesium.Math.toDegrees(cartographic.latitude);
-      // console.log("pickedObject", pickedObject.id.intr);
+      console.log("pickedObject", pickedObject);
       //获取信息
-      getExitLocationName(longitude, latitude).then((scope) => {
+      getExitLocationName(longitude, latitude).then((res) => {
         const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
         const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
+        let scope = {
+          city: res.city,
+          district: res.district,
+        };
+
         const requestData = {
           tablename: type,
           gid: Number(id),
           scope: scope,
         };
-        console.log("scope", scope);
+
         //获取数据
         axios
           .post(
@@ -348,68 +360,118 @@ function clickBuildingEntity() {
             qs.stringify(requestData),
           )
           .then(async (res) => {
-            const detailObj = {
-              popupShow: true,
-              intr: pickedObject.id.intr,
-              pic: pickedObject.id.pic,
+            const scopeData = {
+              scope: scope,
             };
-            detailObj.info = res.data.data;
 
-            // console.log("detailObj", detailObj);
-            //获取县长范围信息
+            //获取河长数据
+            axios
+              .post(
+                IP_ADDRESS_WMS3 + "getDongjiangChief",
+                qs.stringify(scopeData),
+              )
+              .then((res) => {
+                //提取表名
+                const filterName = extractPrefix(requestData.tablename);
+                console.log("res.data.data", res.data.data);
+                const RiverChief = res.data.data.find((i, index) => {
+                  // console.log("i.data.level", i.data.level);
+                  // console.log("filterName", filterName);
+                  if (i.data.level != filterName) {
+                    console.log("111");
+                    return index == 0;
+                  } else {
+                    return i.data.level == filterName;
+                  }
+                });
 
-            app.config.globalProperties.$eventBus.emit("detail", detailObj);
+                const detailObj = {
+                  popupShow: true,
+                  name: pickedObject.primitive._text,
+                  intr: pickedObject.id.intr,
+                  pic: pickedObject.id.pic,
+                  riverChief:
+                    RiverChief == undefined ? "" : RiverChief.data.name,
+                };
+                console.log("detailObj", detailObj);
+                detailObj.info = res.data.data;
 
-            const currentHeight = Math.ceil(
-              window.viewer.camera.positionCartographic.height,
-            );
+                //传值给详情detailpanel组件
+                app.config.globalProperties.$eventBus.emit("detail", detailObj);
+                //当前高度
+                const currentHeight = Math.ceil(
+                  window.viewer.camera.positionCartographic.height,
+                );
 
-            // 移动到对象位置
-            const flytoLat = longitude;
-            const flytoLng = latitude;
+                // 移动到对象位置
+                const flytoLat = longitude;
+                const flytoLng = latitude;
 
-            //高于150000根据计算飞行
-            if (currentHeight > 15000) {
-              // 利用经纬度坐标计算边界起点到中点的距离
-              const firstLat = flytoLat + 0.1;
-              const firstLng = flytoLng + 0.1;
-              const diameter = Math.sqrt(
-                Math.pow(firstLat - flytoLat, 2) +
-                  Math.pow(firstLng - flytoLng, 2),
-              );
-              viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(
-                  flytoLat,
-                  flytoLng,
-                  diameter * 177770 * 1.5,
-                ),
-                orientation: {
-                  heading: Cesium.Math.toRadians(0),
-                  pitch: Cesium.Math.toRadians(-90),
-                  roll: Cesium.Math.toRadians(0),
-                },
+                //高于150000根据计算飞行
+                if (currentHeight > 15000) {
+                  // 利用经纬度坐标计算边界起点到中点的距离
+                  const firstLat = flytoLat + 0.1;
+                  const firstLng = flytoLng + 0.1;
+                  const diameter = Math.sqrt(
+                    Math.pow(firstLat - flytoLat, 2) +
+                      Math.pow(firstLng - flytoLng, 2),
+                  );
+                  viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(
+                      flytoLat,
+                      flytoLng,
+                      diameter * 177770 * 1.5,
+                    ),
+                    orientation: {
+                      heading: Cesium.Math.toRadians(0),
+                      pitch: Cesium.Math.toRadians(-90),
+                      roll: Cesium.Math.toRadians(0),
+                    },
+                  });
+                } else {
+                  viewer.camera.flyTo({
+                    destination: Cesium.Cartesian3.fromDegrees(
+                      flytoLat,
+                      flytoLng,
+                      currentHeight,
+                    ),
+                    orientation: {
+                      heading: Cesium.Math.toRadians(0),
+                      pitch: Cesium.Math.toRadians(-90),
+                      roll: Cesium.Math.toRadians(0),
+                    },
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error(err);
               });
-            } else {
-              viewer.camera.flyTo({
-                destination: Cesium.Cartesian3.fromDegrees(
-                  flytoLat,
-                  flytoLng,
-                  currentHeight,
-                ),
-                orientation: {
-                  heading: Cesium.Math.toRadians(0),
-                  pitch: Cesium.Math.toRadians(-90),
-                  roll: Cesium.Math.toRadians(0),
-                },
-              });
-            }
           })
           .catch((error) => {
             console.error("请求失败：", error);
           });
       });
+      //
     }
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+}
+
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-10 16:22:40
+ * @name: extractPrefix
+ * @msg: 提前tablename字符串
+ * @return {*}
+ */
+function extractPrefix(str) {
+  const regex = /(.+)_table/;
+  const matches = str.match(regex);
+
+  if (matches && matches.length > 1) {
+    return matches[1];
+  } else {
+    return "";
+  }
 }
 
 /**

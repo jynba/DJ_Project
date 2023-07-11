@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-08 09:46:18
+ * @LastEditTime: 2023-07-10 17:21:21
 -->
 <template>
   <div>
@@ -13,18 +13,21 @@
       round
       :overlay="false"
       position="bottom"
-      :style="{ height: '30%' }"
+      :style="{ height: '37%' }"
     >
       <van-cell-group>
         <van-cell :title="detailInfo.name" class="cell_title" />
         <div class="intr_detaill">
-        
-          <div>{{ detailInfo.introduction}}</div>
-          <img v-if="detailInfo.pic!=''" :src="detailInfo.pic" referrerpolicy="no-referrer">
-         
+          <div>河长:{{ detailInfo.riverChief }}</div>
+          <div style="margin-top: 1rem">{{ detailInfo.introduction }}</div>
+          <img
+            v-if="detailInfo.pic != ''"
+            :src="detailInfo.pic"
+            referrerpolicy="no-referrer"
+          />
+
           <!-- <van-image v-if="detailInfo.pic.length>0" :src="detailInfo.pic" fit="cover" /> -->
         </div>
-       
       </van-cell-group>
     </van-popup>
   </div>
@@ -38,15 +41,16 @@ const popupShow = ref(false);
 const detailInfo = reactive({
   name: "",
   introduction: "",
-  pic:''
+  pic: "",
+  riverChief: "",
 });
 app.config.globalProperties.$eventBus.on("detail", (detail) => {
-  
   popupShow.value = detail.popupShow;
-  detailInfo.name = detail.info[0].name;
-  detailInfo.introduction =detail.intr == ""? "暂无数据": detail.intr;
-  detailInfo.pic =detail.pic == ""? "": detail.pic;
- 
+  detailInfo.name = detail.name;
+  detailInfo.introduction = detail.intr == "" ? "暂无数据" : detail.intr;
+  detailInfo.pic = detail.pic == "" ? "" : detail.pic;
+  detailInfo.riverChief = detail.riverChief;
+  console.log("detailInfo.riverChief", detailInfo.riverChief);
 });
 </script>
 
@@ -55,9 +59,9 @@ app.config.globalProperties.$eventBus.on("detail", (detail) => {
   font-weight: 500;
   font-size: 1.5rem;
 }
-.intr_detaill{
+.intr_detaill {
   padding: 0.5rem;
-  height: 9.1rem;
+  height: 15rem;
   display: flex;
   flex-direction: column;
   overflow: scroll;

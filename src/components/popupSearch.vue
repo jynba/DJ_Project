@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-07-06 09:15:00
+ * @LastEditTime: 2023-07-10 18:02:56
 -->
 <template>
   <div>
@@ -70,8 +70,8 @@ const searchVal = { name: "" };
 
 const conversations = reactive([
   {
-    q: "告诉我东江流域中的东源江的长度是多少",
-    ans: "长度的值是24",
+    q: "东江流域附近有什么好玩的景点",
+    ans: "广东省东江流域附近有梅州西湖、河源七星岩等景点。",
   },
 ]);
 
@@ -118,7 +118,7 @@ const onSearch = () => {
     axios
       .post(IP_ADDRESS_WMS3 + "searchDongjiangList", qs.stringify(searchVal))
       .then((res) => {
-        console.log('res',res);
+        console.log("res", res);
         console.log("res.data.data.length", res.data.data.length);
         if (res.data.data.length == 1) {
           //获取经纬度
