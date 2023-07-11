@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-06 18:21:24
+ * @LastEditTime: 2023-07-10 15:33:20
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -656,7 +656,7 @@ onMounted(() => {
   initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  // showArea();
+  showArea();
 });
 </script>
 <style lang="scss">
