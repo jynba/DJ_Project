@@ -4,7 +4,7 @@
  # @version: 1.0.0
  # @Author: 朱海东
  # @Date: 2023-06-20 15:38:35
- # @LastEditTime: 2023-07-08 17:26:32
+ # @LastEditTime: 2023-07-11 08:44:43
 ### 
 
 # 确保脚本抛出遇到的错误
@@ -16,7 +16,7 @@ npm run build
 git init
 git add -A
 
-git commit -m '淹没分析'
+git commit -m '附近所有功能'
 
 
 
