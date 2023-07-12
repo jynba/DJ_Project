@@ -93,7 +93,6 @@ import axios from "axios";
 import $ from "jquery";
 import qs from "qs";
 import nearSearch from "../components/nearSearch.vue";
-import fs from "fs";
 onMounted(() => {
   //获取当前定位
   // getCurrentLocation();

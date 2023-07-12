@@ -11,6 +11,7 @@
     <loadRiver />
     <flood />
     <changeLayer />
+    <currentLocation />
     <panel
       :show-panel="showPanel"
       :has-last="hasLast"
@@ -33,8 +34,10 @@ import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
 import changeLayer from "../components/changeLayer.vue";
 import flood from "../components/flood.vue";
+
 import mapViewer from "../components/mapViewer.vue";
 import encyclopediaPanel from "../components/encyclopediaPanel.vue";
+import currentLocation from "../components/currentLocation.vue";
 
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
@@ -192,13 +195,14 @@ const selectRiver = async (movement) => {
 const showDetail = (data) => {
   return request({
     url: "/api/getDongjiangRiverLog",
-    method: "POST",
+    method: "post",
     data: {
       hierarcode: data.hierarcode,
       tablename: "dongjiang_log", //查询是否已有记录
       basincode: data.basincode,
       regioncode: data.regioncode,
     },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 };
 
@@ -552,14 +556,6 @@ const getExitLocationName = (longitude, latitude) => {
 };
 
 onMounted(() => {
-  console.log("123");
-  navigator.geolocation.getCurrentPosition(function (position) {
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-    // 在这里处理获取到的经纬度数据
-    console.log(latitude, longitude);
-  });
-
   Cesium.Ion.defaultAccessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5ZGE0MzdlZC00NGFhLTQ3ODItODQyNC01MTVlMmZiMjA4NDciLCJpZCI6NzU4ODIsImlhdCI6MTYzODk1MDcyM30.aB08DKXLq43IEtIjXrkeDMm4GYmtr9GjfDWnHWumWF0";
 
@@ -681,9 +677,9 @@ onMounted(() => {
   //   style: "default",
   //   tileMatrixSetID: "w",
   // });
-  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+  // const dongjiangbound6 = new Cesium.WebMapServiceImageryProvider({
   //   url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
-  //   layers: "dongjiang:dongjiang_bound7",
+  //   layers: "dongjiang:dongjiang_bound6",
   //   parameters: {
   //     service: "WMS",
   //     format: "image/png",
