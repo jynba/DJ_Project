@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-10 15:33:20
+ * @LastEditTime: 2023-07-12 16:35:09
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -21,8 +21,11 @@
   </div>
   <popup-search id="popup_search" />
   <detail-panel id="detail_panel"></detail-panel>
+  <encyclopedia-panel id="encyclopedia_panel"></encyclopedia-panel>
+  <map-viewer id="map_viewer"></map-viewer>
 </template>
 <script setup>
+import $ from "jquery";
 import { showArea } from "../utils/entity-function/displayArea";
 import loadRiver from "../components/loadRiver.vue";
 import panel from "../components//panel.vue";
@@ -30,6 +33,9 @@ import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
 import changeLayer from "../components/changeLayer.vue";
 import flood from "../components/flood.vue";
+import mapViewer from "../components/mapViewer.vue";
+import encyclopediaPanel from "../components/encyclopediaPanel.vue";
+
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
 import { onDeactivated, onMounted, reactive } from "vue";
@@ -37,6 +43,7 @@ import * as Cesium from "cesium";
 import { ref } from "vue";
 import { onActivated } from "vue";
 import qs from "qs";
+import { app } from "../main";
 
 /**
  * 方法名：showPopup
@@ -491,9 +498,57 @@ const clickLeftMouseFunction = () => {
         });
         console.log(addRedLine);
         LINE_SEGMENT_LABELING = addRedLine;
+        //展示河流百科
+
+        let getRiverExit = await getExitLocationName(
+          res.data.outletx,
+          res.data.outlety,
+        );
+        console.log("getRiverExit", getRiverExit);
+        const riverExitText = getRiverExit.district
+          ? getRiverExit.city + getRiverExit.district
+          : "暂无内容";
+        // console.log("riverExitText", riverExitText);
+        //传值给详情detailpanel组件
+        let encyclopediaData = {
+          encyclopediaShow: true,
+          name: res.data.name,
+          sub_area: res.data.sub_area,
+          cnl_len: res.data.cnl_len,
+          riverExitText: riverExitText,
+        };
+
+        app.config.globalProperties.$eventBus.emit(
+          "encyclopedia",
+          encyclopediaData,
+        );
       }
     }, 500)();
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+};
+
+//获取河段出口名
+const getExitLocationName = (longitude, latitude) => {
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      url:
+        `https://apis.map.qq.com/ws/geocoder/v1/?location=` +
+        latitude +
+        `,` +
+        longitude +
+        `&key=J4PBZ-YNE6K-YTSJR-AGXXU-ITI6H-Y4FJV&get_poi=1&output=jsonp&callback=?`,
+      type: "get",
+      dataType: "jsonp",
+      success: function (res) {
+        // 将结果分别赋值给下面的内容
+        if (res && res.result && res.result.address_component) {
+          resolve(res.result.address_component);
+        } else {
+          resolve({});
+        }
+      },
+    });
+  });
 };
 
 onMounted(() => {
@@ -689,5 +744,21 @@ onMounted(() => {
   bottom: 3.125rem;
   width: 100%;
   height: 0.01rem;
+}
+#encyclopedia_panel {
+  z-index: 289;
+  position: absolute;
+  bottom: 3.125rem;
+  width: 100%;
+  height: 0.01rem;
+}
+#map_viewer {
+  z-index: 100;
+  position: absolute;
+  right: 1.1rem;
+  bottom: 20%;
+  // bottom: 17.125rem;
+  width: 2rem;
+  height: 4rem;
 }
 </style>
