@@ -156,22 +156,22 @@ const selectRiver = async (movement) => {
   const height = Math.ceil(window.viewer.camera.positionCartographic.height);
   let index;
 
-  if (height > 350000) {
+  if (height >= 680000) {
     index = 7;
   }
-  if (height > 300000 && height < 350000) {
+  if (height >= 600000 && height < 680000) {
     index = 6;
   }
-  if (height < 300000 && height > 200000) {
+  if (height >= 350000 && height < 600000) {
     index = 5;
   }
-  if (height <= 200000 && height > 100000) {
+  if (height >= 200000 && height < 350000) {
     index = 4;
   }
-  if (height <= 150000) {
+  if (height >= 100000 && height < 200000) {
     index = 3;
   }
-  if (height <= 100000) {
+  if (height >= 30000 && height < 100000) {
     index = 2;
   }
   if (height <= 30000) {
@@ -392,10 +392,12 @@ const flytoLastRiverLocation = async (riverdata) => {
   if (typeof res2 == "string") {
     //隐藏高亮
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.scene.requestRender();
   } else {
     //面板跟随显示
     //隐藏高亮river
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.scene.requestRender();
     //创建实体用于点击河段时高亮该河段
     let addRedLine = window.viewer.entities.add({
       name: "Red line on the surface",
@@ -416,6 +418,7 @@ const flytoLastRiverLocation = async (riverdata) => {
       },
     });
     LINE_SEGMENT_LABELING = addRedLine;
+    window.viewer.scene.requestRender();
     publicApi(res[0]);
   }
 };
@@ -431,6 +434,7 @@ const clickRightMouseFunction = () => {
   handler.setInputAction(function (movement) {
     debounce(async function () {
       window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+      window.viewer.scene.requestRender();
       const res = await selectRiver(movement);
       console.log(res);
 
@@ -438,7 +442,7 @@ const clickRightMouseFunction = () => {
       if (res.code == 20000) {
         hasLast.value = false;
         // 再将视角转到河流中心
-        flyToCenter(res.data);
+        // flyToCenter(res.data);
         // 在地球上添加高亮显示当前河流
         window.$selectedRiver = res.data; //把选中命名的河流挂载到window
         let addRedLine = window.viewer.entities.add({
@@ -460,7 +464,7 @@ const clickRightMouseFunction = () => {
           },
         });
         LINE_SEGMENT_LABELING = addRedLine;
-
+        window.viewer.scene.requestRender();
         publicApi(res.data);
       }
     }, 500)();
@@ -478,7 +482,7 @@ const clickLeftMouseFunction = () => {
       console.log("res", res);
       if (res.code == 20000) {
         // 再将视角转到河流中心
-        flyToCenter(res.data);
+        // flyToCenter(res.data);
         // 在地球上添加高亮显示当前河流
         window.$selectedRiver = res.data; //把选中命名的河流挂载到window
         let addRedLine = window.viewer.entities.add({
@@ -500,6 +504,8 @@ const clickLeftMouseFunction = () => {
           },
         });
         console.log(addRedLine);
+        window.viewer.scene.requestRender();
+
         LINE_SEGMENT_LABELING = addRedLine;
         //展示河流百科
 
@@ -513,18 +519,26 @@ const clickLeftMouseFunction = () => {
           : "暂无内容";
         // console.log("riverExitText", riverExitText);
         //传值给详情detailpanel组件
-        let encyclopediaData = {
-          encyclopediaShow: true,
-          name: res.data.name,
-          sub_area: res.data.sub_area,
-          cnl_len: res.data.cnl_len,
-          riverExitText: riverExitText,
-        };
+        // let encyclopediaData = {
+        //   encyclopediaShow: true,
+        //   name: res.data.name,
+        //   sub_area: res.data.sub_area,
+        //   cnl_len: res.data.cnl_len,
+        //   riverExitText: riverExitText,
+        // };
 
-        app.config.globalProperties.$eventBus.emit(
-          "encyclopedia",
-          encyclopediaData,
-        );
+        // app.config.globalProperties.$eventBus.emit(
+        //   "encyclopedia",
+        //   encyclopediaData,
+        // );
+
+        console.log(res.data, "resdata");
+        // const {}
+        // const res2 = await request({
+        //   url: "/api/testBound",
+        //   method: "post",
+        //   data: ,
+        // });
       }
     }, 500)();
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -617,7 +631,7 @@ onMounted(() => {
     destination: Cesium.Cartesian3.fromDegrees(
       114.72537169973519,
       23.924765567670345,
-      628624,
+      680001,
     ),
     orientation: {
       heading: Cesium.Math.toRadians(360), //方向
