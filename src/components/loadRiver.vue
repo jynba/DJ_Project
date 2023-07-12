@@ -1,35 +1,46 @@
 <template>
-	<div class="layout-tool-template modelToolBar">
-		<button @click="mapLabels()">地图标注</button>
-		<button @click="initReservoirs()">显示水库</button>
-
-		<!-- <button @click="getRiver()">getRiver</button> -->
-	</div>
+  <div class="iconBox1" @click="initReservoirs">
+    <img src="@/assets/reservoirs.png" />
+  </div>
+  <div class="iconBox2" @click="mapLabels">
+    <img src="@/assets/mark.png" />
+  </div>
 </template>
 <script setup>
-	import { mapLabels, initReservoirs } from '@/utils/common.js';
+import { mapLabels, initReservoirs } from "@/utils/common.js";
 </script>
 <style scoped lang="scss">
-	.modelToolBar {
-		position: absolute;
-		left: 0;
-		top: 0;
-		z-index: 999;
-		margin: 8px;
-	}
+.iconBox1 {
+  position: absolute;
+  top: 29rem;
+  right: 1rem;
+  padding: 3px;
+  width: 2rem;
+  height: 2rem;
+  background-color: #fff;
+  border-radius: 6px;
+  z-index: 999;
+  cursor: pointer;
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
+.iconBox2 {
+  position: absolute;
+  top: 17rem;
+  right: 1rem;
+  padding: 3px;
+  width: 2rem;
+  height: 2rem;
+  background-color: #fff;
+  border-radius: 6px;
+  z-index: 999;
+  cursor: pointer;
 
-	.water-bartool {
-		margin-top: 10px;
-
-		.waterInfo {
-			font-size: 16px;
-			font-weight: 600;
-			color: red;
-		}
-	}
-
-	.warningHeight {
-		color: red;
-		font-weight: 600;
-	}
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
 </style>
