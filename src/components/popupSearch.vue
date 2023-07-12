@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 20:44:11
- * @LastEditTime: 2023-07-06 09:15:00
+ * @LastEditTime: 2023-07-10 18:02:56
 -->
 <template>
   <div>
@@ -34,7 +34,7 @@
         <span class="self-start text_3">对话记录</span>
         <div class="flex-col group_4 space-y-12" v-for="item in conversations">
           <div class="flex-row justify-end group_5 space-x-5">
-            <div class="flex-col justify-start items-start text-wrapper_2">
+            <div class="flex-col justify-cneter items-center text-wrapper_2">
               <span class="text_4">{{ item.q }}</span>
             </div>
             <img
@@ -47,7 +47,7 @@
               class="image_4"
               src="https://codefun-proj-user-res-1256085488.cos.ap-guangzhou.myqcloud.com/618880640163bf0011e2e0b2/64914e4f54fe0000116a6d3f/16885501568338949860.png"
             />
-            <div class="flex-col justify-start text-wrapper_3">
+            <div class="flex-col justify-center text-wrapper_3">
               <span class="font_1 text_5">{{ item.ans }}</span>
             </div>
           </div>
@@ -68,12 +68,7 @@ import request from "../utils/request";
 
 const searchVal = { name: "" };
 
-const conversations = reactive([
-  {
-    q: "告诉我东江流域中的东源江的长度是多少",
-    ans: "长度的值是24",
-  },
-]);
+const conversations = reactive([]);
 
 const anchors = [
   125,
@@ -102,23 +97,21 @@ const onSearch = () => {
   });
 
   request({
-    url: "/gpt/exec",
+    url: "/gpt/exec/",
     method: "post",
-    data: {
+    data: qs.stringify({
       ori: searchVal.name,
-    },
+    }),
   }).then((res) => {
     console.log(res);
-    conversations.push({
-      ans: res.data,
-    });
+    conversations[conversations.length - 1].ans = res.result;
   });
 
   if (searchVal.name.length > 0) {
     axios
       .post(IP_ADDRESS_WMS3 + "searchDongjiangList", qs.stringify(searchVal))
       .then((res) => {
-        console.log('res',res);
+        console.log("res", res);
         console.log("res.data.data.length", res.data.data.length);
         if (res.data.data.length == 1) {
           //获取经纬度
@@ -193,12 +186,13 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
   line-height: 0.84rem;
 }
 .section_4 {
-  padding: 0.75rem 0.63rem 23.13rem;
+  padding: 0.75rem 0.63rem 25.13rem;
   background-color: #ffffff;
 }
 
 .space-y-16 {
   overflow-y: scroll;
+  overflow-x: hidden;
   height: 100%;
 }
 
@@ -224,16 +218,20 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
   margin-left: 0.31rem;
 }
 .text-wrapper_2 {
-  padding: 0.63rem 0;
+  word-wrap: normal;
+  word-break: break-all;
+  max-width: 80%;
   border-radius: 10px;
+  padding: 0.4rem;
   background-color: #cdf4f9;
+  justify-content: center;
 }
 .text_4 {
-  margin: 0 0.5rem;
   color: #000000;
   font-size: 0.88rem;
   font-family: OPPOSans;
   line-height: 1.06rem;
+  width: 100%;
 }
 .image_3 {
   border-radius: 0.13rem;
@@ -248,14 +246,18 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
   height: 1.81rem;
 }
 .text-wrapper_3 {
-  padding: 0.75rem 0;
-  height: 2.25rem;
+  padding: 0.4rem;
+  word-wrap: normal;
+  word-break: break-all;
+  max-width: 80%;
   border-radius: 10px;
-
   background-color: #f5f5f5;
 }
 .text_5 {
-  margin: 0 0.5rem;
   color: #000000;
+  font-size: 0.88rem;
+  font-family: OPPOSans;
+  line-height: 1.06rem;
+  width: 100%;
 }
 </style>

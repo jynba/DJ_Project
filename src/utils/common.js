@@ -84,7 +84,9 @@ export function initRiver() {
 
 
 	// 默认显示3级河流
-	let showRiver5 = layerShow(5, true);
+	let showRiver7 = layerShow(7, true);
+	let showRiver6
+	let showRiver5
 	let showRiver4;
 	let showRiver3;
 	let showRiver2;
@@ -122,7 +124,12 @@ export function initRiver() {
 				});
 			}, 500)();
 		}
-		if (height > 200000 && height < 300000) {
+		if (height >= 600000 && height < 680000) {
+			showRiver6 = layerShow(6)
+		}
+		else if (height >= 350000 && height < 600000) {
+			showRiver5 = layerShow(5)
+		} else if (height > 200000 && height < 350000) {
 			showRiver4 = layerShow(4);
 
 		} else if (height <= 200000 && height > 100000) {
@@ -133,7 +140,7 @@ export function initRiver() {
 		} else if (height <= 30000) {
 			showRiver1 = layerShow(1);
 		} else {
-			layerShow(5)
+			showRiver7 = layerShow(7)
 		}
 	});
 }

@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-06 18:21:24
+ * @LastEditTime: 2023-07-10 15:33:20
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -148,7 +148,11 @@ const selectRiver = async (movement) => {
   const latitude = Cesium.Math.toDegrees(cartographic.latitude);
   const height = Math.ceil(window.viewer.camera.positionCartographic.height);
   let index;
-  if (height > 300000) {
+
+  if (height > 350000) {
+    index = 7;
+  }
+  if (height > 300000 && height < 350000) {
     index = 6;
   }
   if (height < 300000 && height > 200000) {
@@ -183,13 +187,14 @@ const selectRiver = async (movement) => {
 const showDetail = (data) => {
   return request({
     url: "/api/getDongjiangRiverLog",
-    method: "POST",
+    method: "post",
     data: {
       hierarcode: data.hierarcode,
       tablename: "dongjiang_log", //查询是否已有记录
       basincode: data.basincode,
       regioncode: data.regioncode,
     },
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 };
 
@@ -616,9 +621,9 @@ onMounted(() => {
   //   style: "default",
   //   tileMatrixSetID: "w",
   // });
-  // const dongjiangbound = new Cesium.WebMapServiceImageryProvider({
+  // const dongjiangbound6 = new Cesium.WebMapServiceImageryProvider({
   //   url: IP_ADDRESS_WMS + "geoserver/dongjiang/wms",
-  //   layers: "dongjiang:dongjiang_bound7",
+  //   layers: "dongjiang:dongjiang_bound6",
   //   parameters: {
   //     service: "WMS",
   //     format: "image/png",
@@ -654,7 +659,7 @@ onMounted(() => {
   initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  // showArea();
+  showArea();
 });
 </script>
 <style lang="scss">

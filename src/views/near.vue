@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-08 15:39:02
+ * @LastEditTime: 2023-07-10 20:41:22
 -->
 <template>
   <div class="near_box">
@@ -17,6 +17,7 @@
           <van-dropdown-item
             v-model="currentSelectedValue"
             :options="cityOption1"
+            @change="handleDropdownChange"
           />
         </van-dropdown-menu>
 
@@ -42,7 +43,7 @@
         >
           <van-image
             :src="item.image"
-            @click="clickClassification(index)"
+            @click="clickClassification(item, index)"
             fit="contain"
             :class="{ selected: index == selectedImage }"
           />
@@ -54,11 +55,7 @@
     <div class="noticebar">
       <van-swipe class="wanring-swipe" :autoplay="3000" indicator-color="gray">
         <van-swipe-item v-for="item in warningCityArr" :key="item.city">
-          <van-image
-            class="swiperImage"
-            src="./wind/wind-yellow.png"
-            fit="contain"
-          />
+          <van-image class="swiperImage" :src="item.pic" fit="contain" />
           <div class="wanrn_detaill">
             <div>{{ item.publishtime }}</div>
             <div>{{ item.city }}</div>
@@ -71,18 +68,17 @@
     <!-- 分类详情页 -->
     <div class="classification">
       <van-row
-        v-show="detailData.length >= 0"
         v-for="item in detailData"
         :key="item.text"
         class="each_classify"
         justify="center"
       >
         <van-col span="10">
-          <van-image class="swiperImage" :src="item.image" fit="cover" />
+          <van-image class="swiperImage" src="./no-image.png" fit="cover" />
         </van-col>
         <van-col class="each_classify_detail" span="14">
-          <div>{{ item.city }}</div>
-          <div>{{ item.text }}</div>
+          <div>{{ item.name }}</div>
+          <div>{{ item.intro }}</div>
         </van-col>
       </van-row>
 
@@ -97,28 +93,101 @@ import axios from "axios";
 import $ from "jquery";
 import qs from "qs";
 import nearSearch from "../components/nearSearch.vue";
-
 onMounted(() => {
   //获取当前定位
-  getCurrentLocation();
+  // getCurrentLocation();
   //获取预警数据
   getwarningData();
-  //默认显示第一个数据
-  clickClassification(0);
   //获取详情数据
-  getDetailData();
+
+  getDetailData("hydrographicStation", currentCity.value);
 });
+
+const allWarnImg = [
+  "冰雹橙色.png",
+  "冰雹红色.png",
+  "冰雹黄色.png",
+  "台风橙色.png",
+  "台风红色.png",
+  "台风蓝色.png",
+  "台风黄色.png",
+  "大雾橙色.png",
+  "大雾红色.png",
+  "大雾蓝色.png",
+  "大雾黄色.png",
+  "大风橙色.png",
+  "大风红色.png",
+  "大风蓝色.png",
+  "大风黄色.png",
+  "干旱橙色.png",
+  "干旱红色.png",
+  "干旱蓝色.png",
+  "干旱黄色.png",
+  "暴雨橙色.png",
+  "暴雨红色.png",
+  "暴雨蓝色.png",
+  "暴雨黄色.png",
+  "暴雪橙色.png",
+  "暴雪红色.png",
+  "暴雪蓝色.png",
+  "暴雪黄色.png",
+  "沙尘暴橙色.png",
+  "沙尘暴红色.png",
+  "沙尘暴蓝色.png",
+  "沙尘暴黄色.png",
+  "海上大雾橙色.png",
+  "海上大风橙色.png",
+  "海上大风蓝色.png",
+  "海上大风黄色.png",
+  "雷暴大雨红色.png",
+  "雷暴大风橙色.png",
+  "雷暴大风蓝色.png",
+  "雷暴大风黄色.png",
+  "雷电橙色.png",
+  "雷电红色.png",
+  "雷电蓝色.png",
+  "雷电黄色.png",
+  "雷雨大风橙色.png",
+  "雷雨大风红色.png",
+  "雷雨大风蓝色.png",
+  "雷雨大风黄色.png",
+  "高温橙色.png",
+  "高温红色.png",
+  "高温蓝色.png",
+  "高温黄色.png",
+];
 
 const currentSelectedValue = ref(1);
 const cityOption1 = [
-  // { text: "当前定位", value: 0 },
-  { text: "东莞", value: 1 },
-  { text: "河源", value: 2 },
-  { text: "惠州", value: 3 },
-  { text: "深圳", value: 4 },
-  { text: "广州", value: 5 },
-  { text: "韶关", value: 6 },
+  { text: "东莞市", value: 0 },
+  { text: "河源市", value: 1 },
+  { text: "惠州市", value: 2 },
+  { text: "深圳市", value: 3 },
+  { text: "广州市", value: 4 },
+  { text: "韶关市", value: 5 },
+  { text: "梅州市", value: 6 },
 ];
+
+/**
+ * @Author: 朱海东
+ * @Date: 2023-07-10 09:59:30
+ * @name: handleDropdownChange
+ * @msg: 选择下拉框触发
+ * @return {*}
+ */
+let currentCity = ref("东莞市");
+const handleDropdownChange = (val) => {
+  console.log("val", val);
+  let city = cityOption1.find((item, index) => {
+    return index == val;
+  });
+  currentCity.value = city.text;
+  //获取下方详情数据  切换默认显示水文站数据
+  getDetailData("hydrographicStation", currentCity.value);
+  if (detailData.length >= 0) {
+    clickClassification(0);
+  }
+};
 
 /**
  * @Author: 朱海东
@@ -152,7 +221,6 @@ const getwarningData = () => {
     url: "http://open.gd121.cn/share/data/getYJ.do?type=json&key=0b9fdc1c7526ae60e6ba59f82453aa3a&logType=warn",
     method: "get",
     success: function (res) {
-      console.log(res, "数据判断");
       warningCityArr.push(res.东莞[0]);
       warningCityArr.push(res.河源[0]);
       warningCityArr.push(res.惠州[0]);
@@ -160,26 +228,53 @@ const getwarningData = () => {
       warningCityArr.push(res.广州[0]);
       warningCityArr.push(res.韶关[0]);
       //
+
       warningCityArr.forEach((item) => {
         item.publishtime = formatDate(item.publishtime);
       });
+
+      warningCityArr.forEach((city) => {
+        const matchingImg = allWarnImg.find((img) => img.includes(city.warn));
+        if (matchingImg) {
+          city.pic = `./warning/${matchingImg}`;
+        }
+      });
+
       console.log("warningCityArr", warningCityArr);
+
+      // console.log("warningCityArr", warningCityArr);
     },
   });
 };
 
 //分类数据
 const gridItems = [
-  { image: "./classIcon/stations.png", text: "水文站" },
-  { image: "./classIcon/aqueduct.png", text: "人工渠" },
-  { image: "./classIcon/river.png", text: "河流" },
-  { image: "./classIcon/lake.png", text: "湖泊" },
-  { image: "./classIcon/disaster.png", text: "灾害" },
-  { image: "./classIcon/humanact.png", text: "人文活动" },
-  { image: "./classIcon/cityview.png", text: "城市景点" },
-  { image: "./classIcon/heritage.png", text: "文化遗产" },
-  { image: "./classIcon/museum.png", text: "博物馆" },
-  { image: "./classIcon/more.png", text: "更多" },
+  {
+    image: "./classIcon/stations.png",
+    text: "水文站",
+    type: "hydrographicStation",
+  },
+  {
+    image: "./classIcon/aqueduct.png",
+    text: "人工渠",
+    type: "artificialCanal",
+  },
+  { image: "./classIcon/river.png", text: "河流", type: "river" },
+  { image: "./classIcon/lake.png", text: "湖泊", type: "lake" },
+  { image: "./classIcon/disaster.png", text: "灾害", type: "disaster" },
+  {
+    image: "./classIcon/humanact.png",
+    text: "人文活动",
+    type: "humanisticActivity",
+  },
+  { image: "./classIcon/cityview.png", text: "城市景点", type: "" },
+  {
+    image: "./classIcon/heritage.png",
+    text: "文化遗产",
+    type: "culturalHeritage",
+  },
+  { image: "./classIcon/museum.png", text: "博物馆", type: "museum" },
+  { image: "./classIcon/more.png", text: "更多", type: "" },
 
   // 继续添加更多格子的图片和文字
 ];
@@ -248,13 +343,11 @@ let detailData = reactive([]);
  * @return {*}
  */
 const selectedImage = ref(null);
-const clickClassification = (clickIndex) => {
+const clickClassification = (item, clickIndex) => {
   selectedImage.value = clickIndex;
-  const filterArr = cateData.filter((item, index) => index === clickIndex);
   detailData.length = 0; // 清空现有数据
-  filterArr.forEach((item) => {
-    detailData.push(item); // 将每个项目添加到detailData
-  });
+  //获取对应的城市类型数据
+  getDetailData(item.type, currentCity.value);
 };
 
 /**
@@ -272,6 +365,7 @@ const getCurrentLocation = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log("position", position);
         latitude.value = position.coords.latitude;
         longitude.value = position.coords.longitude;
         // 转换为普通数据
@@ -280,11 +374,8 @@ const getCurrentLocation = () => {
         error.value = null;
 
         getExitLocationName(lon, lat).then((location) => {
-          console.log(location);
           if (location.street) {
-            console.log();
-            console.log("location.street", location.street);
-            currentLocation.value = location.street;
+            currentLocation.value = location;
           }
         });
       },
@@ -306,14 +397,27 @@ const getCurrentLocation = () => {
  * @msg: 获取分类详情的数据
  * @return {*}
  */
-const getDetailData = () => {
-  const params = {
-    type: "lake",
+const getDetailData = (type, city) => {
+  console.log("city", city);
+  const params2 = {
+    type: type,
+    localtion: {
+      district: "",
+      nation: "中国",
+      province: "广东省",
+      city: city,
+      street: "",
+      street_number: "",
+    },
   };
+
   axios
-    .post(IP_ADDRESS_WMS3 + "getDongjiangTypeList", qs.stringify(params))
+    .post(IP_ADDRESS_WMS3 + "getDongjiangTypeList", qs.stringify(params2))
     .then((res) => {
       console.log("分类数据", res);
+      res.data.data.forEach((item) => {
+        detailData.push(item);
+      });
     })
     .catch((err) => {
       console.error(err);
@@ -360,7 +464,7 @@ const getDetailData = () => {
   flex-basis: 20%;
   .van-image {
     width: 60%;
-    height: 60%;
+    height: 70%;
   }
 }
 .selected {
@@ -425,8 +529,16 @@ const getDetailData = () => {
       flex-direction: column;
       justify-content: space-between;
       div:first-child {
-        font-size: 1.625rem;
+        height: 3rem;
+        font-size: 1.325rem;
         font-weight: 500;
+      }
+      div:nth-child(2) {
+        height: 4rem;
+        line-height: 1.05rem;
+        overflow: auto;
+        text-overflow: ellipsis;
+        // white-space: nowrap;
       }
     }
   }

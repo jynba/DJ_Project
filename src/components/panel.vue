@@ -192,6 +192,7 @@ const submitRiverNameForm = () => {
     data: tmp,
   })
     .then((res) => {
+      console.log(tmp, "tmp");
       console.log(res, "改名成功");
       removeRiverNameForm();
       SUBMIT_FLAG = false;
@@ -250,6 +251,7 @@ const submitRiverLogForm = () => {
     data: tmp,
   })
     .then((res) => {
+      console.log(res, tmp, "res");
       //隐藏table
       emit("close", false);
       //隐藏高亮
