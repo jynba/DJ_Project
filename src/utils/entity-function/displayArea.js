@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-11 09:44:09
+ * @LastEditTime: 2023-07-12 18:08:43
  */
 /*
  * @Descripttion: 用于控制实体
@@ -373,13 +373,11 @@ function clickBuildingEntity() {
               )
               .then((res) => {
                 //提取表名
+                console.log("res.sdasdasf.data", res.data.data);
                 const filterName = extractPrefix(requestData.tablename);
-                // console.log("res.data.data", res.data.data);
+
                 const RiverChief = res.data.data.find((i, index) => {
-                  // console.log("i.data.level", i.data.level);
-                  // console.log("filterName", filterName);
                   if (i.data.level != filterName) {
-                    console.log("111");
                     return index == 0;
                   } else {
                     return i.data.level == filterName;

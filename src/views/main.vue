@@ -2,7 +2,7 @@
  * @Author: GRIT
  * @Date: 2023-05-15 19:35:29
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2023-07-12 16:35:09
+ * @LastEditTime: 2023-07-12 19:05:55
  * @FilePath: \DJ_Project\dj-project\src\views\main.vue
  * @Description: 
 -->
@@ -26,6 +26,7 @@
   <map-viewer id="map_viewer"></map-viewer>
 </template>
 <script setup>
+import axios from "axios";
 import $ from "jquery";
 import { showArea } from "../utils/entity-function/displayArea";
 import loadRiver from "../components/loadRiver.vue";
@@ -512,33 +513,44 @@ const clickLeftMouseFunction = () => {
         let getRiverExit = await getExitLocationName(
           res.data.outletx,
           res.data.outlety,
-        );
-        console.log("getRiverExit", getRiverExit);
-        const riverExitText = getRiverExit.district
-          ? getRiverExit.city + getRiverExit.district
-          : "暂无内容";
-        // console.log("riverExitText", riverExitText);
-        //传值给详情detailpanel组件
-        // let encyclopediaData = {
-        //   encyclopediaShow: true,
-        //   name: res.data.name,
-        //   sub_area: res.data.sub_area,
-        //   cnl_len: res.data.cnl_len,
-        //   riverExitText: riverExitText,
-        // };
 
-        // app.config.globalProperties.$eventBus.emit(
-        //   "encyclopedia",
-        //   encyclopediaData,
-        // );
+        ).then((localRes) => {
+          //河段所属城市范围
+          let encyclopediaData = {
+            encyclopediaShow: true,
+            level: res.data.level,
+            name: res.data.name,
+            sub_area: res.data.upsubarea,
+            cnl_len: res.data.cnl_len,
+            riverExitText: localRes.distri
+              ? localRes.city + localRes.district
+              : "暂无内容",
+          };
+          //查找河长
+          getRiverChief(localRes, encyclopediaData);
+        });
 
-        console.log(res.data, "resdata");
-        // const {}
-        // const res2 = await request({
-        //   url: "/api/testBound",
-        //   method: "post",
-        //   data: ,
-        // });
+        function getRiverChief(res, encyclopediaData) {
+          let scope = {
+            city: res.city,
+            district: res.district,
+          };
+
+          axios
+            .post(
+              IP_ADDRESS_WMS3 + "getDongjiangChief",
+              qs.stringify({ scope: scope }),
+            )
+            .then((chiefRes) => {
+              encyclopediaData.Chief = chiefRes.data.data;
+              //传值给百科组件
+              app.config.globalProperties.$eventBus.emit(
+                "encyclopedia",
+                encyclopediaData,
+              );
+            });
+        }
+
       }
     }, 500)();
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
