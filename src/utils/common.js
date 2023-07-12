@@ -45,6 +45,7 @@ export function layerShow(river_index, isShow = true) {
 	})
 	// 获取图层索引，通过show显示与隐藏
 	DONGJIANG_RIVERS[river_index].show = isShow;
+	// window.viewer.resize();
 }
 /**
  * 变量名：initReservoirs

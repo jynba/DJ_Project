@@ -517,20 +517,20 @@ const clickLeftMouseFunction = () => {
         const riverExitText = getRiverExit.district
           ? getRiverExit.city + getRiverExit.district
           : "暂无内容";
-        // console.log("riverExitText", riverExitText);
-        //传值给详情detailpanel组件
-        // let encyclopediaData = {
-        //   encyclopediaShow: true,
-        //   name: res.data.name,
-        //   sub_area: res.data.sub_area,
-        //   cnl_len: res.data.cnl_len,
-        //   riverExitText: riverExitText,
-        // };
+        console.log("riverExitText", riverExitText);
+        // 传值给详情detailpanel组件;
+        let encyclopediaData = {
+          encyclopediaShow: true,
+          name: res.data.name,
+          sub_area: res.data.sub_area,
+          cnl_len: res.data.cnl_len,
+          riverExitText: riverExitText,
+        };
 
-        // app.config.globalProperties.$eventBus.emit(
-        //   "encyclopedia",
-        //   encyclopediaData,
-        // );
+        app.config.globalProperties.$eventBus.emit(
+          "encyclopedia",
+          encyclopediaData,
+        );
 
         console.log(res.data, "resdata");
         // const {}
