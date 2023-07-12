@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-10 20:41:22
+ * @LastEditTime: 2023-07-11 08:49:44
 -->
 <template>
   <div class="near_box">
@@ -157,7 +157,7 @@ const allWarnImg = [
   "高温黄色.png",
 ];
 
-const currentSelectedValue = ref(1);
+const currentSelectedValue = ref(0);
 const cityOption1 = [
   { text: "东莞市", value: 0 },
   { text: "河源市", value: 1 },
@@ -177,7 +177,6 @@ const cityOption1 = [
  */
 let currentCity = ref("东莞市");
 const handleDropdownChange = (val) => {
-  console.log("val", val);
   let city = cityOption1.find((item, index) => {
     return index == val;
   });
