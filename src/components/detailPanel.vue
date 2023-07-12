@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-10 17:21:21
+ * @LastEditTime: 2023-07-12 16:18:53
 -->
 <template>
   <div>
@@ -19,7 +19,11 @@
         <van-cell :title="detailInfo.name" class="cell_title" />
         <div class="intr_detaill">
           <div>河长:{{ detailInfo.riverChief }}</div>
-          <div style="margin-top: 1rem">{{ detailInfo.introduction }}</div>
+          <div v-for="paragraph in naturalParagraphs">
+            <p style="text-indent: 2rem; line-height: 1.5rem">
+              {{ paragraph }}
+            </p>
+          </div>
           <img
             v-if="detailInfo.pic != ''"
             :src="detailInfo.pic"
@@ -37,6 +41,15 @@
 import { reactive, ref } from "vue";
 import { app } from "../main.js";
 
+app.config.globalProperties.$eventBus.on("detail", (detail) => {
+  popupShow.value = detail.popupShow;
+  detailInfo.name = detail.name;
+  detailInfo.introduction = detail.intr == "" ? "" : detail.intr;
+  detailInfo.pic = detail.pic == "" ? "" : detail.pic;
+  detailInfo.riverChief = detail.riverChief;
+  let arr = splitIntoParagraphs(detailInfo.introduction);
+});
+
 const popupShow = ref(false);
 const detailInfo = reactive({
   name: "",
@@ -44,14 +57,20 @@ const detailInfo = reactive({
   pic: "",
   riverChief: "",
 });
-app.config.globalProperties.$eventBus.on("detail", (detail) => {
-  popupShow.value = detail.popupShow;
-  detailInfo.name = detail.name;
-  detailInfo.introduction = detail.intr == "" ? "暂无数据" : detail.intr;
-  detailInfo.pic = detail.pic == "" ? "" : detail.pic;
-  detailInfo.riverChief = detail.riverChief;
-  console.log("detailInfo.riverChief", detailInfo.riverChief);
-});
+
+//切割段落
+const naturalParagraphs = reactive([]);
+const splitIntoParagraphs = (paragraph) => {
+  const cleanedParagraph = paragraph.replace(/\[.*?\]/g, "");
+  const sentences = cleanedParagraph.split("。");
+
+  for (let i = 0; i < sentences.length; i += 3) {
+    const paragraphSentences = sentences.slice(i, i + 3);
+    const naturalParagraph = paragraphSentences.join("。");
+    naturalParagraphs.push(naturalParagraph);
+  }
+  return naturalParagraphs;
+};
 </script>
 
 <style scoped>

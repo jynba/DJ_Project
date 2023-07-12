@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-27 16:29:41
- * @LastEditTime: 2023-07-10 17:55:16
+ * @LastEditTime: 2023-07-11 09:44:09
  */
 /*
  * @Descripttion: 用于控制实体
@@ -373,7 +373,7 @@ function clickBuildingEntity() {
               .then((res) => {
                 //提取表名
                 const filterName = extractPrefix(requestData.tablename);
-                console.log("res.data.data", res.data.data);
+                // console.log("res.data.data", res.data.data);
                 const RiverChief = res.data.data.find((i, index) => {
                   // console.log("i.data.level", i.data.level);
                   // console.log("filterName", filterName);
@@ -393,7 +393,7 @@ function clickBuildingEntity() {
                   riverChief:
                     RiverChief == undefined ? "" : RiverChief.data.name,
                 };
-                console.log("detailObj", detailObj);
+                // console.log("detailObj", detailObj);
                 detailObj.info = res.data.data;
 
                 //传值给详情detailpanel组件
