@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-12 19:14:42
+ * @LastEditTime: 2023-07-12 19:58:25
 -->
 <template>
   <div>
@@ -27,7 +27,9 @@
           <div>流域面积：{{ riverDetailInfo.scopeArea }}</div>
           <div>河网长度:{{ riverDetailInfo.riverLength }}</div>
           <div>河段出口:{{ riverDetailInfo.riverExit }}</div>
-          <div>河长:{{ riverDetailInfo.chiefName }}</div>
+          <div>
+            河长:{{ riverDetailInfo.chiefName }} {{ riverDetailInfo.job }}
+          </div>
         </div>
       </div>
     </van-popup>
@@ -55,13 +57,15 @@ app.config.globalProperties.$eventBus.on("encyclopedia", (encyclopedia) => {
   if (encyclopedia.level == 7) {
     //东江流域河长
     riverDetailInfo.chiefName = "黄坤明";
+    riverDetailInfo.job = "广东省省委书记";
   } else if (encyclopedia.level == 6) {
     //市级河长
-
     riverDetailInfo.chiefName = encyclopedia.Chief[0].data.name;
+    riverDetailInfo.job = encyclopedia.Chief[1].data.job;
   } else if (encyclopedia.level >= 1 && encyclopedia.level <= 5) {
     //县镇级河长
     riverDetailInfo.chiefName = encyclopedia.Chief[1].data.name;
+    riverDetailInfo.job = encyclopedia.Chief[1].data.job;
   }
 });
 
@@ -77,6 +81,7 @@ const riverDetailInfo = reactive({
   liveTraffic: "",
   riverInfoCode: "",
   chiefName: "",
+  job: "",
   //更多信息
 });
 
