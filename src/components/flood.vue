@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="jy-flood">
     <div class="jy-flood__inner" @click="toggleFlood()"></div>
   </div>

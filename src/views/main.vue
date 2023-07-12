@@ -11,6 +11,7 @@
     <loadRiver />
     <flood />
     <changeLayer />
+    <currentLocation />
     <panel
       :show-panel="showPanel"
       :has-last="hasLast"
@@ -30,6 +31,7 @@ import popupSearch from "../components/popupSearch.vue";
 import detailPanel from "../components/detailPanel.vue";
 import changeLayer from "../components/changeLayer.vue";
 import flood from "../components/flood.vue";
+import currentLocation from "../components/currentLocation.vue";
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
 import { onDeactivated, onMounted, reactive } from "vue";
@@ -649,8 +651,8 @@ onMounted(() => {
   // city.style = heightStyle;
 
   viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
-  // initRiver(); //分层级加载河流
-  // clickLeftMouseFunction();
+  initRiver(); //分层级加载河流
+  clickLeftMouseFunction();
   clickRightMouseFunction();
   // showArea();
 });
