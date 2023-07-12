@@ -33,9 +33,13 @@
   </van-popup>
 </template>
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import * as Cesium from "cesium";
 import img1 from "@/assets/tdt.png";
 import img2 from "@/assets/tdtyx.png";
+import img3 from "@/assets/tdtsg.png";
+import img4 from "@/assets/tdtbz.png";
+import { watch } from "vue";
 const showPopup = ref(false);
 const layers = ref([
   {
@@ -48,12 +52,189 @@ const layers = ref([
     isSelected: false,
     name: "天地图影像",
   },
+  {
+    src: img3,
+    isSelected: false,
+    name: "栅格地图",
+  },
 ]);
 const toggleImageHighlight = (index) => {
   layers.value.forEach((layers, i) => {
     layers.isSelected = i === index;
   });
+  console.log(index);
+  const token = "7998f96b301cf185de722d8dadab0479";
+  window.viewer.imageryLayers.remove(window.viewer.imageryLayers.get(0));
+  if (index == 0) {
+    //矢量地图
+    window.viewer.imageryLayers.addImageryProvider(
+      new Cesium.WebMapTileServiceImageryProvider({
+        url:
+          "http://{s}.tianditu.gov.cn/vec_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+          "&LAYER=vec&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+          `&style=default&format=tiles&tk=${token}`,
+        layer: "tdtCva",
+        style: "default",
+        format: "tiles",
+        tileMatrixSetID: "c",
+        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+        ],
+        maximumLevel: 18,
+      }),
+      0,
+    );
+  } else if (index == 1) {
+    //影像地图
+    window.viewer.imageryLayers.addImageryProvider(
+      new Cesium.WebMapTileServiceImageryProvider({
+        url:
+          "http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+          "&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+          `&style=default&format=tiles&tk=${token}`,
+        layer: "tdtCva",
+        style: "default",
+        format: "tiles",
+        tileMatrixSetID: "c",
+        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+        ],
+        maximumLevel: 18,
+      }),
+      0,
+    );
+  } else if (index == 2) {
+    //栅格地图
+    window.viewer.imageryLayers.addImageryProvider(
+      new Cesium.WebMapTileServiceImageryProvider({
+        url:
+          "http://{s}.tianditu.gov.cn/ter_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+          "&LAYER=ter&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+          `&style=default&format=tiles&tk=${token}`,
+        layer: "tdtCva",
+        style: "default",
+        format: "tiles",
+        tileMatrixSetID: "c",
+        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+        ],
+        maximumLevel: 18,
+      }),
+      0,
+    );
+  } else if (index == 3) {
+    //标记地图
+    window.viewer.imageryLayers.addImageryProvider(
+      new Cesium.WebMapTileServiceImageryProvider({
+        url:
+          "http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+          "&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+          `&style=default&format=tiles&tk=${token}`,
+        layer: "tdtCva",
+        style: "default",
+        format: "tiles",
+        tileMatrixSetID: "c",
+        subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+        tilingScheme: new Cesium.GeographicTilingScheme(),
+        tileMatrixLabels: [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+        ],
+        maximumLevel: 18,
+      }),
+      0,
+    );
+  }
 };
+const isMounted = ref(false);
+
+onMounted(() => {
+  isMounted.value = true;
+});
+
+watch(isMounted, (newVal) => {
+  if (newVal) {
+    // 在父组件的 mounted 钩子函数执行完毕后执行子组件的方法
+    toggleImageHighlight(1);
+  }
+});
 </script>
 <style scoped lang="scss">
 @include b(layers) {

@@ -12,7 +12,7 @@ const longitude = ref(null);
 const error = ref(null);
 const currentLocation = ref(null);
 const getCurrentLocation = () => {
-    console.log(navigator.geolocation);
+  console.log(navigator.geolocation);
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -45,7 +45,7 @@ const getCurrentLocation = () => {
   }
 };
 const flyToLocation = () => {
-    console.log(longitude.value);
+  console.log(longitude.value);
   const destination = Cesium.Cartesian3.fromDegrees(23.037759, 113.771723);
   window.viewer.camera.flyTo({
     destination: destination,
@@ -65,6 +65,8 @@ const flyToLocation = () => {
   background-color: #fff;
   border-radius: 6px;
   z-index: 999;
+  cursor: pointer;
+
   img {
     height: 100%;
     width: 100%;

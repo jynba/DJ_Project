@@ -44,10 +44,7 @@ function flyTo(lon, lat, flyheight) {
  */
 function enlarge() {
   // 定义实际点击放大图标时要飞行的高度
-  let controlHeight = [
-    12027664, 7980832, 3757000, 1398373, 576625, 347833, 212048, 100737, 23516,
-    5000,
-  ];
+  let controlHeight = [0, 680001, 600001, 350001, 200001, 100001, 30001, 5000];
   // 从中心点获取相机位置
   let centerAllResult = viewer.camera.pickEllipsoid(
     new Cesium.Cartesian2(
@@ -63,24 +60,22 @@ function enlarge() {
   // 获取相机的实际高度
   var realheight = Math.ceil(viewer.camera.positionCartographic.height);
   // 根据相机高度进行不同的飞行操作
-  if (realheight > 9927664) {
+  if (realheight > 680001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[1]);
-  } else if (realheight <= 9927664 && realheight > 6034000) {
+  } else if (realheight <= 680001 && realheight > 600001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[2]);
-  } else if (realheight <= 6034000 && realheight > 1480000) {
+  } else if (realheight <= 600001 && realheight > 350001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[3]);
-  } else if (realheight <= 1480000 && realheight > 716747) {
+  } else if (realheight <= 350001 && realheight > 200001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[4]);
-  } else if (realheight <= 716747 && realheight > 436504) {
+  } else if (realheight <= 200001 && realheight > 100001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[5]);
-  } else if (realheight <= 436504 && realheight > 259163) {
+  } else if (realheight <= 100001 && realheight > 30001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[6]);
-  } else if (realheight <= 259163 && realheight > 164934) {
+  } else if (realheight <= 30001 && realheight > 5001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[7]);
-  } else if (realheight <= 164934 && realheight > 36540) {
+  } else if (realheight <= 5001) {
     flyTo(centerlongitude, centerlatitude, controlHeight[8]);
-  } else if (realheight <= 36540 && realheight > 10493) {
-    flyTo(centerlongitude, centerlatitude, controlHeight[9]);
   }
 }
 

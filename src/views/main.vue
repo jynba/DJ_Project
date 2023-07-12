@@ -42,10 +42,9 @@ import currentLocation from "../components/currentLocation.vue";
 
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
-import { onDeactivated, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import * as Cesium from "cesium";
 import { ref } from "vue";
-import { onActivated } from "vue";
 import qs from "qs";
 import { app } from "../main";
 
@@ -158,22 +157,22 @@ const selectRiver = async (movement) => {
   const height = Math.ceil(window.viewer.camera.positionCartographic.height);
   let index;
 
-  if (height > 350000) {
+  if (height >= 680000) {
     index = 7;
   }
-  if (height > 300000 && height < 350000) {
+  if (height >= 600000 && height < 680000) {
     index = 6;
   }
-  if (height < 300000 && height > 200000) {
+  if (height >= 350000 && height < 600000) {
     index = 5;
   }
-  if (height <= 200000 && height > 100000) {
+  if (height >= 200000 && height < 350000) {
     index = 4;
   }
-  if (height <= 150000) {
+  if (height >= 100000 && height < 200000) {
     index = 3;
   }
-  if (height <= 100000) {
+  if (height >= 30000 && height < 100000) {
     index = 2;
   }
   if (height <= 30000) {
@@ -394,10 +393,12 @@ const flytoLastRiverLocation = async (riverdata) => {
   if (typeof res2 == "string") {
     //隐藏高亮
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.scene.requestRender();
   } else {
     //面板跟随显示
     //隐藏高亮river
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.scene.requestRender();
     //创建实体用于点击河段时高亮该河段
     let addRedLine = window.viewer.entities.add({
       name: "Red line on the surface",
@@ -418,6 +419,7 @@ const flytoLastRiverLocation = async (riverdata) => {
       },
     });
     LINE_SEGMENT_LABELING = addRedLine;
+    window.viewer.scene.requestRender();
     publicApi(res[0]);
   }
 };
@@ -433,6 +435,7 @@ const clickRightMouseFunction = () => {
   handler.setInputAction(function (movement) {
     debounce(async function () {
       window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+      window.viewer.scene.requestRender();
       const res = await selectRiver(movement);
       console.log(res);
 
@@ -440,7 +443,7 @@ const clickRightMouseFunction = () => {
       if (res.code == 20000) {
         hasLast.value = false;
         // 再将视角转到河流中心
-        flyToCenter(res.data);
+        // flyToCenter(res.data);
         // 在地球上添加高亮显示当前河流
         window.$selectedRiver = res.data; //把选中命名的河流挂载到window
         let addRedLine = window.viewer.entities.add({
@@ -462,7 +465,7 @@ const clickRightMouseFunction = () => {
           },
         });
         LINE_SEGMENT_LABELING = addRedLine;
-
+        window.viewer.scene.requestRender();
         publicApi(res.data);
       }
     }, 500)();
@@ -480,7 +483,7 @@ const clickLeftMouseFunction = () => {
       console.log("res", res);
       if (res.code == 20000) {
         // 再将视角转到河流中心
-        flyToCenter(res.data);
+        // flyToCenter(res.data);
         // 在地球上添加高亮显示当前河流
         window.$selectedRiver = res.data; //把选中命名的河流挂载到window
         let addRedLine = window.viewer.entities.add({
@@ -502,12 +505,15 @@ const clickLeftMouseFunction = () => {
           },
         });
         console.log(addRedLine);
+        window.viewer.scene.requestRender();
+
         LINE_SEGMENT_LABELING = addRedLine;
         //展示河流百科
 
         let getRiverExit = await getExitLocationName(
           res.data.outletx,
           res.data.outlety,
+
         ).then((localRes) => {
           //河段所属城市范围
           let encyclopediaData = {
@@ -544,6 +550,7 @@ const clickLeftMouseFunction = () => {
               );
             });
         }
+
       }
     }, 500)();
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -636,7 +643,7 @@ onMounted(() => {
     destination: Cesium.Cartesian3.fromDegrees(
       114.72537169973519,
       23.924765567670345,
-      628624,
+      680001,
     ),
     orientation: {
       heading: Cesium.Math.toRadians(360), //方向
@@ -650,44 +657,6 @@ onMounted(() => {
   // window.Cesium.Ion.defaultAccessToken =
   //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZGM4NzQ1MS0yMDdmLTQ4YmQtOGM1Yy02ZDllZjYxY2YyMDUiLCJpZCI6MTM1NDgyLCJpYXQiOjE2ODg1MjAwMDd9.hZyghWRVZzaK-woP45qd63OiEgjn0o5fOLo2JnL90Z0";
 
-  // // 天地图;
-  // const token = "7998f96b301cf185de722d8dadab0479";
-  // const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
-  //   url:
-  //     "http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
-  //     "&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
-  //     `&style=default&format=tiles&tk=${token}`,
-  //   layer: "tdtCva",
-  //   style: "default",
-  //   format: "tiles",
-  //   tileMatrixSetID: "c",
-  //   subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
-  //   tilingScheme: new Cesium.GeographicTilingScheme(),
-  //   tileMatrixLabels: [
-  //     "1",
-  //     "2",
-  //     "3",
-  //     "4",
-  //     "5",
-  //     "6",
-  //     "7",
-  //     "8",
-  //     "9",
-  //     "10",
-  //     "11",
-  //     "12",
-  //     "13",
-  //     "14",
-  //     "15",
-  //     "16",
-  //     "17",
-  //     "18",
-  //     "19",
-  //   ],
-  //   // maximumLevel: 18,
-  //   show: false,
-  // });
-  // viewer.imageryLayers.addImageryProvider(imgLayer);
   // const ciaLayer = new Cesium.WebMapTileServiceImageryProvider({
   //   url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
   //   format: "tiles",
@@ -729,11 +698,11 @@ onMounted(() => {
   // });
   // city.style = heightStyle;
 
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 300; //相机最小缩放距离
   initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  showArea();
+  // showArea();
 });
 </script>
 <style lang="scss">

@@ -32,7 +32,10 @@
 
       <div class="flex-col relative section_4 space-y-16" ref="chatContainer">
         <span class="self-start text_3">对话记录</span>
-        <div class="flex-col group_4 space-y-12" v-for="item in conversations">
+        <div
+          class="flex-col group_4 space-y-12"
+          v-for="item in ConverData.conversations"
+        >
           <div class="flex-row justify-end group_5 space-x-5">
             <div class="flex-col justify-cneter items-center text-wrapper_2">
               <span class="text_4">{{ item.q }}</span>
@@ -48,7 +51,15 @@
               src="https://codefun-proj-user-res-1256085488.cos.ap-guangzhou.myqcloud.com/618880640163bf0011e2e0b2/64914e4f54fe0000116a6d3f/16885501568338949860.png"
             />
             <div class="flex-col justify-center text-wrapper_3">
-              <span class="font_1 text_5">{{ item.ans }}</span>
+              <div class="loading-wrapper" v-show="!item.hasloading">
+                <span class="loading-text">正在加载中</span>
+                <span class="dot-1">.</span>
+                <span class="dot-2">.</span>
+                <span class="dot-3">.</span>
+              </div>
+              <span class="font_1 text_5" v-show="item.hasloading">{{
+                item.ans
+              }}</span>
             </div>
           </div>
         </div>
@@ -61,14 +72,14 @@
 import axios from "axios";
 import { ref, reactive } from "vue";
 import qs from "qs";
-import { onMounted } from "vue";
-import { onUpdated } from "vue";
+
 import { nextTick } from "vue";
 import request from "../utils/request";
 
 const searchVal = { name: "" };
-
-const conversations = reactive([]);
+const ConverData = reactive({
+  conversations: [],
+});
 
 const anchors = [
   125,
@@ -91,20 +102,24 @@ const handleSearchFocus = () => {
 const onSearch = () => {
   scrollToBottom();
   console.log(searchVal.name);
-  // 填加问题记录
-  conversations.push({
+  let conversations_item = {
     q: searchVal.name,
-  });
+    hasloading: false,
+  };
+  // 填加问题记录
+  ConverData.conversations.push(conversations_item);
 
   request({
     url: "/gpt/exec/",
     method: "post",
     data: qs.stringify({
-      ori: searchVal.name,
+      ori: conversations_item.q,
     }),
   }).then((res) => {
+    conversations_item.hasloading = true;
     console.log(res);
-    conversations[conversations.length - 1].ans = res.result;
+    ConverData.conversations[ConverData.conversations.length - 1].ans =
+      res.result;
   });
 
   if (searchVal.name.length > 0) {
@@ -180,6 +195,47 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
 </script>
 
 <style scoped lang="scss">
+.loading-wrapper {
+  font-size: 0.88rem;
+}
+
+@keyframes loading {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.loading-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.loading-text {
+  animation: loading 1.5s infinite;
+}
+
+.dot-1,
+.dot-2,
+.dot-3 {
+  animation: loading 1.5s infinite;
+  animation-delay: 0.5s;
+  opacity: 0.3;
+}
+
+.dot-2 {
+  animation-delay: 1s;
+}
+
+.dot-3 {
+  animation-delay: 1.5s;
+}
+
 .font_1 {
   font-size: 0.88rem;
   font-family: OPPOSans;

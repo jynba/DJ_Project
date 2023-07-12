@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="jy-flood">
     <div class="jy-flood__inner" @click="toggleFlood()"></div>
   </div>
@@ -9,6 +9,9 @@
       <div class="app-container">
         <el-button type="primary" @click="drawExtent" :disabled="isDraw"
           >绘制范围</el-button
+        >
+        <el-button type="primary" @click="finishDraw" :disabled="isDraw"
+          >完成绘制</el-button
         >
         <el-button type="primary" @click="induationAnalysis" :disabled="!isDraw"
           >淹没分析</el-button
@@ -43,381 +46,396 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import * as turf from "@turf/turf";
-import { reactive } from "vue";
-import { ref } from "vue";
-import { onBeforeUnmount } from "vue";
-// 飞到东中路
-const flyToLocation = () => {
-  const latitude = 23.037759;
-  const longitude = 113.771723;
-  const height = 1000;
+import { ElNotification } from "element-plus";
 
-  const destination = Cesium.Cartesian3.fromDegrees(
-    longitude,
-    latitude,
-    height,
-  );
-  window.viewer.camera.flyTo({
-    destination: destination,
-    duration: 5,
-    complete: function () {
-      showFlood.value = !showFlood.value;
-    },
-  });
-};
-const toggleFlood = () => {
-  flyToLocation();
-};
-
-let activeShapePoints = reactive([]);
+let activeShapePoints = [];
 let floatingPoint = undefined;
 let activeShape = undefined;
 let handler = undefined;
-
-let isDraw = ref(false);
-let maxWaterHeight = ref(2000);
-let minWaterHeight = ref(0);
-let warningWaterHeight = ref(0); // 预警高度
-let waterHeight = ref(0);
-let waterHeightShow = false;
-let speed = ref("1");
-let waterHeightTimeer = 0;
-let waterPrimitive = undefined;
-let tempEntities = reactive([]);
-let warningWaterHeightDisabled = ref(false);
-const showFlood = ref(false);
-onBeforeUnmount(() => {
-  // 关闭当前组件之前清除所有数据
-  handCloserModel();
-});
-
-const handCloserModel = () => {
-  clearAllEntities();
-};
-/**
- * @author:
- * @Date: 2022-11-13 16:44:02
- * @note: 注意事项
- * @description: 绘制范围
- */
-const drawExtent = () => {
-  if (
-    window.viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider
-  ) {
-    ElNotification({
-      type: "warning",
-      message: "请先开启地形！",
-    });
-    return;
-  }
-  // 开启深度检测
-  window.viewer.scene.globe.depthTestAgainstTerrain = true;
-  handler = new Cesium.ScreenSpaceEventHandler(window.viewer.canvas);
-
-  handler.setInputAction((event) => {
-    const earthPosition = viewer.scene.pickPosition(event.position);
-    if (Cesium.defined(earthPosition)) {
-      if (activeShapePoints.length === 0) {
-        floatingPoint = createPoint(earthPosition);
-        activeShapePoints.push(earthPosition);
-        const dynamicPositions = new Cesium.CallbackProperty(function () {
-          return new Cesium.PolygonHierarchy(activeShapePoints);
-        }, false);
-        activeShape = drawShape(dynamicPositions, Cesium.Color.RED);
+let lastStage = null;
+export default {
+  data() {
+    return {
+      switchActive: true,
+      modelToolBarIsShow: true,
+      isDraw: false,
+      maxWaterHeight: 2000,
+      minWaterHeight: 0,
+      warningWaterHeight: 0, // 预警高度
+      waterHeight: 0,
+      waterHeightShow: false,
+      speed: "1",
+      waterHeightTimeer: 0,
+      waterPrimitive: undefined,
+      tempEntities: [],
+      warningWaterHeightDisabled: false,
+      // 下雨特效
+      showFlood: false,
+    };
+  },
+  beforeDestroy() {
+    // 关闭当前组件之前清除所有数据
+    this.handCloserModel();
+  },
+  methods: {
+    // 清除特效
+    removeStage() {
+      lastStage && window.viewer.scene.postProcessStages.remove(lastStage),
+        (lastStage = null);
+    },
+    rain() {
+      this.removeStage();
+      var e = new Cesium.PostProcessStage({
+        name: "czm_rain",
+        fragmentShader: FS_Rain(),
+      });
+      viewer.scene.postProcessStages.add(e), (lastStage = e);
+      function FS_Rain() {
+        return "uniform sampler2D colorTexture;\n\
+        varying vec2 v_textureCoordinates;\n\
+      \n\
+        float hash(float x){\n\
+          return fract(sin(x*23.3)*13.13);\n\
+      }\n\
+      \n\
+      void main(void){\n\
+      \n\
+        float time = czm_frameNumber / 60.0;\n\
+      vec2 resolution = czm_viewport.zw;\n\
+      \n\
+      vec2 uv=(gl_FragCoord.xy*2.-resolution.xy)/min(resolution.x,resolution.y);\n\
+      vec3 c=vec3(.6,.7,.8);\n\
+      \n\
+      float a=-.4;\n\
+      float si=sin(a),co=cos(a);\n\
+      uv*=mat2(co,-si,si,co);\n\
+      uv*=length(uv+vec2(0,4.9))*.3+1.;\n\
+      \n\
+      float v=1.-sin(hash(floor(uv.x*100.))*100.);\n\
+      float b=clamp(abs(sin(15.*time*v+uv.y*(10./(2.+v))))-.95,0.,1.)*4.;\n\
+      c*=v*b; \n\
+      \n\
+      gl_FragColor = mix(texture2D(colorTexture, v_textureCoordinates), vec4(c,1), 0.5);  \n\
+      }\n\
+";
       }
-      activeShapePoints.push(earthPosition);
-      tempEntities.push(createPoint(earthPosition));
-    }
-  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    },
+    flyToLocation() {
+      const latitude = 23.037759;
+      const longitude = 113.771723;
+      const height = 1000;
 
-  handler.setInputAction((event) => {
-    if (Cesium.defined(floatingPoint)) {
-      const newPosition = viewer.scene.pickPosition(event.endPosition);
-      if (Cesium.defined(newPosition)) {
-        floatingPoint.position.setValue(newPosition);
-        activeShapePoints.pop();
-        activeShapePoints.push(newPosition);
+      const destination = Cesium.Cartesian3.fromDegrees(
+        longitude,
+        latitude,
+        height,
+      );
+      window.viewer.camera.flyTo({
+        destination: destination,
+        duration: 5,
+        // complete: () => {
+        //   console.log(this.showFlood);
+        //   this.showFlood = true;
+        // },
+      });
+    },
+    toggleFlood() {
+      // this.flyToLocation();
+      this.showFlood = !this.showFlood;
+    },
+    handCloserModel() {
+      this.modelToolBarIsShow = false;
+      this.clearAllEntities();
+    },
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:44:02
+     * @note: 注意事项
+     * @description: 绘制范围
+     */
+    drawExtent() {
+      if (viewer.terrainProvider instanceof Cesium.EllipsoidTerrainProvider) {
+        this.$modal.msgWarning("请先开启地形！");
+        return;
       }
-    }
-  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      // 开启深度检测
+      window.viewer.scene.globe.depthTestAgainstTerrain = true;
+      handler = new Cesium.ScreenSpaceEventHandler(window.viewer.canvas);
 
-  handler.setInputAction((event) => {
-    activeShapePoints.pop();
-    if (activeShapePoints.length < 3) return;
+      handler.setInputAction((event) => {
+        const earthPosition = viewer.scene.pickPosition(event.position);
+        if (Cesium.defined(earthPosition)) {
+          if (activeShapePoints.length === 0) {
+            floatingPoint = this.createPoint(earthPosition);
+            activeShapePoints.push(earthPosition);
+            const dynamicPositions = new Cesium.CallbackProperty(function () {
+              return new Cesium.PolygonHierarchy(activeShapePoints);
+            }, false);
+            activeShape = this.drawShape(dynamicPositions, Cesium.Color.RED);
+          }
+          activeShapePoints.push(earthPosition);
+          this.tempEntities.push(this.createPoint(earthPosition));
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
-    tempEntities.push(drawPolyline(activeShapePoints));
-    let ploy = drawShape(
-      activeShapePoints,
-      Cesium.Color.fromBytes(64, 157, 253, 20),
-    );
-    tempEntities.push(ploy);
-
-    getAreaHeight(activeShapePoints);
-
-    window.viewer.entities.remove(floatingPoint);
-    window.viewer.entities.remove(activeShape);
-    floatingPoint = undefined;
-    activeShape = undefined;
-    handler.destroy(); // 关闭事件句柄
-    handler = null;
-  }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-};
-
-/**
- * @author:许佳宇
- * @Date: 2023/7/10
- * @note: 注意事项
- * @description: 绘制范围
- */
-const drawDongZhong = () => {};
-
-/**
- * @author:
- * @Date: 2022-11-13 16:48:43
- * @note: 注意事项
- * @description: 获取区域内最大最小高程
- * @param {*} positions
- */
-const getAreaHeight = (positions) => {
-  let startP = positions[0];
-  let endP = positions[positions.length - 1];
-  if (startP.x != endP.x && startP.y != endP.y && startP.z != endP.z)
-    positions.push(positions[0]);
-
-  const tempPoints = [];
-  for (let i = 0; i < positions.length; i++) {
-    var ellipsoid = window.viewer.scene.globe.ellipsoid;
-    var cartographic = ellipsoid.cartesianToCartographic(positions[i]);
-    var lat = Cesium.Math.toDegrees(cartographic.latitude);
-    var lng = Cesium.Math.toDegrees(cartographic.longitude);
-    tempPoints.push([lng, lat]);
-  }
-  var line = turf.lineString(tempPoints);
-  var chunk = turf.lineChunk(line, 10, { units: "meters" });
-
-  const tempArray = [];
-  chunk.features.forEach((f) => {
-    f.geometry.coordinates.forEach((c) => {
-      tempArray.push(Cesium.Cartographic.fromDegrees(c[0], c[1]));
-    });
-  });
-
-  var promise = Cesium.sampleTerrainMostDetailed(
-    window.viewer.terrainProvider,
-    tempArray,
-  ).then((updatedPositions) => {
-    const max = Math.max.apply(
-      Math,
-      updatedPositions.map((item) => {
-        return item.height;
-      }),
-    );
-    const min = Math.min.apply(
-      Math,
-      updatedPositions.map((item) => {
-        return item.height;
-      }),
-    );
-
-    waterHeight.value = Math.ceil(min);
-    minWaterHeight.value = Math.ceil(min);
-    maxWaterHeight.value = Math.ceil(max);
-    // 禁用绘制按钮
-    isDraw.value = !isDraw.value;
-    warningWaterHeightDisabled.value = false;
-  });
-};
-
-/**
- * @author:
- * @Date: 2022-11-13 16:46:47
- * @note: 注意事项
- * @description: 创建点
- * @param {*} worldPosition
- */
-const createPoint = (worldPosition) => {
-  const point = window.viewer.entities.add({
-    position: worldPosition,
-    point: {
-      color: Cesium.Color.SKYBLUE,
-      pixelSize: 5,
-      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      handler.setInputAction((event) => {
+        if (Cesium.defined(floatingPoint)) {
+          const newPosition = viewer.scene.pickPosition(event.endPosition);
+          if (Cesium.defined(newPosition)) {
+            floatingPoint.position.setValue(newPosition);
+            activeShapePoints.pop();
+            activeShapePoints.push(newPosition);
+          }
+        }
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     },
-  });
-  return point;
-};
-/**
- * @author:
- * @Date: 2022-11-13 16:46:37
- * @note: 注意事项
- * @description: 绘制多边形
- * @param {*} positionData
- * @param {*} mat
- */
-const drawShape = (positionData, mat) => {
-  let shape = window.viewer.entities.add({
-    polygon: {
-      hierarchy: positionData,
-      material: mat,
-      outline: true,
-      outlineColor: Cesium.Color.SKYBLUE,
-      outlineWidth: 4,
-    },
-  });
-  return shape;
-};
 
-/**
- * @author:
- * @Date: 2022-11-13 16:46:11
- * @note: 注意事项
- * @description: 绘制线
- * @param {*} positions
- */
-const drawPolyline = (positions) => {
-  if (positions.length < 1) return;
+    finishDraw() {
+      if (activeShapePoints.length < 3) return;
 
-  let startP = positions[0];
-  let endP = positions[positions.length - 1];
-  if (startP.x != endP.x && startP.y != endP.y && startP.z != endP.z)
-    positions.push(positions[0]);
+      this.tempEntities.push(this.drawPolyline(activeShapePoints));
 
-  return window.viewer.entities.add({
-    name: "polyline",
-    polyline: {
-      positions: positions,
-      width: 2.0,
-      material: Cesium.Color.SKYBLUE,
-      clampToGround: true,
-    },
-  });
-};
-/**
- * @author:
- * @Date: 2022-11-13 16:45:05
- * @note: 注意事项
- * @description: 淹没分析
- */
-const induationAnalysis = () => {
-  console.log(warningWaterHeight.value);
-  console.log(maxWaterHeight.value);
-  console.log(minWaterHeight.value);
-  console.log(activeShapePoints, "activepos");
-  console.log(tempEntities, "tempE");
-  let tmpPos = [
-    {
-      x: -2367174.215778246,
-      y: 5374114.035657404,
-      z: 2480834.0670244945,
-    },
-    {
-      x: -2367088.203347616,
-      y: 5374433.979880874,
-      z: 2480227.0527583696,
-    },
-    {
-      x: -2367153.0441021663,
-      y: 5374413.848992698,
-      z: 2480208.912923143,
-    },
-    {
-      x: -2367221.3786056293,
-      y: 5374095.149759812,
-      z: 2480830.003463956,
-    },
-    {
-      x: -2367174.215778246,
-      y: 5374114.035657404,
-      z: 2480834.0670244945,
-    },
-  ];
+      let ploy = this.drawShape(
+        activeShapePoints,
+        Cesium.Color.fromBytes(64, 157, 253, 20),
+      );
+      this.tempEntities.push(ploy);
+      this.getAreaHeight(activeShapePoints);
 
-  if (
-    Number(warningWaterHeight.value) < Number(minWaterHeight.value) ||
-    Number(warningWaterHeight.value) > Number(maxWaterHeight.value)
-  ) {
-    ElNotification({
-      message: "预警高度必须在最大高度和最小高度之间",
-      type: "warning",
-    });
-    return;
-  }
-  warningWaterHeightDisabled.value = true;
-  let shape = window.viewer.entities.add({
-    polygon: {
-      hierarchy: activeShapePoints,
-      material: Cesium.Color.fromBytes(64, 157, 253, 20),
-      extrudedHeight: Number(warningWaterHeight.value),
-      outline: true,
-      outlineColor: Cesium.Color.RED,
-      outlineWidth: 4,
-      // perPositionHeight: true
+      console.log(this.tempEntities, "tempEntities");
+      console.log(activeShapePoints, "activeShapePoints");
+
+      window.viewer.entities.remove(floatingPoint);
+      window.viewer.entities.remove(activeShape);
+      floatingPoint = undefined;
+      activeShape = undefined;
+      handler.destroy(); // 关闭事件句柄
+      handler = null;
     },
-  });
-  tempEntities.push(shape);
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:48:43
+     * @note: 注意事项
+     * @description: 获取区域内最大最小高程
+     * @param {*} positions
+     */
+    getAreaHeight(positions) {
+      let startP = positions[0];
+      let endP = positions[positions.length - 1];
+      if (startP.x != endP.x && startP.y != endP.y && startP.z != endP.z)
+        positions.push(positions[0]);
 
-  waterHeightShow = true;
-  waterHeight.value = Number(minWaterHeight.value);
-  const en = window.viewer.entities.add({
-    polygon: {
-      hierarchy: activeShapePoints,
-      extrudedHeight: new Cesium.CallbackProperty(() => {
-        return waterHeight.value;
-      }, false),
-      material: Cesium.Color.fromBytes(64, 157, 253, 150),
+      const tempPoints = [];
+      for (let i = 0; i < positions.length; i++) {
+        var ellipsoid = window.viewer.scene.globe.ellipsoid;
+        var cartographic = ellipsoid.cartesianToCartographic(positions[i]);
+        var lat = Cesium.Math.toDegrees(cartographic.latitude);
+        var lng = Cesium.Math.toDegrees(cartographic.longitude);
+        tempPoints.push([lng, lat]);
+      }
+      var line = turf.lineString(tempPoints);
+      var chunk = turf.lineChunk(line, 10, { units: "meters" });
+
+      const tempArray = [];
+      chunk.features.forEach((f) => {
+        f.geometry.coordinates.forEach((c) => {
+          tempArray.push(Cesium.Cartographic.fromDegrees(c[0], c[1]));
+        });
+      });
+
+      var promise = Cesium.sampleTerrainMostDetailed(
+        window.viewer.terrainProvider,
+        tempArray,
+      ).then((updatedPositions) => {
+        const max = Math.max.apply(
+          Math,
+          updatedPositions.map((item) => {
+            return item.height;
+          }),
+        );
+        const min = Math.min.apply(
+          Math,
+          updatedPositions.map((item) => {
+            return item.height;
+          }),
+        );
+        this.waterHeight = Math.ceil(min);
+        this.minWaterHeight = Math.ceil(min);
+        this.maxWaterHeight = Math.ceil(max);
+        this.warningWaterHeight = Math.ceil(max);
+        // 禁用绘制按钮
+        this.isDraw = !this.isDraw;
+        this.warningWaterHeightDisabled = false;
+      });
     },
-  });
-  tempEntities.push(en);
 
-  waterHeightTimeer = setInterval(() => {
-    waterHeight.value += Number(speed.value);
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:46:47
+     * @note: 注意事项
+     * @description: 创建点
+     * @param {*} worldPosition
+     */
+    createPoint(worldPosition) {
+      const point = window.viewer.entities.add({
+        position: worldPosition,
+        point: {
+          color: Cesium.Color.SKYBLUE,
+          pixelSize: 5,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        },
+      });
+      return point;
+    },
 
-    let l =
-      speed.value.split(".").length > 1 ? speed.value.split(".")[1].length : 0;
-    waterHeight.value = Number(waterHeight.value.toFixed(l));
-    maxWaterHeight.value = Number(maxWaterHeight.value);
-    minWaterHeight.value = Number(minWaterHeight.value);
-    if (
-      waterHeight.value > maxWaterHeight.value ||
-      waterHeight.value < minWaterHeight.value
-    ) {
-      clearInterval(waterHeightTimeer);
-      waterHeight.value =
-        waterHeight.value > maxWaterHeight.value
-          ? maxWaterHeight.value
-          : minWaterHeight.value;
-    }
-  }, 1000);
-};
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:46:37
+     * @note: 注意事项
+     * @description: 绘制多边形
+     * @param {*} positionData
+     * @param {*} mat
+     */
+    drawShape(positionData, mat) {
+      let shape = window.viewer.entities.add({
+        polygon: {
+          hierarchy: positionData,
+          material: mat,
+          outline: true,
+          outlineColor: Cesium.Color.SKYBLUE,
+          outlineWidth: 4,
+        },
+      });
+      return shape;
+    },
 
-/**
- * @author:
- * @Date: 2022-11-13 16:44:42
- * @note: 注意事项
- * @description: 清除当前页面所有数据
- */
-const clearAllEntities = () => {
-  if (waterHeightTimeer) {
-    clearInterval(waterHeightTimeer);
-  }
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:46:11
+     * @note: 注意事项
+     * @description: 绘制线
+     * @param {*} positions
+     */
+    drawPolyline(positions) {
+      if (positions.length < 1) return;
 
-  const length = tempEntities.length;
-  for (let f = 0; f < length; f++) {
-    window.viewer.entities.remove(tempEntities[f]);
-  }
-  tempEntities = [];
-  waterHeightShow = false;
-  activeShapePoints = reactive([]);
-  warningWaterHeight.value = 0;
-  isDraw = !isDraw;
-  floatingPoint = undefined;
-  activeShape = undefined;
-  if (handler) {
-    handler.destroy(); // 关闭事件句柄
-    handler = undefined;
-  }
+      let startP = positions[0];
+      let endP = positions[positions.length - 1];
+      if (startP.x != endP.x && startP.y != endP.y && startP.z != endP.z)
+        positions.push(positions[0]);
+
+      return window.viewer.entities.add({
+        name: "polyline",
+        polyline: {
+          positions: positions,
+          width: 2.0,
+          material: Cesium.Color.SKYBLUE,
+          clampToGround: true,
+        },
+      });
+    },
+
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:45:05
+     * @note: 注意事项
+     * @description: 淹没分析
+     */
+    induationAnalysis() {
+      this.rain();
+      if (
+        Number(this.warningWaterHeight) < Number(this.minWaterHeight) ||
+        Number(this.warningWaterHeight) > Number(this.maxWaterHeight)
+      ) {
+        ElNotification({
+          message: "预警高度必须在最大高度和最小高度之间",
+          type: "warning",
+        });
+        return;
+      }
+      this.warningWaterHeightDisabled = true;
+      let shape = window.viewer.entities.add({
+        polygon: {
+          hierarchy: activeShapePoints,
+          material: Cesium.Color.fromBytes(64, 157, 253, 20),
+          extrudedHeight: Number(this.warningWaterHeight),
+          outline: true,
+          outlineColor: Cesium.Color.RED,
+          outlineWidth: 4,
+          // perPositionHeight: true
+        },
+      });
+      this.tempEntities.push(shape);
+
+      this.waterHeightShow = true;
+      this.waterHeight = Number(this.minWaterHeight);
+      const en = window.viewer.entities.add({
+        polygon: {
+          hierarchy: activeShapePoints,
+          extrudedHeight: new Cesium.CallbackProperty(() => {
+            return this.waterHeight;
+          }, false),
+          material: Cesium.Color.fromBytes(64, 157, 253, 150),
+        },
+      });
+      this.tempEntities.push(en);
+
+      this.waterHeightTimeer = setInterval(() => {
+        this.waterHeight += Number(this.speed);
+
+        let l =
+          this.speed.split(".").length > 1
+            ? this.speed.split(".")[1].length
+            : 0;
+        this.waterHeight = Number(this.waterHeight.toFixed(l));
+        this.maxWaterHeight = Number(this.maxWaterHeight);
+        this.minWaterHeight = Number(this.minWaterHeight);
+        if (
+          this.waterHeight > this.maxWaterHeight ||
+          this.waterHeight < this.minWaterHeight
+        ) {
+          clearInterval(this.waterHeightTimeer);
+          this.waterHeight =
+            this.waterHeight > this.maxWaterHeight
+              ? this.maxWaterHeight
+              : this.minWaterHeight;
+        }
+      }, 1000);
+      // 手动触发屏幕渲染更新
+      window.viewer.scene.requestRender();
+    },
+
+    /**
+     * @author:
+     * @Date: 2022-11-13 16:44:42
+     * @note: 注意事项
+     * @description: 清除当前页面所有数据
+     */
+    clearAllEntities() {
+      this.removeStage();
+      if (this.waterHeightTimeer) {
+        clearInterval(this.waterHeightTimeer);
+      }
+      this.positions = [];
+      const length = this.tempEntities.length;
+      for (let f = 0; f < length; f++) {
+        window.viewer.entities.remove(this.tempEntities[f]);
+      }
+      this.tempEntities = [];
+      this.waterHeightShow = false;
+      activeShapePoints = [];
+      this.warningWaterHeight = 0;
+      this.isDraw = !this.isDraw;
+      floatingPoint = undefined;
+      activeShape = undefined;
+      if (handler) {
+        handler.destroy(); // 关闭事件句柄
+        handler = undefined;
+      }
+    },
+  },
 };
 </script>
 
