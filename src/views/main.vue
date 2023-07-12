@@ -32,10 +32,9 @@ import changeLayer from "../components/changeLayer.vue";
 import flood from "../components/flood.vue";
 import request from "../utils/request";
 import { initRiver, debounce } from "@/utils/common.js";
-import { onDeactivated, onMounted, reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import * as Cesium from "cesium";
 import { ref } from "vue";
-import { onActivated } from "vue";
 import qs from "qs";
 
 /**
@@ -574,44 +573,6 @@ onMounted(() => {
   // window.Cesium.Ion.defaultAccessToken =
   //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZGM4NzQ1MS0yMDdmLTQ4YmQtOGM1Yy02ZDllZjYxY2YyMDUiLCJpZCI6MTM1NDgyLCJpYXQiOjE2ODg1MjAwMDd9.hZyghWRVZzaK-woP45qd63OiEgjn0o5fOLo2JnL90Z0";
 
-  // // 天地图;
-  // const token = "7998f96b301cf185de722d8dadab0479";
-  // const imgLayer = new Cesium.WebMapTileServiceImageryProvider({
-  //   url:
-  //     "http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
-  //     "&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
-  //     `&style=default&format=tiles&tk=${token}`,
-  //   layer: "tdtCva",
-  //   style: "default",
-  //   format: "tiles",
-  //   tileMatrixSetID: "c",
-  //   subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
-  //   tilingScheme: new Cesium.GeographicTilingScheme(),
-  //   tileMatrixLabels: [
-  //     "1",
-  //     "2",
-  //     "3",
-  //     "4",
-  //     "5",
-  //     "6",
-  //     "7",
-  //     "8",
-  //     "9",
-  //     "10",
-  //     "11",
-  //     "12",
-  //     "13",
-  //     "14",
-  //     "15",
-  //     "16",
-  //     "17",
-  //     "18",
-  //     "19",
-  //   ],
-  //   // maximumLevel: 18,
-  //   show: false,
-  // });
-  // viewer.imageryLayers.addImageryProvider(imgLayer);
   // const ciaLayer = new Cesium.WebMapTileServiceImageryProvider({
   //   url: `https://t0.tianditu.gov.cn/cia_w/wmts?tk=${token}`,
   //   format: "tiles",
@@ -653,11 +614,11 @@ onMounted(() => {
   // });
   // city.style = heightStyle;
 
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 2000; //相机最小缩放距离
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 300; //相机最小缩放距离
   initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  showArea();
+  // showArea();
 });
 </script>
 <style lang="scss">
