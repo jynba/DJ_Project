@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-12 16:18:53
+ * @LastEditTime: 2023-07-12 17:27:10
 -->
 <template>
   <div>
@@ -13,7 +13,7 @@
       round
       :overlay="false"
       position="bottom"
-      :style="{ height: '37%' }"
+      :style="{ height: '40%' }"
     >
       <van-cell-group>
         <van-cell :title="detailInfo.name" class="cell_title" />

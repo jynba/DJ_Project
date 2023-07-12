@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-12 16:29:18
+ * @LastEditTime: 2023-07-12 19:14:42
 -->
 <template>
   <div>
@@ -13,12 +13,12 @@
       round
       :overlay="false"
       position="bottom"
-      :style="{ height: '37%' }"
+      :style="{ height: '40%' }"
     >
-      <div id="basinStyle">
+      <!-- <div id="basinStyle">
         <img src="../assets/riverIcon.png" />
         <h2>河流百科</h2>
-      </div>
+      </div> -->
 
       <div class="river_info_box">
         <div class="riverName">{{ riverDetailInfo.name }}</div>
@@ -27,6 +27,7 @@
           <div>流域面积：{{ riverDetailInfo.scopeArea }}</div>
           <div>河网长度:{{ riverDetailInfo.riverLength }}</div>
           <div>河段出口:{{ riverDetailInfo.riverExit }}</div>
+          <div>河长:{{ riverDetailInfo.chiefName }}</div>
         </div>
       </div>
     </van-popup>
@@ -37,18 +38,33 @@
 import { reactive, ref } from "vue";
 import { app } from "../main.js";
 import $ from "jquery";
+import qs from "qs";
+import axios from "axios";
 
 const encyclopediaShow = ref(false);
 //接受河流百科信息
 app.config.globalProperties.$eventBus.on("encyclopedia", (encyclopedia) => {
   // console.log("百科数据", encyclopedia);
+  console.log("encyclopedia", encyclopedia);
   encyclopediaShow.value = encyclopedia.encyclopediaShow;
   riverDetailInfo.name =
-    encyclopedia.name == null ? "暂未命名" : encyclopedia.name;
+    encyclopedia.name == null ? "暂无信息" : encyclopedia.name;
   riverDetailInfo.scopeArea = encyclopedia.sub_area + "km²";
   riverDetailInfo.riverLength = encyclopedia.cnl_len + "km";
   riverDetailInfo.riverExit = encyclopedia.riverExitText;
+  if (encyclopedia.level == 7) {
+    //东江流域河长
+    riverDetailInfo.chiefName = "黄坤明";
+  } else if (encyclopedia.level == 6) {
+    //市级河长
+
+    riverDetailInfo.chiefName = encyclopedia.Chief[0].data.name;
+  } else if (encyclopedia.level >= 1 && encyclopedia.level <= 5) {
+    //县镇级河长
+    riverDetailInfo.chiefName = encyclopedia.Chief[1].data.name;
+  }
 });
+
 const riverDetailInfo = reactive({
   name: "",
   riverScope: "",
@@ -60,7 +76,7 @@ const riverDetailInfo = reactive({
   riverExit: "",
   liveTraffic: "",
   riverInfoCode: "",
-
+  chiefName: "",
   //更多信息
 });
 
