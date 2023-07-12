@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="jy-flood">
     <div class="jy-flood__inner" @click="toggleFlood()"></div>
   </div>
@@ -135,14 +135,15 @@ export default {
       window.viewer.camera.flyTo({
         destination: destination,
         duration: 5,
-        complete: () => {
-          console.log(this.showFlood);
-          this.showFlood = true;
-        },
+        // complete: () => {
+        //   console.log(this.showFlood);
+        //   this.showFlood = true;
+        // },
       });
     },
     toggleFlood() {
-      this.flyToLocation();
+      // this.flyToLocation();
+      this.showFlood = !this.showFlood;
     },
     handCloserModel() {
       this.modelToolBarIsShow = false;
