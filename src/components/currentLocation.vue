@@ -27,7 +27,6 @@ const getCurrentLocation = () => {
         getExitLocationName(lon, lat).then((location) => {
           console.log(location);
           if (location.street) {
-            console.log();
             console.log("location.street", location.street);
             currentLocation.value = location.street;
           }
@@ -46,10 +45,14 @@ const getCurrentLocation = () => {
 };
 const flyToLocation = () => {
   console.log(longitude.value);
-  const destination = Cesium.Cartesian3.fromDegrees(23.037759, 113.771723);
+  const destination = Cesium.Cartesian3.fromDegrees(
+    23.037759,
+    113.771723,
+    20000,
+  );
   window.viewer.camera.flyTo({
     destination: destination,
-    duration: 5,
+    duration: 10,
   });
 };
 </script>
@@ -64,7 +67,7 @@ const flyToLocation = () => {
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 999;
+  z-index: 200;
   cursor: pointer;
 
   img {

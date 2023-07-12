@@ -242,7 +242,7 @@ const flyToLocationCenter = (flytoLat, flytoLng, currentHeight) => {
   line-height: 0.84rem;
 }
 .section_4 {
-  padding: 0.75rem 0.63rem 25.13rem;
+  padding: 0.75rem 0.63rem 22.13rem;
   background-color: #ffffff;
 }
 

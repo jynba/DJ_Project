@@ -300,7 +300,7 @@ const closeBox = () => {
   position: absolute;
   left: 200px;
   top: 0;
-  z-index: 999;
+  z-index: 200;
   margin: 8px;
 }
 
