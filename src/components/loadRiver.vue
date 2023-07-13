@@ -20,7 +20,7 @@ import { mapLabels, initReservoirs } from "@/utils/common.js";
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 999;
+  z-index: 200;
   cursor: pointer;
   img {
     height: 100%;
@@ -36,7 +36,7 @@ import { mapLabels, initReservoirs } from "@/utils/common.js";
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 999;
+  z-index: 200;
   cursor: pointer;
 
   img {

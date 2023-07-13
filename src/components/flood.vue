@@ -2,45 +2,61 @@
   <div class="jy-flood">
     <div class="jy-flood__inner" @click="toggleFlood()"></div>
   </div>
-  <div>
-    <div class="Tool-template ToolBar" v-if="showFlood">
-      <span>淹没分析</span>
-      <div class="splitline"></div>
-      <div class="app-container">
-        <el-button type="primary" @click="drawExtent" :disabled="isDraw"
+  <div class="Tool-template ToolBar" v-if="showFlood">
+    <h3 class="Tool-title">淹没分析</h3>
+    <div class="app-container">
+      <div class="Tool-buttons">
+        <el-button
+          type="primary"
+          size="small"
+          @click="drawExtent"
+          :disabled="isDraw"
           >绘制范围</el-button
         >
-        <el-button type="primary" @click="finishDraw" :disabled="isDraw"
+        <el-button
+          type="primary"
+          size="small"
+          @click="finishDraw"
+          :disabled="isDraw"
           >完成绘制</el-button
         >
-        <el-button type="primary" @click="induationAnalysis" :disabled="!isDraw"
+        <el-button
+          type="primary"
+          size="small"
+          @click="induationAnalysis"
+          :disabled="!isDraw"
           >淹没分析</el-button
         >
-        <el-button type="primary" @click="clearAllEntities" :disabled="!isDraw"
+        <el-button
+          type="primary"
+          size="small"
+          @click="clearAllEntities"
+          :disabled="!isDraw"
           >清除</el-button
         >
-        <div class="water-bartool">
-          最大高度：<el-input v-model="maxWaterHeight" disabled></el-input
-          >&nbsp;&nbsp;米
-        </div>
-        <div class="water-bartool">
-          最小高度：<el-input v-model="minWaterHeight" disabled></el-input
-          >&nbsp;&nbsp;米
-        </div>
-        <div class="water-bartool">
-          预警高度：<el-input
-            v-model="warningWaterHeight"
-            :disabled="warningWaterHeightDisabled"
-          ></el-input
-          >&nbsp;&nbsp;米
-        </div>
-        <div class="water-bartool">
-          淹没速度：<el-input v-model="speed"></el-input>&nbsp;&nbsp;m/s
-        </div>
-        <div class="water-bartool" v-show="waterHeightShow">
-          实时高度：<span class="waterInfo">{{ waterHeight }}</span
-          >&nbsp;&nbsp;m
-        </div>
+      </div>
+
+      <div class="water-bartool">
+        最大高度：<el-input v-model="maxWaterHeight" disabled></el-input
+        >&nbsp;&nbsp;米
+      </div>
+      <div class="water-bartool">
+        最小高度：<el-input v-model="minWaterHeight" disabled></el-input
+        >&nbsp;&nbsp;米
+      </div>
+      <div class="water-bartool">
+        预警高度：<el-input
+          v-model="warningWaterHeight"
+          :disabled="warningWaterHeightDisabled"
+        ></el-input
+        >&nbsp;&nbsp;米
+      </div>
+      <div class="water-bartool">
+        淹没速度：<el-input v-model="speed"></el-input>&nbsp;&nbsp;m/s
+      </div>
+      <div class="water-bartool" v-show="waterHeightShow">
+        实时高度：<span class="waterInfo">{{ waterHeight }}</span
+        >&nbsp;&nbsp;m
       </div>
     </div>
   </div>
@@ -142,7 +158,7 @@ export default {
       });
     },
     toggleFlood() {
-      // this.flyToLocation();
+      this.flyToLocation();
       this.showFlood = !this.showFlood;
     },
     handCloserModel() {
@@ -464,23 +480,29 @@ export default {
 }
 
 .Tool-template {
-  background-color: white;
-  height: auto;
-  width: auto;
-  position: relative;
-  margin: 1rem;
+  background-color: #fff;
+  width: 22rem;
+  padding: 0.5rem;
+  position: fixed;
+  margin: 0.7rem;
+  border-radius: 0.5rem;
+  .Tool-title {
+    margin-bottom: 0.5rem;
+    text-align: center;
+    font-weight: 700;
+  }
+  .Tool-buttons {
+    text-align: center;
+  }
 }
+
 .ToolBar {
-  position: absolute;
-  right: 2rem;
   z-index: 200;
-}
-.splitline {
-  border: 2px solid #666;
 }
 .water-bartool {
   margin-top: 10px;
-
+  margin-left: 1.8rem;
+  font-size: 0.8rem;
   .waterInfo {
     font-size: 16px;
     font-weight: 600;
@@ -489,7 +511,7 @@ export default {
 }
 
 .el-input {
-  width: 120px;
+  width: 12rem;
 
   .el-input__inner {
     text-align: center;

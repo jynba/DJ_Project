@@ -234,14 +234,14 @@ function renderEntity(data, location, type) {
           image: item.name.includes("桥")
             ? ImageUrl[0]
             : item.name.includes("公园")
-              ? ImageUrl[1]
-              : item.name.includes("保护区")
-                ? ImageUrl[2]
-                : item.name.includes("公路")
-                  ? ImageUrl[3]
-                  : item.name.includes("水库")
-                    ? ImageUrl[5]
-                    : ImageUrl[4],
+            ? ImageUrl[1]
+            : item.name.includes("保护区")
+            ? ImageUrl[2]
+            : item.name.includes("公路")
+            ? ImageUrl[3]
+            : item.name.includes("水库")
+            ? ImageUrl[5]
+            : ImageUrl[4],
           scale: 1,
           width: 20,
           height: 20,
@@ -338,9 +338,18 @@ function clickBuildingEntity() {
       let longitude = Cesium.Math.toDegrees(cartographic.longitude);
       let latitude = Cesium.Math.toDegrees(cartographic.latitude);
       console.log("pickedObject", pickedObject);
-      if (pickedObject.primitive._id == undefined) return
+      if (
+        pickedObject.primitive._id == undefined ||
+        pickedObject.primitive._id._name == undefined
+      )
+        return;
       //获取信息
       getExitLocationName(longitude, latitude).then((res) => {
+        if (
+          pickedObject.primitive._id == undefined ||
+          pickedObject.primitive._id._name == undefined
+        )
+          return;
         const id = pickedObject.primitive._id._name.match(/\d+/)[0]; // 使用正则表达式替换掉数字部分得到字段
         const type = pickedObject.primitive._id._name.replace(/\d+/, ""); //请求数据
         let scope = {
@@ -413,7 +422,7 @@ function clickBuildingEntity() {
                   const firstLng = flytoLng + 0.1;
                   const diameter = Math.sqrt(
                     Math.pow(firstLat - flytoLat, 2) +
-                    Math.pow(firstLng - flytoLng, 2),
+                      Math.pow(firstLng - flytoLng, 2),
                   );
                   viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(
