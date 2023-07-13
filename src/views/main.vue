@@ -564,7 +564,7 @@ const clickLeftMouseFunction = () => {
         const { level, basincode, channelid } = res.data;
         axios
           .post(
-            IP_ADDRESS_WMS3 + "testBound",
+            IP_ADDRESS_WMS3 + "getDongjiangBound",
             qs.stringify({ level, basincode, channelid }),
           )
           .then((bound) => {
@@ -577,14 +577,14 @@ const clickLeftMouseFunction = () => {
                 followSurface: false,
                 width: 4,
                 material: new Cesium.PolylineOutlineMaterialProperty({
-                  color: Cesium.Color.RED,
+                  color: Cesium.Color.ROYALBLUE,
                   outlineWidth: 2,
-                  outlineColor: Cesium.Color.RED,
+                  outlineColor: Cesium.Color.ROYALBLUE,
                 }),
                 depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
-                  color: Cesium.Color.RED,
+                  color: Cesium.Color.ROYALBLUE,
                   outlineWidth: 2,
-                  outlineColor: Cesium.Color.RED,
+                  outlineColor: Cesium.Color.ROYALBLUE,
                 }),
               },
             });
