@@ -1,3 +1,10 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: 朱海东
+ * @Date: 2023-07-12 16:42:36
+ * @LastEditTime: 2023-07-13 10:41:00
+-->
 <template>
   <div class="iconBox" @click="getCurrentLocation">
     <img src="@/assets/location.png" />
@@ -6,6 +13,7 @@
 
 <script setup>
 import { ref } from "vue";
+import { getExitLocationName } from "../utils/entity-function/displayArea";
 
 const latitude = ref(null);
 const longitude = ref(null);
@@ -13,6 +21,11 @@ const error = ref(null);
 const currentLocation = ref(null);
 const getCurrentLocation = () => {
   console.log(navigator.geolocation);
+  let pos = {
+    lat: 114.1231,
+    lon: 23.1231,
+    height: 2000,
+  };
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -20,15 +33,16 @@ const getCurrentLocation = () => {
         longitude.value = position.coords.longitude;
         console.log(latitude.value, longitude.value);
         // 转换为普通数据
-        const lat = latitude.value;
-        const lon = longitude.value;
+        pos.lat = latitude.value;
+        pos.lon = longitude.value;
         error.value = null;
 
-        getExitLocationName(lon, lat).then((location) => {
+        getExitLocationName(pos.lon, pos.lat).then((location) => {
           console.log(location);
           if (location.street) {
             console.log("location.street", location.street);
             currentLocation.value = location.street;
+            flyToLocation(pos);
           }
         });
       },
@@ -38,21 +52,20 @@ const getCurrentLocation = () => {
         longitude.value = null;
       },
     );
-    flyToLocation();
   } else {
     error.value = "浏览器不支持地理位置获取";
   }
 };
-const flyToLocation = () => {
+const flyToLocation = (position) => {
   console.log(longitude.value);
   const destination = Cesium.Cartesian3.fromDegrees(
-    23.037759,
-    113.771723,
-    20000,
+    position.lon,
+    position.lat,
+    position.height,
   );
   window.viewer.camera.flyTo({
     destination: destination,
-    duration: 10,
+    duration: 5,
   });
 };
 </script>
