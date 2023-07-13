@@ -13,13 +13,14 @@ import { mapLabels, initReservoirs } from "@/utils/common.js";
 .iconBox1 {
   position: absolute;
   top: 14rem;
+  top: 14rem;
   right: 1rem;
   padding: 3px;
   width: 2rem;
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 100;
+  z-index: 999;
   cursor: pointer;
   img {
     height: 100%;
@@ -35,7 +36,7 @@ import { mapLabels, initReservoirs } from "@/utils/common.js";
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 100;
+  z-index: 999;
   cursor: pointer;
 
   img {

@@ -742,7 +742,7 @@ onMounted(() => {
   initRiver(); //分层级加载河流
   clickLeftMouseFunction();
   clickRightMouseFunction();
-  // showArea();
+  showArea();
 });
 </script>
 <style lang="scss">
