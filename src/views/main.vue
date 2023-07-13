@@ -181,7 +181,7 @@ const selectRiver = async (movement) => {
   console.log(longitude, latitude, height, index, "经纬度高度层级");
   // 发请求
   return request({
-    url: IP_ADDRESS_WMS3 + "/getDongjiangRiver",
+    url: IP_ADDRESS_WMS3 + "getDongjiangRiver",
     method: "post",
     data: {
       lon: longitude,
@@ -194,7 +194,7 @@ const selectRiver = async (movement) => {
 
 const showDetail = (data) => {
   return request({
-    url: IP_ADDRESS_WMS3 + "/getDongjiangRiverLog",
+    url: IP_ADDRESS_WMS3 + "getDongjiangRiverLog",
     method: "post",
     data: {
       hierarcode: data.hierarcode,
@@ -371,7 +371,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   formData.select_river = "";
   delete riverdata.scope;
   const res = await request({
-    url: IP_ADDRESS_WMS3 + "/getDongjiangLastRiverLocation",
+    url: IP_ADDRESS_WMS3 + "getDongjiangLastRiverLocation",
     method: "post",
     data: {
       ...riverdata,
@@ -379,7 +379,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   }); //找上一级河流位置
   // console.log(res, 'res');
   const res2 = await request({
-    url: IP_ADDRESS_WMS3 + "/getDongjiangRiverGeom",
+    url: IP_ADDRESS_WMS3 + "getDongjiangRiverGeom",
     method: "post",
     data: res[0],
   }); //高亮上一级河流
