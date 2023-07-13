@@ -443,7 +443,7 @@ export default {
 @include b(flood) {
   background-color: white;
   position: absolute;
-  z-index: 999;
+  z-index: 100;
   right: 1rem;
   top: 23rem;
   width: 2rem;
@@ -473,7 +473,7 @@ export default {
 .ToolBar {
   position: absolute;
   right: 2rem;
-  z-index: 999;
+  z-index: 100;
 }
 .splitline {
   border: 2px solid #666;

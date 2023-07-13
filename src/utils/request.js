@@ -5,7 +5,7 @@ import { ElNotification } from "element-plus";
 let request = axios.create({
 	// 基础路径，发请求时都会携带
 	// baseURL: '/api',
-	timeout: 10000, //超时时间
+	timeout: 20000, //超时时间
 });
 // 第二步：给实例添加 请求拦截器
 request.interceptors.request.use((config) => {

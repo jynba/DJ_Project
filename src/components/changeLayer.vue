@@ -240,7 +240,7 @@ watch(isMounted, (newVal) => {
 @include b(layers) {
   background-color: white;
   position: absolute;
-  z-index: 999;
+  z-index: 100;
   right: 1rem;
   top: 20rem;
   width: 2rem;

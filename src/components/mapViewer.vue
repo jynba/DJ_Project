@@ -137,7 +137,7 @@ function narrow() {
   width: 2rem;
   border-radius: 6px;
   background-color: white;
-  z-index: 999;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

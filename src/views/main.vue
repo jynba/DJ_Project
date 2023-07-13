@@ -134,7 +134,7 @@ const handleClosePanel = () => {
   showPanel.value = false;
 };
 let LINE_SEGMENT_LABELING;
-
+let LINE_SEGMENT_BOUND;
 /**
  * 方法名：selectRiver
  * 创建时间：2023/06/6
@@ -181,7 +181,7 @@ const selectRiver = async (movement) => {
   console.log(longitude, latitude, height, index, "经纬度高度层级");
   // 发请求
   return request({
-    url: "/api/getDongjiangRiver",
+    url: IP_ADDRESS_WMS3 + "/getDongjiangRiver",
     method: "post",
     data: {
       lon: longitude,
@@ -194,7 +194,7 @@ const selectRiver = async (movement) => {
 
 const showDetail = (data) => {
   return request({
-    url: "/api/getDongjiangRiverLog",
+    url: IP_ADDRESS_WMS3 + "/getDongjiangRiverLog",
     method: "post",
     data: {
       hierarcode: data.hierarcode,
@@ -371,7 +371,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   formData.select_river = "";
   delete riverdata.scope;
   const res = await request({
-    url: "/api/getDongjiangLastRiverLocation",
+    url: IP_ADDRESS_WMS3 + "/getDongjiangLastRiverLocation",
     method: "post",
     data: {
       ...riverdata,
@@ -379,7 +379,7 @@ const flytoLastRiverLocation = async (riverdata) => {
   }); //找上一级河流位置
   // console.log(res, 'res');
   const res2 = await request({
-    url: "/api/getDongjiangRiverGeom",
+    url: IP_ADDRESS_WMS3 + "/getDongjiangRiverGeom",
     method: "post",
     data: res[0],
   }); //高亮上一级河流
@@ -393,11 +393,13 @@ const flytoLastRiverLocation = async (riverdata) => {
   if (typeof res2 == "string") {
     //隐藏高亮
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.entities.remove(LINE_SEGMENT_BOUND);
     window.viewer.scene.requestRender();
   } else {
     //面板跟随显示
     //隐藏高亮river
     window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+    window.viewer.entities.remove(LINE_SEGMENT_BOUND);
     window.viewer.scene.requestRender();
     //创建实体用于点击河段时高亮该河段
     let addRedLine = window.viewer.entities.add({
@@ -435,6 +437,7 @@ const clickRightMouseFunction = () => {
   handler.setInputAction(function (movement) {
     debounce(async function () {
       window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+      window.viewer.entities.remove(LINE_SEGMENT_BOUND);
       window.viewer.scene.requestRender();
       const res = await selectRiver(movement);
       console.log(res);
@@ -479,6 +482,7 @@ const clickLeftMouseFunction = () => {
   handler.setInputAction(function (movement) {
     debounce(async function () {
       window.viewer.entities.remove(LINE_SEGMENT_LABELING);
+      window.viewer.entities.remove(LINE_SEGMENT_BOUND);
       const res = await selectRiver(movement);
       console.log("res", res);
       if (res.code == 20000) {
@@ -541,14 +545,52 @@ const clickLeftMouseFunction = () => {
               qs.stringify({ scope: scope }),
             )
             .then((chiefRes) => {
-              encyclopediaData.Chief = chiefRes.data.data;
+              if (chiefRes.data) encyclopediaData.Chief = chiefRes.data.data;
               //传值给百科组件
-              app.config.globalProperties.$eventBus.emit(
-                "encyclopedia",
-                encyclopediaData,
-              );
+              if (encyclopediaData.Chief)
+                app.config.globalProperties.$eventBus.emit(
+                  "encyclopedia",
+                  encyclopediaData,
+                );
+            })
+            .catch((err) => {
+              console.log(err);
             });
         }
+
+        if (!res.data) {
+          return;
+        }
+        const { level, basincode, channelid } = res.data;
+        axios
+          .post(
+            IP_ADDRESS_WMS3 + "testBound",
+            qs.stringify({ level, basincode, channelid }),
+          )
+          .then((bound) => {
+            window.viewer.entities.remove(LINE_SEGMENT_BOUND);
+            window.viewer.scene.requestRender();
+            let addBound = window.viewer.entities.add({
+              name: "Red line on the surface",
+              polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArray(bound.data.data), //经纬度数组 data.scope
+                followSurface: false,
+                width: 4,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                  color: Cesium.Color.RED,
+                  outlineWidth: 2,
+                  outlineColor: Cesium.Color.RED,
+                }),
+                depthFailMaterial: new Cesium.PolylineOutlineMaterialProperty({
+                  color: Cesium.Color.RED,
+                  outlineWidth: 2,
+                  outlineColor: Cesium.Color.RED,
+                }),
+              },
+            });
+            LINE_SEGMENT_BOUND = addBound;
+            window.viewer.scene.requestRender();
+          });
       }
     }, 500)();
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
@@ -736,8 +778,8 @@ onMounted(() => {
 #map_viewer {
   z-index: 100;
   position: absolute;
-  right: 1.1rem;
-  bottom: 20%;
+  right: 1rem;
+  top: 28.5rem;
   // bottom: 17.125rem;
   width: 2rem;
   height: 4rem;

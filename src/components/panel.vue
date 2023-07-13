@@ -187,7 +187,7 @@ const submitRiverNameForm = () => {
     tablelocation: window.$selectedRiver.tablelocation,
   };
   request({
-    url: "/api/submitDongjiangTmp",
+    url: IP_ADDRESS_WMS3 + "/submitDongjiangTmp",
     method: "POST",
     data: tmp,
   })
@@ -246,7 +246,7 @@ const submitRiverLogForm = () => {
   console.log("request");
 
   request({
-    url: "/api/submitDongjiang",
+    url: IP_ADDRESS_WMS3 + "/submitDongjiang",
     method: "POST",
     data: tmp,
   })

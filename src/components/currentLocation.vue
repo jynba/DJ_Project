@@ -49,6 +49,7 @@ const flyToLocation = () => {
   const destination = Cesium.Cartesian3.fromDegrees(23.037759, 113.771723);
   window.viewer.camera.flyTo({
     destination: destination,
+
     duration: 5,
   });
 };
@@ -64,7 +65,7 @@ const flyToLocation = () => {
   height: 2rem;
   background-color: #fff;
   border-radius: 6px;
-  z-index: 999;
+  z-index: 100;
   cursor: pointer;
 
   img {
