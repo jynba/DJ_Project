@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-07-13 15:21:15
- * @LastEditTime: 2023-07-14 14:31:15
+ * @LastEditTime: 2023-07-14 14:38:23
 -->
 <!--
  * @Descripttion: 柱状图组件
@@ -15,14 +15,16 @@
 
 <template>
   <div>
-    <van-dropdown-menu id="dropYear" :overlay="false">
-      <van-dropdown-item
-        class="dropYear_item"
-        v-model="currentYearSelected"
-        :options="yearOption"
-        @change="handleYearChange"
-      />
-    </van-dropdown-menu>
+    <div id="dropYear">
+      <van-dropdown-menu :overlay="false">
+        <van-dropdown-item
+          v-model="currentYearSelected"
+          :options="yearOption"
+          @change="handleYearChange"
+        />
+      </van-dropdown-menu>
+    </div>
+
     <div class="histogram" ref="histgramChart"></div>
     <div class="histogram" ref="stackedChart"></div>
   </div>
@@ -316,15 +318,11 @@ const handleYearChange = (val) => {
 //     background-color: gray;
 //   }
 // }
-// #dropYear {
-//   width: 30%;
-//   height: 2rem;
-
-//   .dropYear_item {
-//     width: 30%;
-//   }
-// }
-// #dropYear .van-dropdown-menu__bar {
-//   background-color: gray !important;
-// }
+#dropYear {
+  width: 30%;
+  height: 2rem;
+  .van-dropdown-menu__bar {
+    box-shadow: none;
+  }
+}
 </style>
