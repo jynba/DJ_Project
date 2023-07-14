@@ -40,7 +40,7 @@ export default defineConfig(({ command, mode }) => ({
 				target: 'https://eslab.dgut.edu.cn/',
 				// target: loadEnv(mode, process.cwd()).VITE_TESTSERVER, // 接口的域名
 				// 若loadENV无第三个参数''，则需要VITE_前缀
-				secure: false, // 如果是https接口，需要配置这个参数
+				secure: true, // 如果是https接口，需要配置这个参数
 				changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
 				rewrite: (path) => path.replace(/^\/api/, ''),
 				//重写传过来的path路径，比如 `/api/index/1?id=10&name=zs`

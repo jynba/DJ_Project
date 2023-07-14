@@ -1,9 +1,9 @@
 <template>
   <div class="iconBox1" @click="initReservoirs">
-    <img src="@/assets/reservoirs.png" />
+    <img src="@/assets/reservoirs.svg" />
   </div>
   <div class="iconBox2" @click="mapLabels">
-    <img src="@/assets/mark.png" />
+    <img src="@/assets/mark.svg" />
   </div>
 </template>
 <script setup>

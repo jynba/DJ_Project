@@ -8,9 +8,9 @@
 <template>
   <div>
     <div class="change_box">
-      <img @click="enlarge" src="../assets/magnify.png" />
+      <img @click="enlarge" src="../assets/magnify.svg" />
       <div class="separator"></div>
-      <img @click="narrow" src="../assets/shrink.png" />
+      <img @click="narrow" src="../assets/shrink.svg" />
     </div>
   </div>
 </template>
@@ -154,8 +154,8 @@ function narrow() {
 
   img {
     cursor: pointer;
-    width: 100%;
-    height: 45%;
+    width: 1.5rem;
+    height: 40%;
   }
 }
 </style>

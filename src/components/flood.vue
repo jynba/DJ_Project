@@ -470,7 +470,7 @@ export default {
   box-sizing: border-box; /* 内边距计算方式，包含边框和内边距在内 */
   @include e(inner) {
     z-index: 1000;
-    background-image: url("../assets/flood.png");
+    background-image: url("../assets/flood.svg");
     background-size: cover; /* 调整图标尺寸以适应容器 */
     background-repeat: no-repeat; /* 禁止图标重复 */
     background-position: center center; /* 图标在容器中居中显示 */

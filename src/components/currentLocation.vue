@@ -7,7 +7,7 @@
 -->
 <template>
   <div class="iconBox" @click="getCurrentLocation">
-    <img src="@/assets/location.png" />
+    <img src="@/assets/location.svg" />
   </div>
 </template>
 
