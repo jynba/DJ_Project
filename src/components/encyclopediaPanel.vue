@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-29 17:44:11
- * @LastEditTime: 2023-07-12 19:58:25
+ * @LastEditTime: 2023-07-14 15:48:02
 -->
 <template>
   <div>
@@ -25,7 +25,7 @@
         <div class="riverContent">
           <div>所属流域:东江</div>
           <div>流域面积：{{ riverDetailInfo.scopeArea }}</div>
-          <div>河网长度:{{ riverDetailInfo.riverLength }}</div>
+          <div>河段长度:{{ riverDetailInfo.riverLength }}</div>
           <div>河段出口:{{ riverDetailInfo.riverExit }}</div>
           <div>
             河长:{{ riverDetailInfo.chiefName }} {{ riverDetailInfo.job }}
