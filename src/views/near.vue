@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-14 09:32:44
+ * @LastEditTime: 2023-07-14 15:05:39
 -->
 <template>
   <div class="near_box">
@@ -68,13 +68,13 @@
     <div class="classification">
       <echart-collention v-if="moreDataStatus"></echart-collention>
       <van-row
-        v-for="item in detailData"
+        v-for="(item, index) in detailData"
         :key="item.text"
         class="each_classify"
         justify="center"
       >
         <van-col span="10">
-          <van-image class="swiperImage" src="./no-image.png" fit="cover" />
+          <van-image class="swiperImage" :src="classImg[index]" fit="contain" />
         </van-col>
         <van-col class="each_classify_detail" span="14">
           <div>{{ item.name }}</div>
@@ -105,6 +105,18 @@ onMounted(() => {
 
   getDetailData("hydrographicStation", currentCity.value);
 });
+//临时图片
+const classImg = [
+  "./shuiwen.png",
+  "./rengongqu.png",
+  "./river.jpg",
+  "./lake2.png",
+  "./diaster.png",
+  "./human.png",
+  "./yichan.png",
+  "./yichan.png",
+  "./testdetail.png",
+];
 
 const allWarnImg = [
   "冰雹橙色.png",
