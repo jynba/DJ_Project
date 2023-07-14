@@ -3,7 +3,7 @@
  * @version: 1.0.0
  * @Author: 朱海东
  * @Date: 2023-06-20 17:39:44
- * @LastEditTime: 2023-07-11 08:49:44
+ * @LastEditTime: 2023-07-14 09:32:44
 -->
 <template>
   <div class="near_box">
@@ -20,8 +20,6 @@
             @change="handleDropdownChange"
           />
         </van-dropdown-menu>
-
-        <!-- <span>{{ currentLocation }}</span> -->
       </div>
       <div class="first_row_col2">
         <van-search
@@ -52,6 +50,7 @@
       </van-row>
     </div>
     <!-- 预警通知 -->
+
     <div class="noticebar">
       <van-swipe class="wanring-swipe" :autoplay="3000" indicator-color="gray">
         <van-swipe-item v-for="item in warningCityArr" :key="item.city">
@@ -67,6 +66,7 @@
 
     <!-- 分类详情页 -->
     <div class="classification">
+      <echart-collention v-if="moreDataStatus"></echart-collention>
       <van-row
         v-for="item in detailData"
         :key="item.text"
@@ -81,12 +81,15 @@
           <div>{{ item.intro }}</div>
         </van-col>
       </van-row>
-
-      <div v-show="detailData.length == 0" class="no_data">暂无数据</div>
+      <div v-if="!moreDataStatus">
+        <div v-if="detailData.length == 0" id="no_data">暂无数据</div>
+      </div>
     </div>
   </div>
 </template>
 <script setup>
+import echartCollention from "../components/echartCollention.vue";
+
 import { ref, reactive, onMounted } from "vue";
 import { getExitLocationName } from "../utils/entity-function/displayArea";
 import axios from "axios";
@@ -159,13 +162,14 @@ const allWarnImg = [
 
 const currentSelectedValue = ref(0);
 const cityOption1 = [
-  { text: "东莞市", value: 0 },
-  { text: "河源市", value: 1 },
-  { text: "惠州市", value: 2 },
-  { text: "深圳市", value: 3 },
-  { text: "广州市", value: 4 },
-  { text: "韶关市", value: 5 },
-  { text: "梅州市", value: 6 },
+  { text: "东江流域", type: "all", value: 0 },
+  { text: "东莞市", type: "东莞市", value: 1 },
+  { text: "河源市", type: "河源市", value: 2 },
+  { text: "惠州市", type: "惠州市", value: 3 },
+  { text: "深圳市", type: "深圳市", value: 4 },
+  { text: "广州市", type: "广州市", value: 5 },
+  { text: "韶关市", type: "韶关市", value: 6 },
+  { text: "梅州市", type: "梅州市", value: 7 },
 ];
 
 /**
@@ -175,13 +179,16 @@ const cityOption1 = [
  * @msg: 选择下拉框触发
  * @return {*}
  */
-let currentCity = ref("东莞市");
+let currentCity = ref("all");
+const moreDataStatus = ref(false);
 const handleDropdownChange = (val) => {
   let city = cityOption1.find((item, index) => {
     return index == val;
   });
-  currentCity.value = city.text;
+  currentCity.value = city.type;
   //获取下方详情数据  切换默认显示水文站数据
+  //显示柱状图
+
   getDetailData("hydrographicStation", currentCity.value);
   if (detailData.length >= 0) {
     clickClassification(0);
@@ -346,6 +353,14 @@ const clickClassification = (item, clickIndex) => {
   selectedImage.value = clickIndex;
   detailData.length = 0; // 清空现有数据
   //获取对应的城市类型数据
+
+  //显示更多数据
+
+  clickIndex == 9
+    ? (moreDataStatus.value = true)
+    : (moreDataStatus.value = false);
+  console.log("clickIndex", clickIndex, moreDataStatus.value);
+
   getDetailData(item.type, currentCity.value);
 };
 
@@ -537,11 +552,12 @@ const getDetailData = (type, city) => {
         line-height: 1.05rem;
         overflow: auto;
         text-overflow: ellipsis;
+        color: gray;
         // white-space: nowrap;
       }
     }
   }
-  .no_data {
+  #no_data {
     margin-top: 1rem;
     width: 100%;
     text-align: center;

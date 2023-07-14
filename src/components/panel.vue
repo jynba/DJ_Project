@@ -1,3 +1,11 @@
+<!--
+ * @Descripttion: 地图标记详情组件
+ * @version: 1.0.0
+ * @Author: 朱海东
+ * @Date: 2023-06-20 15:38:35
+ * @LastEditTime: 2023-07-13 15:22:29
+-->
+
 <template>
   <!-- <div class="modelToolBar">
 		<button @click="showPanel = !showPanel">展示命名面板</button>
